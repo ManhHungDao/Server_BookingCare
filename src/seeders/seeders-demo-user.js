@@ -10,8 +10,6 @@ module.exports = {
         password: "123456",
         address: "tp hcm",
         gender: 1,
-        typeRole: "",
-        keyRole: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
