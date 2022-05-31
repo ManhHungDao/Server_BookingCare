@@ -1,16 +1,17 @@
-import db from('../models/index')
+import db from "../models/index";
 
-let getHomePage =async (req, res) => {
-    try {
-        const data =  await db.User.findAll()
-        console.log("🚀 ~ file: homeController.js ~ line 6 ~ getHomePage ~ data", data)
-        return res.render("homepage.ejs");
-    } catch (error) {
-    console.log("🚀 ~ file: homeController.js ~ line 7 ~ getHomePage ~ error", error)
-    }
-
+let getHomePage = async (req, res) => {
+  try {
+    const data = await db.User.findAll();
+    return res.render("homepage.ejs", { data: JSON.stringify(data) });
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: homeController.js ~ line 11 ~ getHomePage ~ error",
+      error
+    );
+  }
 };
-  
+
 let getAboutPage = (req, res) => {
   return res.render("test/about.ejs");
 };
@@ -21,5 +22,5 @@ let getAboutPage = (req, res) => {
 // }
 module.exports = {
   getHomePage: getHomePage,
-    getAboutPage: getAboutPage,
-  };
+  getAboutPage: getAboutPage,
+};
