@@ -48,3 +48,52 @@ exports.getAllUser = () => {
     }
   });
 };
+
+exports.getUserInfoById = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findOne({ where: { id: userId }, raw: true });
+      if (user) resolve(user);
+      else {
+        resolve({});
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+exports.updateUser =async (user) => {
+  // return new Promise(async (resolve, reject) => {
+  //   try {
+  //     await db.User.update(
+  //       {
+  //         firstName: user.firstName,
+  //         lastName: user.lastName,
+  //         address: user.address,
+  //       },
+  //       {
+  //         where: {
+  //           id: user.id,
+  //         },
+  //       }
+  //     );
+  //     resolve("edit successful");
+  //   } catch (error) {
+  //     reject(error);
+  //   }
+  // });
+
+  return await db.User.update(
+    {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      address: user.address,
+    },
+    {
+      where: {
+        id: user.id,
+      },
+    }
+  ).catch (error=>error) 
+};

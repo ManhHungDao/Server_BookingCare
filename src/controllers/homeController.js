@@ -23,11 +23,33 @@ exports.getCRUD = (req, res) => {
 
 exports.postCRUD = async (req, res) => {
   let message = await CRUDService.createNewUser(req.body);
-  console.log(message);
-  return res.send("createNewUser");
+  return res.send(message);
 };
 
 exports.displayGetCRUD = async (req, res) => {
   const data = await CRUDService.getAllUser();
   return res.render("displayCRUD.ejs", { dataTable: data });
+};
+
+exports.getEditCRUD = async (req, res) => {
+  const userId = req.query.id;
+  if (userId) {
+    const userData = await CRUDService.getUserInfoById(userId);
+    if (userData) {
+      return res.render("editCRUD", {
+        user: userData,
+      }); // co thể bỏ đuôi ejs
+    } else {
+      return res.send("user not found");
+    }
+  } else {
+    return res.send("user not found");
+  }
+};
+
+exports.putCRUD = async (req, res) => {
+  return await CRUDService.updateUser(req.body)
+    .then(res.redirect("/get-crud"))
+    .catch((error) => console.log(error));
+  // return res.redirect("/get-crud");
 };

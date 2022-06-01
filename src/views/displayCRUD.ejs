@@ -43,8 +43,12 @@
                         <td>
                             <%= item.address %>
                         </td>
+                        <td>
+                            <a href="/edit-crud?id=<%=item.id%>" type="button" class="btn btn-primary">Edit</a>
+                            <a href="/delete-crud?id=<%=item.id%>" type="button" class="btn btn-danger">Delete</a>
+                        </td>
                     </tr>
-                        <% }); %>
+                    <% }); %>
             </tbody>
         </table>
     </div>
