@@ -23,7 +23,8 @@ exports.getCRUD = (req, res) => {
 
 exports.postCRUD = async (req, res) => {
   let message = await CRUDService.createNewUser(req.body);
-  return res.send(message);
+  // return res.send(message);
+  res.redirect("/get-crud");
 };
 
 exports.displayGetCRUD = async (req, res) => {
@@ -52,4 +53,9 @@ exports.putCRUD = async (req, res) => {
     .then(res.redirect("/get-crud"))
     .catch((error) => console.log(error));
   // return res.redirect("/get-crud");
+};
+
+exports.deleteCRUD = async (req, res) => {
+  const userId = req.query.id;
+  await CRUDService.deleteUser(userId).then(res.redirect("/get-crud"));
 };

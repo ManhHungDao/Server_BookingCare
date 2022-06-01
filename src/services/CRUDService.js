@@ -63,7 +63,7 @@ exports.getUserInfoById = (userId) => {
   });
 };
 
-exports.updateUser =async (user) => {
+exports.updateUser = async (user) => {
   // return new Promise(async (resolve, reject) => {
   //   try {
   //     await db.User.update(
@@ -95,5 +95,13 @@ exports.updateUser =async (user) => {
         id: user.id,
       },
     }
-  ).catch (error=>error) 
+  ).catch((error) => error);
+};
+
+exports.deleteUser = async (userId) => {
+  return  await db.User.destroy({
+    where: {
+      id: userId,
+    },
+  }).catch((error) => error);
 };
