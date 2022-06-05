@@ -1,16 +1,29 @@
 import express from "express";
 import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
-import initWebRoutes from './route/web';
-import connectDB from'./config/connectDB'
-require('dotenv').config();
+import initWebRoutes from "./route/web";
+import connectDB from "./config/connectDB";
+import cors from "cors";
+
+
+require("dotenv").config();
 
 let app = express();
+
+app.use(cors({ origin: true }));
+// app.options('*', cors())
+
+// app.use((req,res, next)=>{
+//   res.setHeader('Access-Control-Allow-Origin',"http://localhost:3000");
+//   res.setHeader('Access-Control-Allow-Headers',"*");
+//   res.header('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 //config app
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
 
 viewEngine(app);
 initWebRoutes(app);
@@ -21,6 +34,6 @@ let port = process.env.PORT || 6969;
 //Port === undefined => port = 6969
 
 app.listen(port, () => {
-    //callback
-    console.log("Backend Nodejs is runing on the port : " + port)
-})
+  //callback
+  console.log("Backend Nodejs is runing on the port : " + port);
+});
