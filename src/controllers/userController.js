@@ -7,7 +7,7 @@ exports.handleLogin = async (req, res) => {
   if (!email || !password) {
     return res.status(500).json({
       errCode: 1,
-      message: "missing unput parameters",
+      message: "missing input parameters",
     });
   }
   const userData = await userService.handleUserLogin(email, password);
@@ -19,12 +19,45 @@ exports.handleLogin = async (req, res) => {
 };
 
 exports.handleGetAllUers = async (req, res) => {
-  const id = req.body.id;
+  const id = req.query.id; // change body => query
   const users = await userService.getAllUsers(id);
-
   return res.status(200).json({
     errCode: 0,
     message: "ok",
     user: users,
   });
+};
+
+exports.handleCreateNewUser = async (req, res) => {
+  if (!req.body.email)
+    return res.status(200).json({
+      errCode: 1,
+      message: "missing input parameters",
+    });
+  const message = await userService.createNewUsers(req.body);
+  return res.status(200).json({ message });
+};
+
+exports.handleEditUser = async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(200).json({
+      errCode: 1,
+      message: "missing input parameters",
+    });
+  }
+  const message = await userService.updateUser(req.body);
+  return res.status(200).json({ message });
+};
+
+exports.handleDeleteUser = async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(200).json({
+      errCode: 1,
+      message: "missing input parameters",
+    });
+  }
+  const message = await userService.deleteUser(id);
+  return res.status(200).json({ message });
 };

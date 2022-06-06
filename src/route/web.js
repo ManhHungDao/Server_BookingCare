@@ -1,4 +1,5 @@
 import express from "express";
+import { route, use } from "express/lib/application";
 import homeController from "../controllers/homeController";
 import userController from "../controllers/userController";
 
@@ -13,9 +14,12 @@ let initWebRoutes = (app) => {
   router.get("/edit-crud", homeController.getEditCRUD);
   router.post("/put-crud", homeController.putCRUD);
   router.get("/delete-crud", homeController.deleteCRUD);
-  router.post("/api/login", userController.handleLogin);  
-  router.get("/api/get-all-user", userController.handleGetAllUers);  
 
+  router.post("/api/login", userController.handleLogin);
+  router.get("/api/get-all-user", userController.handleGetAllUers);
+  router.post("/api/create-new-user", userController.handleCreateNewUser);
+  router.put('/api/edit-user',userController.handleEditUser)
+  router.delete('/api/delete-user',userController.handleDeleteUser)
 
   return app.use("/", router);
 };

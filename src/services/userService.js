@@ -1,6 +1,8 @@
 import db from "../models/index";
 import bcrypt from "bcryptjs";
 
+const salt = bcrypt.genSaltSync(10);
+
 exports.handleUserLogin = async (email, password) => {
   try {
     let userData = {};
@@ -63,13 +65,81 @@ exports.getAllUsers = async (id) => {
     }
     return users;
   } catch (error) {
-    console.log(
-      "🚀 ~ file: userService.js ~ line 70 ~ exports.getAllUsers= ~ error",
-      error
-    );
+    return error;
   }
-    console.log("🚀 ~ file: userService.js ~ line 72 ~ exports.getAllUsers= ~ users", users)
-    console.log("🚀 ~ file: userService.js ~ line 72 ~ exports.getAllUsers= ~ users", users)
-    console.log("🚀 ~ file: userService.js ~ line 72 ~ exports.getAllUsers= ~ users", users)
-    console.log("🚀 ~ file: userService.js ~ line 72 ~ exports.getAllUsers= ~ users", users)
+};
+
+const hashUserPassword = (password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const hashPassword = await bcrypt.hashSync(password, salt);
+      resolve(hashPassword);
+    } catch (error) {
+      reject(e);
+    }
+  });
+};
+
+exports.createNewUsers = async (data) => {
+  const hashPassword = await hashUserPassword(data.password);
+  const check = await checkUserEmail(data.email);
+  if (check) {
+    return { errCode: 1, message: "Email is exist " };
+  }
+  return await db.User.create({
+    email: data.email,
+    password: hashPassword,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    address: data.address,
+    phoneNumber: data.phoneNumber,
+    gender: data.gender,
+    image: data.image,
+    roleId: data.roleId,
+    positionId: data.positionId,
+  })
+    .then(() => {
+      return {
+        errCode: 0,
+        message: "Ok",
+      };
+    })
+    .catch((err) => err);
+};
+exports.updateUser = async (user) => {
+  const checkUser = await checkExisUser(user.id);
+  if (!checkUser) return { errCode: 1, message: "User not found" };
+  await db.User.update(
+    {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      address: user.address,
+    },
+    {
+      where: {
+        id: user.id,
+      },
+    }
+  ).catch((error) => error);
+  return { errCode: 0, message: "User updated" };
+};
+exports.deleteUser = async (userId) => {
+  const checkUser = await checkExisUser(userId);
+  if (!checkUser) return { errCode: 1, message: "User not found" };
+  await db.User.destroy({
+    where: {
+      id: userId,
+    },
+  }).catch((err) => err);
+  return { errCode: 0, message: "User deleted" };
+};
+
+const checkExisUser = async (id) => {
+  const existUser = await db.User.findOne({ where: { id: id } }).catch(
+    (err) => {
+      throw new Error(err.message);
+    }
+  );
+  if (existUser) return true;
+  return false;
 };

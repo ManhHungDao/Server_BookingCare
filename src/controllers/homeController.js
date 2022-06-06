@@ -23,7 +23,6 @@ exports.getCRUD = (req, res) => {
 
 exports.postCRUD = async (req, res) => {
   let message = await CRUDService.createNewUser(req.body);
-  // return res.send(message);
   res.redirect("/get-crud");
 };
 

@@ -64,25 +64,6 @@ exports.getUserInfoById = (userId) => {
 };
 
 exports.updateUser = async (user) => {
-  // return new Promise(async (resolve, reject) => {
-  //   try {
-  //     await db.User.update(
-  //       {
-  //         firstName: user.firstName,
-  //         lastName: user.lastName,
-  //         address: user.address,
-  //       },
-  //       {
-  //         where: {
-  //           id: user.id,
-  //         },
-  //       }
-  //     );
-  //     resolve("edit successful");
-  //   } catch (error) {
-  //     reject(error);
-  //   }
-  // });
 
   return await db.User.update(
     {
