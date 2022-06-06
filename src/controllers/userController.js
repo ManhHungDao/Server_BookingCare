@@ -17,3 +17,14 @@ exports.handleLogin = async (req, res) => {
     user: userData.user ? userData.user : {},
   });
 };
+
+exports.handleGetAllUers = async (req, res) => {
+  const id = req.body.id;
+  const users = await userService.getAllUsers(id);
+
+  return res.status(200).json({
+    errCode: 0,
+    message: "ok",
+    user: users,
+  });
+};
