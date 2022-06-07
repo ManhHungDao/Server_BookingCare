@@ -35,7 +35,7 @@ exports.handleCreateNewUser = async (req, res) => {
       message: "missing input parameters",
     });
   const message = await userService.createNewUsers(req.body);
-  return res.status(200).json({ message });
+  return res.status(200).json(message);
 };
 
 exports.handleEditUser = async (req, res) => {
@@ -47,7 +47,7 @@ exports.handleEditUser = async (req, res) => {
     });
   }
   const message = await userService.updateUser(req.body);
-  return res.status(200).json({ message });
+  return res.status(200).json(message );
 };
 
 exports.handleDeleteUser = async (req, res) => {
@@ -59,5 +59,5 @@ exports.handleDeleteUser = async (req, res) => {
     });
   }
   const message = await userService.deleteUser(id);
-  return res.status(200).json({ message });
+  return res.status(200).json(message );
 };
