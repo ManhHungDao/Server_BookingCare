@@ -19,13 +19,29 @@ exports.handleLogin = async (req, res) => {
 };
 
 exports.handleGetAllUers = async (req, res) => {
-  const id = req.query.id; // change body => query
+  const { id } = req.query;
+  console.log(
+    "🚀 ~ file: userController.js ~ line 23 ~ exports.handleGetAllUers= ~ req.bod",
+    id
+  );
   const users = await userService.getAllUsers(id);
   return res.status(200).json({
     errCode: 0,
     message: "ok",
     user: users,
   });
+
+  // const { id } = req.body;
+  // console.log(
+  //   "🚀 ~ file: userController.js ~ line 23 ~ exports.handleGetAllUers= ~ req.bod",
+  //   id
+  // );
+  // const users = await userService.getAllUsers(id);
+  // return res.status(200).json({
+  //   errCode: 0,
+  //   message: "ok",
+  //   user: users,
+  // });
 };
 
 exports.handleCreateNewUser = async (req, res) => {
@@ -47,7 +63,11 @@ exports.handleEditUser = async (req, res) => {
     });
   }
   const message = await userService.updateUser(req.body);
-  return res.status(200).json(message );
+  console.log(
+    "🚀 ~ file: userController.js ~ line 64 ~ exports.handleEditUser= ~ message",
+    message
+  );
+  return res.status(200).json(message);
 };
 
 exports.handleDeleteUser = async (req, res) => {
@@ -59,5 +79,19 @@ exports.handleDeleteUser = async (req, res) => {
     });
   }
   const message = await userService.deleteUser(id);
-  return res.status(200).json(message );
+  return res.status(200).json(message);
+};
+
+exports.getAllCode = async (req, res) => {
+  const type = req.query.type;
+  if (!type)
+    return res.status(200).json({
+      errCode: 1,
+      message: "missing input parameters",
+    });
+  const message = await userService.getAllCodeService(type);
+  return res.status(200).json(message);
+  // return await userService.getAllCodeService(type).then((message) => {
+  //   return res.status(200).json(message);
+  // });
 };

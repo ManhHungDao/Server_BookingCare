@@ -9,13 +9,13 @@ exports.handleUserLogin = async (email, password) => {
     const isExist = await checkUserEmail(email);
     if (isExist) {
       const user = await db.User.findOne({
-        attributes: ["roleId", "email", "password"],
+        attributes: ["roleId", "email", "password", "firstName", "lastName"],
         where: { email: email },
       });
       if (user) {
         const check = await bcrypt.compareSync(password, user.password);
         if (check) {
-          delete user.password;
+          delete user.password; // delete password 
           userData = {
             errCode: 0,
             message: "Ok",
@@ -142,4 +142,24 @@ const checkExisUser = async (id) => {
   );
   if (existUser) return true;
   return false;
+};
+
+exports.getAllCodeService = async (type) => {
+  try {
+    const data = await db.Allcode.findAll({
+      where: { type: type },
+      attributes: { exclude: ["createdAt"] },
+    });
+    return {
+      errCode: 0,
+      message: "get all code succeed",
+      data,
+    };
+  } catch (error) {
+    console.log("🚀 ~ file: userService.js ~ line 159 ~ exports.getAllCodeService= ~ error", error)
+    return {
+      errCode: 0,
+      message: "sever error",
+    };
+  }
 };
