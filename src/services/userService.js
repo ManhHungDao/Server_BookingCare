@@ -15,7 +15,7 @@ exports.handleUserLogin = async (email, password) => {
       if (user) {
         const check = await bcrypt.compareSync(password, user.password);
         if (check) {
-          delete user.password; // delete password 
+          delete user.password; // delete password
           userData = {
             errCode: 0,
             message: "Ok",
@@ -114,6 +114,21 @@ exports.updateUser = async (user) => {
       firstName: user.firstName,
       lastName: user.lastName,
       address: user.address,
+      phoneNumber: user.phoneNumber,
+      gender: user.gender,
+      roleId: user.roleId,
+      positionId: user.positionId,
+      image: user.image,
+      /*       email: data.email,
+      password: hashPassword,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      address: data.address,
+      phoneNumber: data.phoneNumber,
+      gender: data.gender,
+      image: data.image,
+      roleId: data.roleId,
+      positionId: data.positionId, */
     },
     {
       where: {
@@ -156,7 +171,10 @@ exports.getAllCodeService = async (type) => {
       data,
     };
   } catch (error) {
-    console.log("🚀 ~ file: userService.js ~ line 159 ~ exports.getAllCodeService= ~ error", error)
+    console.log(
+      "🚀 ~ file: userService.js ~ line 159 ~ exports.getAllCodeService= ~ error",
+      error
+    );
     return {
       errCode: 0,
       message: "sever error",
