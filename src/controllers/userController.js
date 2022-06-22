@@ -11,6 +11,7 @@ exports.handleLogin = async (req, res) => {
     });
   }
   const userData = await userService.handleUserLogin(email, password);
+  console.log('handle login')
   return res.status(200).json({
     errCode: userData.errCode,
     message: userData.message,
@@ -50,23 +51,21 @@ exports.handleCreateNewUser = async (req, res) => {
       errCode: 1,
       message: "missing input parameters",
     });
+  console.log("handle get all users");
   const message = await userService.createNewUsers(req.body);
   return res.status(200).json(message);
 };
 
 exports.handleEditUser = async (req, res) => {
-  const { id } = req.body;
-  if (!id) {
+  const { id, gender, roleId, positionId } = req.body;
+  if (!id || !gender || !roleId || !positionId) {
     return res.status(200).json({
       errCode: 1,
       message: "missing input parameters",
     });
   }
   const message = await userService.updateUser(req.body);
-  console.log(
-    "🚀 ~ file: userController.js ~ line 64 ~ exports.handleEditUser= ~ message",
-    message
-  );
+  console.log("handle edit user");
   return res.status(200).json(message);
 };
 
@@ -78,6 +77,7 @@ exports.handleDeleteUser = async (req, res) => {
       message: "missing input parameters",
     });
   }
+  console.log("handle get delete user");
   const message = await userService.deleteUser(id);
   return res.status(200).json(message);
 };
@@ -89,6 +89,7 @@ exports.getAllCode = async (req, res) => {
       errCode: 1,
       message: "missing input parameters",
     });
+  console.log("handle get all code");
   const message = await userService.getAllCodeService(type);
   return res.status(200).json(message);
   // return await userService.getAllCodeService(type).then((message) => {
