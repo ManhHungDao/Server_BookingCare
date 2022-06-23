@@ -1,5 +1,3 @@
-import db from "../models/index";
-import CRUDService from "../services/CRUDService";
 import userService from "../services/userService";
 
 exports.handleLogin = async (req, res) => {
