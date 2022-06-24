@@ -31,7 +31,50 @@ exports.getTopDoctorHomeService = async (limit) => {
     .catch((err) => {
       return {
         errCode: 1,
-        message: "error when get top doctor home",
+        message: "get top doctor home failed",
+      };
+    });
+};
+
+exports.getAllDoctorService = async () => {
+  return await db.User.findAll({
+    where: { roleId: "R2" },
+    // attributes: ["firstName", "lastName"],
+    attributes: { exclude: ["password", "image"] },
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get all doctor succeed",
+        data: result,
+      };
+    })
+    .catch(() => {
+      return {
+        errCode: 1,
+        message: "get all doctor failed",
+        data: result,
+      };
+    });
+};
+
+exports.saveDetailDoctorService = async (detailDoctor) => {
+  return await db.Markdown.create({
+    contentHTML: detailDoctor.contentHTML,
+    contentMarkdown: detailDoctor.contentMarkdown,
+    doctorId: detailDoctor.doctorId,
+    description: detailDoctor.description,
+  })
+    .then(() => {
+      return {
+        errCode: 0,
+        message: "create detail doctor succeed",
+      };
+    })
+    .catch(() => {
+      return {
+        errCode: 1,
+        message: "error from sever",
       };
     });
 };
