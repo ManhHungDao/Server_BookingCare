@@ -5,7 +5,21 @@ exports.getTopDoctorHomeService = async (limit) => {
     limit: limit,
     where: { roleId: "R2" },
     order: [["createdAt", "DESC"]],
-    attributes: { exclude: ["password", "image"] },
+    attributes: { exclude: ["password"] },
+    include: [
+      {
+        model: db.Allcode,
+        as: "positionData",
+        attributes: ["valueEN", "valueVI"],
+      },
+      {
+        model: db.Allcode,
+        as: "genderData",
+        attributes: ["valueEN", "valueVI"],
+      },
+    ],
+    raw: true,
+    nest: true,
   })
     .then((result) => {
       return {
@@ -20,23 +34,4 @@ exports.getTopDoctorHomeService = async (limit) => {
         message: "error when get top doctor home",
       };
     });
-
-  //   try {
-  //     const doctors = await db.User.findAll({
-  //       limit: limit,
-  //       //   where: { role: {$like:''} },
-  //       attributes: { exclude: ["password", "image"] },
-  //       order: [["createdAt", "DESC"]],
-  //     });
-  //      return {
-  //        errCode: 0,
-  //        message: "get top doctor succeed",
-  //        data: doctors,
-  //      };
-  //   } catch (error) {
-  //     return {
-  //       errCode: 1,
-  //       message: "error when get top doctor home",
-  //     };
-  //   }
 };

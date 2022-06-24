@@ -13,8 +13,6 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "keyMap",
         as: "positionData",
       });
-    }
-    static associate(models) {
       User.belongsTo(models.Allcode, {
         foreignKey: "gender",
         targetKey: "keyMap",
