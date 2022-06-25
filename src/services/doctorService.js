@@ -78,3 +78,36 @@ exports.saveDetailDoctorService = async (detailDoctor) => {
       };
     });
 };
+
+exports.getDetaiDoctorByIdService = async (id) => {
+  return await db.User.findOne({
+    where: { id: id },
+    attributes: { exclude: ["password", "image"] },
+    include: [
+      {
+        model: db.Markdown,
+        attributes: ["description", "contentHTML", "contentMarkdown"],
+      },
+      {
+        model: db.Allcode,
+        as: "positionData",
+        attributes: ["valueEN", "valueVI"],
+      },
+    ],
+    raw: true,
+    nest: true,
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get detail doctor by id succeed",
+        data: result,
+      };
+    })
+    .catch(() => {
+      return {
+        errCode: 1,
+        message: "error from sever",
+      };
+    });
+};

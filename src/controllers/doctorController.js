@@ -48,3 +48,24 @@ exports.postInfoDoctor = async (req, res) => {
     });
   }
 };
+
+exports.getDetailDoctorById = async (req, res) => {
+  const id = req.query.id;
+  if (!id)
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing parameter",
+    });
+  else {
+    return await doctorService.getDetaiDoctorByIdService(id)
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch(() => {
+        return res.status(200).json({
+          errCode: -1,
+          message: "error from sever",
+        });
+      });
+  }
+};
