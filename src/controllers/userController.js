@@ -9,7 +9,7 @@ exports.handleLogin = async (req, res) => {
     });
   }
   const userData = await userService.handleUserLogin(email, password);
-  console.log('handle login')
+  console.log("handle login");
   return res.status(200).json({
     errCode: userData.errCode,
     message: userData.message,
@@ -62,9 +62,15 @@ exports.handleEditUser = async (req, res) => {
       message: "missing input parameters",
     });
   }
-  const message = await userService.updateUser(req.body);
-  console.log("handle edit user");
-  return res.status(200).json(message);
+  return await userService.updateUser(req.body).then((result) => {
+    console.log("handle edit user");
+    return res.status(200).json(result);
+  }).catch(()=>{
+    return{
+      errCode:-1,
+      message:'error from sever'
+    }
+  });
 };
 
 exports.handleDeleteUser = async (req, res) => {

@@ -109,7 +109,7 @@ exports.createNewUsers = async (data) => {
 exports.updateUser = async (user) => {
   const checkUser = await checkExisUser(user.id);
   if (!checkUser) return { errCode: 1, message: "User not found" };
-  await db.User.update(
+  return await db.User.update(
     {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -118,7 +118,7 @@ exports.updateUser = async (user) => {
       gender: user.gender,
       roleId: user.roleId,
       positionId: user.positionId,
-      image: user.image,
+      image: user.image ? user.image : image,
       /*       email: data.email,
       password: hashPassword,
       firstName: data.firstName,
@@ -134,9 +134,27 @@ exports.updateUser = async (user) => {
       where: {
         id: user.id,
       },
+    },
+    {
+      raw: true,
     }
-  ).catch((error) => error);
-  return { errCode: 0, message: "User updated" };
+  )
+    .then(() => {
+      return {
+        errCode: 0,
+        message: "User updated",
+      };
+    })
+    .catch((ERR) => {
+      console.log(
+        "🚀 ~ file: userService.js ~ line 146 ~ exports.updateUser= ~ ERR",
+        ERR
+      );
+      return {
+        errCode: 1,
+        message: "update user failed",
+      };
+    });
 };
 exports.deleteUser = async (userId) => {
   const checkUser = await checkExisUser(userId);
