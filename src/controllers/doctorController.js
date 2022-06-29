@@ -57,11 +57,39 @@ exports.getDetailDoctorById = async (req, res) => {
       message: "Missing parameter",
     });
   else {
-    return await doctorService.getDetaiDoctorByIdService(id)
+    return await doctorService
+      .getDetaiDoctorByIdService(id)
       .then((result) => {
         return res.status(200).json(result);
       })
       .catch(() => {
+        return res.status(200).json({
+          errCode: -1,
+          message: "error from sever",
+        });
+      });
+  }
+};
+
+exports.bulkCreateSchedule = async (req, res) => {
+  const data = req.body;
+  if (!data)
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing parameter",
+    });
+  else {
+    return await doctorService
+      .postBulkCreateScheduleService(data.result,data.doctorId,data.date)
+      .then((result) => {
+        console.log("create bulk schedule doctor time");
+        return res.status(200).json(result);
+      })
+      .catch((err) => {
+        console.log(
+          "🚀 ~ file: doctorController.js ~ line 89 ~ exports.bulkCreateSchedule= ~ err",
+          err
+        );
         return res.status(200).json({
           errCode: -1,
           message: "error from sever",
