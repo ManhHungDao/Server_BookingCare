@@ -171,19 +171,15 @@ exports.postBulkCreateScheduleService = async (data, doctorId, date) => {
     attributes: ["timeType", "date", "doctorId", "maxNumber"],
     raw: true,
   });
-  if (existing && existing.length > 0) {
-    existing = existing.map((item) => {
-      item.date = new Date(item.date).getTime();
-      return item;
-    });
-  }
+  // if (existing && existing.length > 0) {
+  //   existing = existing.map((item) => {
+  //     item.date = new Date(item.date).getTime();
+  //     return item;
+  //   });
+  // }
   let toCreate = _.differenceWith(data, existing, (a, b) => {
-    return a.timeType === b.timeType && a.date === b.date;
+    return a.timeType === b.timeType && +a.date === +b.date;
   });
-  console.log(
-    "🚀 ~ file: doctorService.js ~ line 184 ~ exports.postBulkCreateScheduleService= ~ toCreate",
-    toCreate
-  );
   if (toCreate && toCreate.length > 0)
     return await db.Schedule.bulkCreate(toCreate)
       .then(() => {
@@ -202,4 +198,36 @@ exports.postBulkCreateScheduleService = async (data, doctorId, date) => {
           message: "create bulk doctor schedule time failed",
         };
       });
+};
+
+exports.getScheduleService = (doctorId, date) => {
+  return db.Schedule.findAll({
+    where: {
+      doctorId: doctorId,
+      date: date,
+    },
+    include: [
+      {
+        model: db.Allcode,
+        as: "timeTypeData",
+        attributes: ["valueEN", "valueVI"],
+      },
+    ],
+    raw: false,
+    nest: true,
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get schedule by doctor id & date succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log("🚀 ~ file: doctorService.js ~ line 227 ~ err", err)
+      return {
+        errCode: 1,
+        message: "create bulk doctor schedule time failed",
+      };
+    });
 };

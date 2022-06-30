@@ -1,3 +1,4 @@
+import { result } from "lodash";
 import doctorService from "../services/doctorService";
 
 exports.getTopDoctorHome = async (req, res) => {
@@ -80,7 +81,7 @@ exports.bulkCreateSchedule = async (req, res) => {
     });
   else {
     return await doctorService
-      .postBulkCreateScheduleService(data.result,data.doctorId,data.date)
+      .postBulkCreateScheduleService(data.result, data.doctorId, data.date)
       .then((result) => {
         console.log("create bulk schedule doctor time");
         return res.status(200).json(result);
@@ -90,6 +91,30 @@ exports.bulkCreateSchedule = async (req, res) => {
           "🚀 ~ file: doctorController.js ~ line 89 ~ exports.bulkCreateSchedule= ~ err",
           err
         );
+        return res.status(200).json({
+          errCode: -1,
+          message: "error from sever",
+        });
+      });
+  }
+};
+
+exports.getSchedule = async (req, res) => {
+  const { doctorId, date } = req.query;
+  if (!doctorId || !date) {
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing parameter",
+    });
+  } else {
+    return await doctorService
+      .getScheduleService(doctorId, date)
+      .then((result) => {
+        console.log("get schedule by doctor id & date succeed");
+        return res.status(200).json(result);
+      })
+      .catch((err) => {
+        console.log("🚀 ~ file: doctorController.js ~ line 117 ~ exports.getSchedule= ~ err", err)
         return res.status(200).json({
           errCode: -1,
           message: "error from sever",
