@@ -112,7 +112,65 @@ exports.saveDetailDoctorService = async (detailDoctor) => {
       });
 };
 
-exports.getDetaiDoctorByIdService = async (id) => {
+exports.saveSubDetailDoctorService = async (data) => {
+  const existedDetail = await db.Doctor_Info.findOne({
+    where: { doctorId: data.doctorId },
+    raw: false,
+  });
+  if (!existedDetail) {
+    return await db.Doctor_Info.create({
+      doctorId: data.doctorId,
+      priceId: data.selectedPrice,
+      provinceId: data.selectedProvince,
+      paymentId: data.selectedPayment,
+      note: data.note,
+      nameClinic: data.nameClinic,
+      addressClinic: data.addressClinic,
+    })
+      .then(() => {
+        return {
+          errCode: 0,
+          message: "create detail doctor succeed",
+        };
+      })
+      .catch(() => {
+        return {
+          errCode: 1,
+          message: "error from sever",
+        };
+      });
+  } else {
+    return await db.Doctor_Info.update(
+      {
+        priceId: data.selectedPrice,
+        provinceId: data.selectedProvince,
+        paymentId: data.selectedPayment,
+        note: data.note,
+        nameClinic: data.nameClinic,
+        addressClinic: data.addressClinic,
+      },
+      {
+        where: {
+          doctorId: data.doctorId,
+        },
+      }
+    )
+      .then(() => {
+        return {
+          errCode: 0,
+          message: "create detail doctor succeed",
+        };
+      })
+      .catch(() => {
+        return {
+          errCode: 1,
+          message: "error from sever",
+        };
+      });
+  }
+};
+
+exports.getDetaiDoctorService = async (id) => {
   return await db.User.findOne({
     where: { id: id },
     attributes: { exclude: ["password"] },
@@ -125,6 +183,27 @@ exports.getDetaiDoctorByIdService = async (id) => {
         model: db.Allcode,
         as: "positionData",
         attributes: ["valueEN", "valueVI"],
+      },
+      {
+        model: db.Doctor_Info,
+        attributes: { exclude: ["id", "doctorId", "createdAt", "updatedAt"] },
+        include: [
+          {
+            model: db.Allcode,
+            as: "priceTypeData",
+            attributes: ["valueEN", "valueVI"],
+          },
+          {
+            model: db.Allcode,
+            as: "provinceTypeData",
+            attributes: ["valueEN", "valueVI"],
+          },
+          {
+            model: db.Allcode,
+            as: "paymentTypeData",
+            attributes: ["valueEN", "valueVI"],
+          },
+        ],
       },
     ],
     raw: true,
@@ -224,7 +303,7 @@ exports.getScheduleService = (doctorId, date) => {
       };
     })
     .catch((err) => {
-      console.log("🚀 ~ file: doctorService.js ~ line 227 ~ err", err)
+      console.log("🚀 ~ file: doctorService.js ~ line 227 ~ err", err);
       return {
         errCode: 1,
         message: "create bulk doctor schedule time failed",

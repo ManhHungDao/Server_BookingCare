@@ -50,7 +50,22 @@ exports.postInfoDoctor = async (req, res) => {
   }
 };
 
-exports.getDetailDoctorById = async (req, res) => {
+exports.postSubInfoDoctor = async (req, res) => {
+  const data = req.body;
+  return await doctorService
+    .saveSubDetailDoctorService(data)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch(() => {
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.getDetailDoctor = async (req, res) => {
   const id = req.query.id;
   if (!id)
     return res.status(200).json({
@@ -58,8 +73,8 @@ exports.getDetailDoctorById = async (req, res) => {
       message: "Missing parameter",
     });
   else {
-    return await doctorService
-      .getDetaiDoctorByIdService(id)
+    await doctorService
+      .getDetaiDoctorService(id)
       .then((result) => {
         return res.status(200).json(result);
       })
@@ -71,6 +86,7 @@ exports.getDetailDoctorById = async (req, res) => {
       });
   }
 };
+
 
 exports.bulkCreateSchedule = async (req, res) => {
   const data = req.body;
@@ -114,7 +130,10 @@ exports.getSchedule = async (req, res) => {
         return res.status(200).json(result);
       })
       .catch((err) => {
-        console.log("🚀 ~ file: doctorController.js ~ line 117 ~ exports.getSchedule= ~ err", err)
+        console.log(
+          "🚀 ~ file: doctorController.js ~ line 117 ~ exports.getSchedule= ~ err",
+          err
+        );
         return res.status(200).json({
           errCode: -1,
           message: "error from sever",
