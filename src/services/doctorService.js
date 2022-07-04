@@ -225,10 +225,6 @@ exports.getDetaiDoctorService = async (id) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: doctorService.js ~ line 146 ~ exports.getDetaiDoctorByIdService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "error from sever",
@@ -268,10 +264,6 @@ exports.postBulkCreateScheduleService = async (data, doctorId, date) => {
         };
       })
       .catch((err) => {
-        console.log(
-          "🚀 ~ file: doctorService.js ~ line 170 ~ exports.postBulkCreateScheduleService= ~ err",
-          err
-        );
         return {
           errCode: 1,
           message: "create bulk doctor schedule time failed",
@@ -279,8 +271,8 @@ exports.postBulkCreateScheduleService = async (data, doctorId, date) => {
       });
 };
 
-exports.getScheduleService = (doctorId, date) => {
-  return db.Schedule.findAll({
+exports.getScheduleService = async (doctorId, date) => {
+  return await db.Schedule.findAll({
     where: {
       doctorId: doctorId,
       date: date,
@@ -303,10 +295,48 @@ exports.getScheduleService = (doctorId, date) => {
       };
     })
     .catch((err) => {
-      console.log("🚀 ~ file: doctorService.js ~ line 227 ~ err", err);
       return {
         errCode: 1,
         message: "create bulk doctor schedule time failed",
+      };
+    });
+};
+
+exports.getExtraInfoDoctorService = async (id) => {
+  return await db.Doctor_Info.findOne({
+    attributes: { exclude: ["id", "doctorId", "createdAt", "updatedAt"] },
+    where: { doctorId: id },
+    include: [
+      {
+        model: db.Allcode,
+        as: "priceTypeData",
+        attributes: ["valueEN", "valueVI"],
+      },
+      {
+        model: db.Allcode,
+        as: "provinceTypeData",
+        attributes: ["valueEN", "valueVI"],
+      },
+      {
+        model: db.Allcode,
+        as: "paymentTypeData",
+        attributes: ["valueEN", "valueVI"],
+      },
+    ],
+    raw: true,
+    nest: true,
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get detail doctor by id succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      return {
+        errCode: 1,
+        message: "error from sever",
       };
     });
 };
