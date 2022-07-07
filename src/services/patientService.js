@@ -14,19 +14,24 @@ exports.postBookAppoinmentService = async (data) => {
   })
     .then((result) => {
       if (result && result[0]) {
-        const data = result[0];
         db.Booking.findOrCreate({
-          where: { patientId: data.id },
+          where: { patientId: result[0].id },
           defaults: {
             statusId: "R3",
-            doctorI: data.doctorId,
-            patientId: data.id,
+            doctorId: data.doctorId,
+            patientId: result[0].id,
             date: data.date,
             timeType: data.timeType,
           },
           raw: true,
         });
       }
+    })
+    .then(() => {
+      return {
+        errCode: 0,
+        message: "post booking succeed",
+      };
     })
     .catch((err) => {
       console.log(
