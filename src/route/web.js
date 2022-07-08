@@ -23,7 +23,11 @@ let initWebRoutes = (app) => {
   router.get("/api/get-schedule", doctorController.getSchedule);
   router.get("/api/get-extra-info-doctor", doctorController.getExtraInfoDoctor);
 
-  router.post("/api/patient-book-appointment", patientController.postBookAppoinment);
+  router.post(
+    "/api/patient-book-appointment",
+    patientController.postBookAppoinment
+  );
+
 
   return app.use("/", router);
 };

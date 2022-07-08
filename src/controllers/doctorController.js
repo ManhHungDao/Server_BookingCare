@@ -87,7 +87,6 @@ exports.getDetailDoctor = async (req, res) => {
   }
 };
 
-
 exports.bulkCreateSchedule = async (req, res) => {
   const data = req.body;
   if (!data)
@@ -142,26 +141,25 @@ exports.getSchedule = async (req, res) => {
   }
 };
 
-
-exports.getExtraInfoDoctor = async(req,res)=>{
- const id = req.query.id;
- if (!id)
-   return res.status(200).json({
-     errCode: 1,
-     message: "Missing parameter",
-   });
- else {
-   await doctorService
-     .getExtraInfoDoctorService(id)
-     .then((result) => {
-       return res.status(200).json(result);
-     })
-     .catch(() => {
-       return res.status(200).json({
-         errCode: -1,
-         message: "error from sever",
-       });
-     });
- }
-}
+exports.getExtraInfoDoctor = async (req, res) => {
+  const id = req.query.id;
+  if (!id)
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing parameter",
+    });
+  else {
+    await doctorService
+      .getExtraInfoDoctorService(id)
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch(() => {
+        return res.status(200).json({
+          errCode: -1,
+          message: "error from sever",
+        });
+      });
+  }
+};
 

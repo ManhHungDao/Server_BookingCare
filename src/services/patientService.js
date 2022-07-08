@@ -1,6 +1,6 @@
 import db from "../models/index";
 import _ from "lodash";
-
+import emailService from "../services/emailService";
 require("dotenv").config();
 
 exports.postBookAppoinmentService = async (data) => {
@@ -13,6 +13,13 @@ exports.postBookAppoinmentService = async (data) => {
     raw: true,
   })
     .then((result) => {
+      sendMail({
+        reciverEmail: data.email,
+        patientName: "example name",
+        time: "8:00 - 9:00 Chủ nhật 1/9/2022",
+        doctorName: "Mạnh Hùng",
+        redirectLink: "",
+      });
       if (result && result[0]) {
         db.Booking.findOrCreate({
           where: { patientId: result[0].id },
@@ -34,13 +41,18 @@ exports.postBookAppoinmentService = async (data) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: patientService.js ~ line 22 ~ exports.postBookAppoinmentService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get top doctor home failed",
       };
     });
 };
+
+async function sendMail(email) {
+  await emailService
+    .sendSimpleEmail(email)
+    .then(() => {
+      console.log("send maild succeed");
+    })
+    .catch((err) => console.log(err));
+}
