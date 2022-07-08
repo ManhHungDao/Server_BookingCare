@@ -15,9 +15,10 @@ exports.postBookAppoinmentService = async (data) => {
     .then((result) => {
       sendMail({
         reciverEmail: data.email,
-        patientName: "example name",
-        time: "8:00 - 9:00 Chủ nhật 1/9/2022",
-        doctorName: "Mạnh Hùng",
+        patientName: data.fullName,
+        time: data.timeString,
+        doctorName: data.doctorName,
+        language: data.language,
         redirectLink: "",
       });
       if (result && result[0]) {
@@ -41,9 +42,13 @@ exports.postBookAppoinmentService = async (data) => {
       };
     })
     .catch((err) => {
+      console.log(
+        "🚀 ~ file: patientService.js ~ line 45 ~ exports.postBookAppoinmentService= ~ err",
+        err
+      );
       return {
         errCode: 1,
-        message: "get top doctor home failed",
+        message: "post booking failed",
       };
     });
 };

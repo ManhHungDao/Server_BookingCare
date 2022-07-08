@@ -283,6 +283,11 @@ exports.getScheduleService = async (doctorId, date) => {
         as: "timeTypeData",
         attributes: ["valueEN", "valueVI"],
       },
+      {
+        model: db.User,
+        as: "doctorData",
+        attributes: ["firstName", "lastName"],
+      },
     ],
     raw: false,
     nest: true,
