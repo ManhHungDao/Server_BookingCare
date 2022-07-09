@@ -22,7 +22,7 @@ exports.sendSimpleEmail = async (data) => {
     <p>Bạn nhận được email này vì đã đặt lịch khám bệnh trên trang bookingcare.vn</p>
     <p>Thông tin khám bệnh: </p>
     <div><b>Thời gian: ${data.time}</b></div>
-    <div><b>Bác sĩ: ${data.doctorName}}</b></div>
+    <div><b>Bác sĩ: ${data.doctorName}</b></div>
     <p>Nếu mọi thông tin chính xác, vui lòng <a href=${data.redirectLink}>Click here</a>, xin cảm ơn.</p>
     `;
   const sendMailEn = `<h3>Hi, ${data.patientName} </h3>
