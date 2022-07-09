@@ -1,7 +1,14 @@
 import db from "../models/index";
 import _ from "lodash";
 import emailService from "../services/emailService";
+import { v4 as uuidv4 } from "uuid";
+uuidv4();
 require("dotenv").config();
+
+const buildUrlEmail = (doctorId, token) => {
+  let result = `${process.env.URL_REACT}/verify-booking/?token=${token}&doctorId=${doctorId}`;
+  return result;
+};
 
 exports.postBookAppoinmentService = async (data) => {
   return await db.User.findOrCreate({
@@ -13,23 +20,26 @@ exports.postBookAppoinmentService = async (data) => {
     raw: true,
   })
     .then((result) => {
+      const token = uuidv4();
+
       sendMail({
         reciverEmail: data.email,
         patientName: data.fullName,
         time: data.timeString,
         doctorName: data.doctorName,
         language: data.language,
-        redirectLink: "",
+        redirectLink: buildUrlEmail(data.doctorId, token),
       });
       if (result && result[0]) {
         db.Booking.findOrCreate({
           where: { patientId: result[0].id },
           defaults: {
-            statusId: "R3",
+            statusId: "S1",
             doctorId: data.doctorId,
             patientId: result[0].id,
             date: data.date,
             timeType: data.timeType,
+            token: token,
           },
           raw: true,
         });
@@ -61,3 +71,34 @@ async function sendMail(email) {
     })
     .catch((err) => console.log(err));
 }
+
+exports.postVerifyBookAppoinmentService = async (data) => {
+  try {
+    const appointment = await db.Booking.findOne({
+      where: {
+        doctorId: data.doctorId,
+        token: data.token,
+        statusId: "S1",
+      },
+      raw: false,
+    });
+    if (appointment) {
+      appointment.statusId = "S2";
+      await appointment.save();
+      return {
+        errCode: 0,
+        message: "verify appointment succeed",
+      };
+    }
+    return {
+      errCode: 2,
+      message: "appointment has been actived or doeas not existed",
+    };
+  } catch (error) {
+    console.log("🚀 ~ file: patientService.js ~ line 79 ~ error", error);
+    return {
+      errCode: 1,
+      message: "verify booking failed",
+    };
+  }
+};

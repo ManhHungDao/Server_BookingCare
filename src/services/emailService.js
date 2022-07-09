@@ -3,7 +3,6 @@ dotenv.config();
 const nodemailer = require("nodemailer");
 
 exports.sendSimpleEmail = async (data) => {
-  console.log("🚀 ~ file: emailService.js ~ line 6 ~ exports.sendSimpleEmail= ~ data", data)
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
