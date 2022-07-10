@@ -1,4 +1,3 @@
-import { result } from "lodash";
 import doctorService from "../services/doctorService";
 
 exports.getTopDoctorHome = async (req, res) => {

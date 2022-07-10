@@ -19,13 +19,55 @@ exports.createSpecialtyService = async (data) => {
       };
     })
     .catch((err) => {
+      return {
+        errCode: 1,
+        message: "create specialty failed",
+      };
+    });
+};
+
+exports.getSpecialtiesService = async () => {
+  return await db.Specialty.findAll()
+    .then((result) => {
+      if (result && result.length > 0) {
+        result.map((item) => {
+          item.image = new Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      }
+      return {
+        errCode: 0,
+        message: "get list specialty succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      return {
+        errCode: 1,
+        message: "get list specialty failed",
+      };
+    });
+};
+
+exports.getListSpecialtyService = async () => {
+  return await db.Specialty.findAll({
+    attributes: ["name", "id"],
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get list specialty succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
       console.log(
-        "🚀 ~ file: specialtyService.js ~ line 14 ~ exports.createSpecialtyService= ~ err",
+        "🚀 ~ file: specialtyService.js ~ line 64 ~ exports.getListSpecialtiesService= ~ err",
         err
       );
       return {
         errCode: 1,
-        message: "create specialty failed",
+        message: "get list specialty failed",
       };
     });
 };
