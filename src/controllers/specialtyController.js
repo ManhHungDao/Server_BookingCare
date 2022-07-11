@@ -24,7 +24,6 @@ exports.getSpecialties = async (req, res) => {
   return await specialtyService
     .getSpecialtiesService()
     .then((result) => {
-      console.log("get specialties");
       return res.status(200).json(result);
     })
     .catch((err) => {
@@ -44,7 +43,6 @@ exports.getListSpecialty = async (req, res) => {
   return await specialtyService
     .getListSpecialtyService()
     .then((result) => {
-      console.log("get list specialty");
       return res.status(200).json(result);
     })
     .catch((err) => {
@@ -60,10 +58,9 @@ exports.getListSpecialty = async (req, res) => {
     });
 };
 
-
 exports.getDetailSpecialty = async (req, res) => {
   return await specialtyService
-    .getDetailSpecialtyService(req.body.id)
+    .getDetailSpecialtyService(req.query.id)
     .then((result) => {
       console.log("get detail specialty");
       return res.status(200).json(result);
@@ -72,6 +69,25 @@ exports.getDetailSpecialty = async (req, res) => {
       console.log(
         "🚀 ~ file: specialtyController.js ~ line 72 ~ exports.getDetailSpecialty= ~ err",
         err
+      );
+
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.getDoctorSpecialty = async (req, res) => {
+  return await specialtyService
+    .getDoctorSpecialtyService(req.query)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyController.js ~ line 90 ~ exports.getDoctorSpecialty= ~ e",
+        e
       );
 
       return res.status(200).json({

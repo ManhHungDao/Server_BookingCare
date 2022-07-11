@@ -54,6 +54,7 @@ exports.getListSpecialtyService = async () => {
     attributes: ["name", "id"],
   })
     .then((result) => {
+      console.log("get list specialty succeed");
       return {
         errCode: 0,
         message: "get list specialty succeed",
@@ -74,16 +75,26 @@ exports.getListSpecialtyService = async () => {
 
 exports.getDetailSpecialtyService = async (id) => {
   if (!id) {
-    return res.status(200).json({
+    return {
       errCode: 1,
       message: "Missing parameter",
-    });
+    };
   }
   return await db.Specialty.findOne({
     attributes: { exclude: ["image", "createdAt", "updatedAt"] },
     where: { id: id },
+    // raw: false,
+    // nest: true,
+    // include: [
+    //   {
+    //     model: db.Doctor_Info,
+    //     as: "doctorSpecialtyData",
+    //     attributes: { exclude: ["specialtyId", "createdAt", "updatedAt"] },
+    //   },
+    // ],
   })
     .then((result) => {
+      console.log("get list succeed");
       return {
         errCode: 0,
         message: "get detail specialty succeed",
@@ -100,4 +111,43 @@ exports.getDetailSpecialtyService = async (id) => {
         message: "error from sever",
       };
     });
+};
+
+exports.getDoctorSpecialtyService = async (data) => {
+  const { specialtyId, provinceId } = data;
+  let result = {};
+  try {
+    if (!specialtyId) {
+      return {
+        errCode: 1,
+        message: "Missing parameter",
+      };
+    }
+    if (provinceId)
+      result = await db.Doctor_Info.findAll({
+        where: { specialtyId: specialtyId, provinceId: provinceId },
+        attributes: { exclude: ["provinceId", "createdAt", "updatedAt"] },
+      });
+    else {
+      result = await db.Doctor_Info.findAll({
+        where: { specialtyId: specialtyId },
+        attributes: { exclude: ["provinceId", "createdAt", "updatedAt"] },
+      });
+    }
+    console.log("get list doctor spoecialty succeed");
+    return {
+      errCode: 0,
+      message: "get list doctor specialty succeed",
+      data: result,
+    };
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: specialtyService.js ~ line 121 ~ exports.getDoctorSpecialtyService= ~ error",
+      error
+    );
+    return {
+      errCode: 1,
+      message: "get list doctor specialty failed",
+    };
+  }
 };
