@@ -42,6 +42,9 @@ let initWebRoutes = (app) => {
   // specialty
   router.post("/api/create-specialty", specialtyController.createSpecialty);
   router.get("/api/get-specialty", specialtyController.getSpecialties);
+  router.get("/api/get-detail-specialty", specialtyController.getDetailSpecialty);
+
+
   // without col image
   router.get("/api/get-list-specialty", specialtyController.getListSpecialty);
 

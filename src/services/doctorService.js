@@ -126,6 +126,8 @@ exports.saveSubDetailDoctorService = async (data) => {
       note: data.note,
       nameClinic: data.nameClinic,
       addressClinic: data.addressClinic,
+      clinicId: data.clinicId,
+      specialtyId: data.specialtyId,
     })
       .then(() => {
         return {
@@ -148,6 +150,8 @@ exports.saveSubDetailDoctorService = async (data) => {
         note: data.note,
         nameClinic: data.nameClinic,
         addressClinic: data.addressClinic,
+        clinicId: data.clinicId,
+        specialtyId: data.specialtyId,
       },
       {
         where: {

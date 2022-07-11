@@ -59,3 +59,24 @@ exports.getListSpecialty = async (req, res) => {
       });
     });
 };
+
+
+exports.getDetailSpecialty = async (req, res) => {
+  return await specialtyService
+    .getDetailSpecialtyService(req.body.id)
+    .then((result) => {
+      console.log("get detail specialty");
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyController.js ~ line 72 ~ exports.getDetailSpecialty= ~ err",
+        err
+      );
+
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};

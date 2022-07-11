@@ -71,3 +71,33 @@ exports.getListSpecialtyService = async () => {
       };
     });
 };
+
+exports.getDetailSpecialtyService = async (id) => {
+  if (!id) {
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing parameter",
+    });
+  }
+  return await db.Specialty.findOne({
+    attributes: { exclude: ["image", "createdAt", "updatedAt"] },
+    where: { id: id },
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get detail specialty succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyService.js ~ line 88 ~ exports.getDetailSpecialtyService= ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "error from sever",
+      };
+    });
+};
