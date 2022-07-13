@@ -115,10 +115,6 @@ exports.getDetailSpecialtyService = async (id) => {
 
 exports.getDoctorSpecialtyService = async (data) => {
   const { specialtyId, provinceId } = data;
-  console.log(
-    "🚀 ~ file: specialtyService.js ~ line 118 ~ exports.getDoctorSpecialtyService= ~ data",
-    data
-  );
   let result = {};
   try {
     if (!specialtyId) {
@@ -127,7 +123,7 @@ exports.getDoctorSpecialtyService = async (data) => {
         message: "Missing parameter",
       };
     }
-    if (provinceId !== 'all')
+    if (provinceId !== "all")
       result = await db.Doctor_Info.findAll({
         where: { specialtyId: specialtyId, provinceId: provinceId },
         attributes: { exclude: ["provinceId", "createdAt", "updatedAt"] },

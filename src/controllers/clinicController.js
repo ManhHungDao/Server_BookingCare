@@ -47,3 +47,40 @@ exports.getListClinic = async (req, res) => {
       });
     });
 };
+
+exports.getListClinicHome = async (req, res) => {
+  return await clinicService
+    .getListClinicHomeService()
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: clinicController.js ~ line 58 ~ exports.getListClinicHome= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.getListDoctorClinic = async (req, res) => {
+  return await clinicService
+    .getListDoctorClinicService(req.query)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: clinicController.js ~ line 78 ~ exports.getListDoctorClinic= ~ err",
+        err
+      );
+
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};

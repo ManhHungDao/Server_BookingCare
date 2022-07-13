@@ -37,7 +37,14 @@ let initWebRoutes = (app) => {
   // clinic
   router.post("/api/create-clinic", clinicController.createClinic);
   router.get("/api/get-detail-clinic", clinicController.getDetailClinic);
+  // get list clinic for manage doctor
   router.get("/api/get-list-clinic", clinicController.getListClinic);
+  router.get("/api/get-list-home-clinic", clinicController.getListClinicHome);
+  //get list doctor clinic from home
+  router.get(
+    "/api/get-list-doctor-clinic",
+    clinicController.getListDoctorClinic
+  );
 
   // specialty
   router.post("/api/create-specialty", specialtyController.createSpecialty);
@@ -46,7 +53,10 @@ let initWebRoutes = (app) => {
     "/api/get-detail-specialty",
     specialtyController.getDetailSpecialty
   );
-  router.get("/api/get-doctor-specialty", specialtyController.getDoctorSpecialty);
+  router.get(
+    "/api/get-doctor-specialty",
+    specialtyController.getDoctorSpecialty
+  );
 
   // without col image
   router.get("/api/get-list-specialty", specialtyController.getListSpecialty);

@@ -60,10 +60,6 @@ exports.getDetailClinicService = async (id) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: clinicService.js ~ line 61 ~ exports.getDetailClinicService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get detail clinic failed",
@@ -89,4 +85,71 @@ exports.getListClinicService = async () => {
         message: "get list clinic failed",
       };
     });
+};
+
+exports.getListClinicHomeService = async () => {
+  return await db.Clinic.findAll({
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((result) => {
+      if (!result) {
+        result = {};
+      } else if (result && result.length > 0) {
+        result.map((item) => {
+          item.image = new Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      }
+      console.log("get list clinic  home succeed");
+      return {
+        errCode: 0,
+        message: "get list clinic home succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      return {
+        errCode: 1,
+        message: "get list clinic home failed",
+      };
+    });
+};
+
+exports.getListDoctorClinicService = async (data) => {
+  const { provinceId, clinicId } = data;
+  let result = {};
+  try {
+    if (!clinicId) {
+      return {
+        errCode: 1,
+        message: "Missing parameter",
+      };
+    }
+    if (provinceId !== "all")
+      result = await db.Doctor_Info.findAll({
+        where: { provinceId: provinceId, clinicId: clinicId },
+        attributes: { exclude: ["clinicId", "createdAt", "updatedAt"] },
+      });
+    else {
+      result = await db.Doctor_Info.findAll({
+        where: { clinicId: clinicId },
+        attributes: { exclude: ["provinceId", "createdAt", "updatedAt"] },
+      });
+    }
+    console.log("get list doctor clinic succeed");
+    return {
+      errCode: 0,
+      message: "get list doctor clinic succeed",
+      data: result,
+    };
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: clinicService.js ~ line 148 ~ exports.getListDoctorClinicService= ~ error",
+      error
+    );
+    return {
+      errCode: 1,
+      message: "get list doctor clinic failed",
+    };
+  }
 };

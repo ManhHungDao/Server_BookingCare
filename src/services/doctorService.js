@@ -20,6 +20,10 @@ exports.getTopDoctorHomeService = async (limit) => {
         as: "genderData",
         attributes: ["valueEN", "valueVI"],
       },
+      // {
+      //   model: db.Specialty,
+      //   as: "doctorSpecialtyData",
+      // },
     ],
     raw: true,
     nest: true,
