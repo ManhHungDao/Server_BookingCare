@@ -20,7 +20,7 @@ exports.createClinic = async (req, res) => {
 
 exports.getDetailClinic = async (req, res) => {
   return await clinicService
-    .getDetailClinicService(req.body.id)
+    .getDetailClinicService(req.query.id)
     .then((result) => {
       return res.status(200).json(result);
     })

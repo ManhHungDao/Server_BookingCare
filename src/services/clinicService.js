@@ -28,10 +28,6 @@ exports.createClinicService = async (data) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: clinicService.js ~ line 14 ~ exports.cereateClinicService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "create a new clinic failed",
@@ -40,12 +36,23 @@ exports.createClinicService = async (data) => {
 };
 
 exports.getDetailClinicService = async (id) => {
+  if (!id)
+    return {
+      errCode: 1,
+      message: "Missing parameter",
+    };
   return await db.Clinic.findOne({
-    attributes: { exclude: ["image", "createdAt", "updatedAt"] },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
     where: { id: id },
   })
     .then((result) => {
       console.log("get detail clinic succeed");
+      if (!result) result = {};
+      else {
+        result.image = new Buffer.from(result.image, "base64").toString(
+          "binary"
+        );
+      }
       return {
         errCode: 0,
         message: "get detail clinic succeed",
@@ -54,7 +61,7 @@ exports.getDetailClinicService = async (id) => {
     })
     .catch((err) => {
       console.log(
-        "🚀 ~ file: clinicService.js ~ line 52 ~ exports.getClinicsService= ~ err",
+        "🚀 ~ file: clinicService.js ~ line 61 ~ exports.getDetailClinicService= ~ err",
         err
       );
       return {
@@ -77,11 +84,6 @@ exports.getListClinicService = async () => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: clinicService.js ~ line 76 ~ exports.getListClinicService= ~ err",
-        err
-      );
-
       return {
         errCode: 1,
         message: "get list clinic failed",
