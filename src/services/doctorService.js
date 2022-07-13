@@ -101,13 +101,13 @@ exports.saveDetailDoctorService = async (detailDoctor) => {
       .then(() => {
         return {
           errCode: 0,
-          message: "create detail doctor succeed",
+          message: "update detail doctor succeed",
         };
       })
       .catch(() => {
         return {
           errCode: 1,
-          message: "error from sever",
+          message: "update detail doctor failed",
         };
       });
 };
@@ -132,13 +132,13 @@ exports.saveSubDetailDoctorService = async (data) => {
       .then(() => {
         return {
           errCode: 0,
-          message: "create detail doctor succeed",
+          message: "create sub detail doctor succeed",
         };
       })
       .catch(() => {
         return {
           errCode: 1,
-          message: "error from sever",
+          message: "create sub detail doctor failed",
         };
       });
   } else {
@@ -162,13 +162,13 @@ exports.saveSubDetailDoctorService = async (data) => {
       .then(() => {
         return {
           errCode: 0,
-          message: "create detail doctor succeed",
+          message: "update sub detail doctor succeed",
         };
       })
       .catch(() => {
         return {
           errCode: 1,
-          message: "error from sever",
+          message: "update sub detail doctor failed",
         };
       });
   }
@@ -231,7 +231,7 @@ exports.getDetaiDoctorService = async (id) => {
     .catch((err) => {
       return {
         errCode: 1,
-        message: "error from sever",
+        message: "get detail doctor by id failed",
       };
     });
 };
@@ -306,7 +306,7 @@ exports.getScheduleService = async (doctorId, date) => {
     .catch((err) => {
       return {
         errCode: 1,
-        message: "create bulk doctor schedule time failed",
+        message: "get schedule by doctor id & date failed",
       };
     });
 };
@@ -338,14 +338,14 @@ exports.getExtraInfoDoctorService = async (id) => {
     .then((result) => {
       return {
         errCode: 0,
-        message: "get detail doctor by id succeed",
+        message: "get extra info doctor by id succeed",
         data: result,
       };
     })
     .catch((err) => {
       return {
         errCode: 1,
-        message: "error from sever",
+        message: "get extra info doctor by id failed",
       };
     });
 };

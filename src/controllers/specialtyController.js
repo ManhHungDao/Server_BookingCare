@@ -60,7 +60,7 @@ exports.getListSpecialty = async (req, res) => {
 
 exports.getDetailSpecialty = async (req, res) => {
   return await specialtyService
-    .getDetailSpecialtyService(req.query.id)
+    .getDetailSpecialtyService(req.query.specialtyId)
     .then((result) => {
       console.log("get detail specialty");
       return res.status(200).json(result);
@@ -87,7 +87,7 @@ exports.getDoctorSpecialty = async (req, res) => {
     .catch((err) => {
       console.log(
         "🚀 ~ file: specialtyController.js ~ line 90 ~ exports.getDoctorSpecialty= ~ e",
-        e
+        err
       );
 
       return res.status(200).json({

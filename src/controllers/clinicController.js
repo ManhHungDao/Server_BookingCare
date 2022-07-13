@@ -1,12 +1,27 @@
 import clinicService from "../services/clinicService";
 
-exports.createClinic = (req, res) => {};
-
-exports.getClinics = async (req, res) => {
+exports.createClinic = async (req, res) => {
   return await clinicService
-    .getClinicsService()
+    .createClinicService(req.body)
     .then((result) => {
-      console.log("get clinics");
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: clinicController.js ~ line 12 ~ exports.createClinic=async ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.getDetailClinic = async (req, res) => {
+  return await clinicService
+    .getDetailClinicService(req.body.id)
+    .then((result) => {
       return res.status(200).json(result);
     })
     .catch((err) => {
@@ -17,11 +32,11 @@ exports.getClinics = async (req, res) => {
       });
     });
 };
+
 exports.getListClinic = async (req, res) => {
   return await clinicService
     .getListClinicService()
     .then((result) => {
-      console.log("get list clinic");
       return res.status(200).json(result);
     })
     .catch((err) => {
