@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here - định danh các mối qhe
+       Booking.belongsTo(models.User, {
+         foreignKey: "patientId",
+         targetKey: "id",
+         as: "patientData",
+       });
     }
   }
   Booking.init(
@@ -16,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       statusId: DataTypes.STRING,
       doctorId: DataTypes.INTEGER,
       patientId: DataTypes.INTEGER,
-      date: DataTypes.DATE,
+      date: DataTypes.STRING,
       timeType: DataTypes.STRING,
       token: DataTypes.STRING,
     },

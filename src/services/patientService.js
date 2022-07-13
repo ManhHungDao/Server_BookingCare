@@ -15,13 +15,16 @@ exports.postBookAppoinmentService = async (data) => {
     where: { email: data.email },
     defaults: {
       email: data.email,
+      gender: data.gender,
+      address: data.address,
+      phoneNumber: data.phoneNumber,
+      firstName: data.fullName,
       roleId: "R3",
     },
     raw: true,
   })
     .then((result) => {
       const token = uuidv4();
-
       sendMail({
         reciverEmail: data.email,
         patientName: data.fullName,

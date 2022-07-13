@@ -161,4 +161,20 @@ exports.getExtraInfoDoctor = async (req, res) => {
       });
   }
 };
-
+exports.getListPatient = async (req, res) => {
+  return await doctorService
+    .getListPatientService(req.query)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: doctorController.js ~ line 177 ~ exports.getListPatient= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};

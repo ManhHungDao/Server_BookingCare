@@ -353,3 +353,44 @@ exports.getExtraInfoDoctorService = async (id) => {
       };
     });
 };
+
+exports.getListPatientService = async (data) => {
+  const date = data.date;
+  const doctorId = data.doctorId;
+  if (!date || !doctorId) {
+    return {
+      errCode: 1,
+      message: "missing input parameters",
+    };
+  }
+  return await db.Booking.findAll({
+    where: { doctorId: doctorId, date: date, statusId: "S2" },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+    include: [
+      {
+        model: db.User,
+        attributes: ["email", "address", "gender", "firstName"],
+        as: "patientData",
+      },
+    ],
+    raw: true,
+    nest: true,
+  })
+    .then((result) => {
+      return {
+        errCode: 0,
+        message: "get list patient of doctor succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: doctorService.js ~ line 386 ~ exports.getListPatientService= ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "get list patient of doctor failed",
+      };
+    });
+};
