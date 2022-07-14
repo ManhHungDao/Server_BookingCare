@@ -1,5 +1,6 @@
 import db from "../models/index";
 import _ from "lodash";
+import emailService from "../services/emailService";
 
 require("dotenv").config();
 
@@ -371,6 +372,18 @@ exports.getListPatientService = async (data) => {
         model: db.User,
         attributes: ["email", "address", "gender", "firstName"],
         as: "patientData",
+        include: [
+          {
+            model: db.Allcode,
+            as: "genderData",
+            attributes: ["valueEN", "valueVI"],
+          },
+        ],
+      },
+      {
+        model: db.Allcode,
+        as: "timeTypeDataPatient",
+        attributes: ["valueEN", "valueVI"],
       },
     ],
     raw: true,
@@ -384,13 +397,63 @@ exports.getListPatientService = async (data) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: doctorService.js ~ line 386 ~ exports.getListPatientService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get list patient of doctor failed",
       };
     });
 };
+
+exports.postSendSemedyService = async (data) => {
+  const email = data.email;
+  const doctorId = data.doctorId;
+  const patientId = data.patientId;
+  const timeType = data.timeType;
+  // if (!email || !doctorId || !patientId || !timeType) {
+  if (!doctorId || !patientId || !timeType) {
+    return {
+      errCode: 1,
+      message: "missing input parameters",
+    };
+  }
+  try {
+    // update patient status
+    let appointment = await db.Booking.findOne({
+      where: {
+        doctorId: doctorId,
+        patientId: patientId,
+        timeType: timeType,
+        statusId: "S2",
+      },
+      raw: false,
+    });
+    if (appointment) {
+      appointment.statusId = "S3";
+      await appointment.save();
+    }
+    emailService.sendAttachment(data);
+    return {
+      errCode: 0,
+      message: "handle confirm appointment succeed",
+    };
+    //sent email
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: doctorService.js ~ line 419 ~ exports.postSendSemedyService= ~ error",
+      error
+    );
+    return {
+      errCode: 1,
+      message: "get remery failed",
+    };
+  }
+};
+
+async function sendMail(email) {
+  await emailService
+    .sendSimpleEmail(email)
+    .then(() => {
+      console.log("send maild succeed");
+    })
+    .catch((err) => console.log(err));
+}

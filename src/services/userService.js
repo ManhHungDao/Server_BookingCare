@@ -9,7 +9,7 @@ exports.handleUserLogin = async (email, password) => {
     const isExist = await checkUserEmail(email);
     if (isExist) {
       const user = await db.User.findOne({
-        attributes: ["roleId", "email", "password", "firstName", "lastName"],
+        attributes: ["id","roleId", "email", "password", "firstName", "lastName"],
         where: { email: email },
       });
       if (user) {

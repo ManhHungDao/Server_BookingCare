@@ -178,3 +178,22 @@ exports.getListPatient = async (req, res) => {
       });
     });
 };
+
+exports.postSendSemedy = async (req, res) => {
+  return await doctorService
+    .postSendSemedyService(req.body)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: doctorController.js ~ line 189 ~ exports.postSendSemedy= ~ err",
+        err
+      );
+
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
