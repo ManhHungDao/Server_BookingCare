@@ -1,3 +1,4 @@
+import { result } from "lodash";
 import userService from "../services/userService";
 
 exports.handleLogin = async (req, res) => {
@@ -19,10 +20,6 @@ exports.handleLogin = async (req, res) => {
 
 exports.handleGetAllUers = async (req, res) => {
   const { id } = req.query;
-  console.log(
-    "🚀 ~ file: userController.js ~ line 23 ~ exports.handleGetAllUers= ~ req.bod",
-    id
-  );
   const users = await userService.getAllUsers(id);
   return res.status(200).json({
     errCode: 0,
@@ -62,15 +59,18 @@ exports.handleEditUser = async (req, res) => {
       message: "missing input parameters",
     });
   }
-  return await userService.updateUser(req.body).then((result) => {
-    console.log("handle edit user");
-    return res.status(200).json(result);
-  }).catch(()=>{
-    return{
-      errCode:-1,
-      message:'error from sever'
-    }
-  });
+  return await userService
+    .updateUser(req.body)
+    .then((result) => {
+      console.log("handle edit user");
+      return res.status(200).json(result);
+    })
+    .catch(() => {
+      return {
+        errCode: -1,
+        message: "error from sever",
+      };
+    });
 };
 
 exports.handleDeleteUser = async (req, res) => {

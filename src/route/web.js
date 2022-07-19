@@ -29,8 +29,6 @@ let initWebRoutes = (app) => {
   // send remedy
   router.post("/api/send-remedy", doctorController.postSendSemedy);
 
-
-
   // patient
   router.post(
     "/api/patient-book-appointment",
@@ -44,6 +42,9 @@ let initWebRoutes = (app) => {
   // clinic
   router.post("/api/create-clinic", clinicController.createClinic);
   router.get("/api/get-detail-clinic", clinicController.getDetailClinic);
+  // update clinic
+  router.put("/api/update-detail-clinic", clinicController.updateDetailClinic);
+  router.delete("/api/delete-clinic", clinicController.deleteClinic);
   // get list clinic for manage doctor
   router.get("/api/get-list-clinic", clinicController.getListClinic);
   router.get("/api/get-list-home-clinic", clinicController.getListClinicHome);

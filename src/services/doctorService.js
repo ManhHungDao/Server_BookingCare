@@ -129,8 +129,6 @@ exports.saveSubDetailDoctorService = async (data) => {
       provinceId: data.selectedProvince,
       paymentId: data.selectedPayment,
       note: data.note,
-      nameClinic: data.nameClinic,
-      addressClinic: data.addressClinic,
       clinicId: data.clinicId,
       specialtyId: data.specialtyId,
     })
@@ -153,8 +151,6 @@ exports.saveSubDetailDoctorService = async (data) => {
         provinceId: data.selectedProvince,
         paymentId: data.selectedPayment,
         note: data.note,
-        nameClinic: data.nameClinic,
-        addressClinic: data.addressClinic,
         clinicId: data.clinicId,
         specialtyId: data.specialtyId,
       },

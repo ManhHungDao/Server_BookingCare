@@ -9,7 +9,14 @@ exports.handleUserLogin = async (email, password) => {
     const isExist = await checkUserEmail(email);
     if (isExist) {
       const user = await db.User.findOne({
-        attributes: ["id","roleId", "email", "password", "firstName", "lastName"],
+        attributes: [
+          "id",
+          "roleId",
+          "email",
+          "password",
+          "firstName",
+          "lastName",
+        ],
         where: { email: email },
       });
       if (user) {
@@ -56,12 +63,17 @@ exports.getAllUsers = async (id) => {
       users = await db.User.findAll({
         attributes: { exclude: ["password"] },
       });
+      users.map((item) => {
+        item.image = new Buffer.from(item.image, "base64").toString("binary");
+        return item;
+      });
     }
     if (id && id !== "All") {
       users = await db.User.findOne({
         where: { id: id },
         attributes: { exclude: ["password"] },
       });
+      users.image = new Buffer.from(users.image, "base64").toString("binary");
     }
     return users;
   } catch (error) {
@@ -194,7 +206,7 @@ exports.getAllCodeService = async (type) => {
       error
     );
     return {
-      errCode: 0,
+      errCode: -1,
       message: "sever error",
     };
   }

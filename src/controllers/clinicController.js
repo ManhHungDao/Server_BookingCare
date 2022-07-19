@@ -33,6 +33,39 @@ exports.getDetailClinic = async (req, res) => {
     });
 };
 
+exports.updateDetailClinic = async (req, res) => {
+  return await clinicService
+    .updateDetailClinicService(req.body)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: clinicController.js ~ line 43 ~ exports.updateDetailClinic= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.deleteClinic = async (req, res) => {
+  return await clinicService
+    .deleteClinicService(req.query.id)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+    console.log("🚀 ~ file: clinicController.js ~ line 61 ~ exports.deleteClinic ~ err", err)
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
 exports.getListClinic = async (req, res) => {
   return await clinicService
     .getListClinicService()
