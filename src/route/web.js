@@ -65,6 +65,13 @@ let initWebRoutes = (app) => {
     "/api/get-doctor-specialty",
     specialtyController.getDoctorSpecialty
   );
+  //get list specialty by clinicId
+  router.get(
+    "/api/get-list-specialty-by-clinicId",
+    specialtyController.getListSpecialtyByClinicId
+  );
+  router.delete("/api/delete-specialty", specialtyController.deleteSpecialty);
+  router.put("/api/update-specialty", specialtyController.updateSpecialty);
 
   // without col image
   router.get("/api/get-list-specialty", specialtyController.getListSpecialty);

@@ -58,7 +58,10 @@ exports.deleteClinic = async (req, res) => {
       return res.status(200).json(result);
     })
     .catch((err) => {
-    console.log("🚀 ~ file: clinicController.js ~ line 61 ~ exports.deleteClinic ~ err", err)
+      console.log(
+        "🚀 ~ file: clinicController.js ~ line 61 ~ exports.deleteClinic ~ err",
+        err
+      );
       return res.status(200).json({
         errCode: -1,
         message: "error from sever",

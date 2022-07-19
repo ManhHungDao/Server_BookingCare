@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Specialty.init(
     {
+      clinicId: DataTypes.INTEGER,
       name: DataTypes.STRING,
       contentMarkdown: DataTypes.TEXT,
       contentHTML: DataTypes.TEXT,

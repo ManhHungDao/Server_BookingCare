@@ -96,3 +96,58 @@ exports.getDoctorSpecialty = async (req, res) => {
       });
     });
 };
+
+exports.getListSpecialtyByClinicId = async (req, res) => {
+  return await specialtyService
+    .getListSpecialtyByClinicIdService(req.query.id)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyController.js ~ line 108 ~ exports.getListSpecialtyByClinicId= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.deleteSpecialty = async (req, res) => {
+  return await specialtyService
+    .deleteSpecialtyService(req.query.id)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyController.js ~ line 125 ~ exports.deleteSpecialty ~ err",
+        err
+      );
+
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.updateSpecialty = async (req, res) => {
+  return await specialtyService
+    .updateSpecialtyService(req.body)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyController.js ~ line 144 ~ exports.updateSpecialty= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
