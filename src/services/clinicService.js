@@ -152,18 +152,18 @@ exports.getListDoctorClinicService = async (data) => {
 };
 
 exports.updateDetailClinicService = async (data) => {
-    if (
-      !data.name ||
-      !data.address ||
-      !data.contentMarkdown ||
-      !data.contentHTML ||
-      !data.image ||
-      !data.id
-    )
-      return {
-        errCode: 1,
-        message: "Missing parameter",
-      };
+  if (
+    !data.name ||
+    !data.address ||
+    !data.contentMarkdown ||
+    !data.contentHTML ||
+    !data.image ||
+    !data.id
+  )
+    return {
+      errCode: 1,
+      message: "Missing parameter",
+    };
   return await db.Clinic.update(
     {
       contentHTML: data.contentHTML,
@@ -205,10 +205,51 @@ exports.deleteClinicService = async (id) => {
       };
     })
     .catch((err) => {
-
       return {
         errCode: 1,
         message: "delete clinic failed",
+      };
+    });
+};
+
+exports.createDetailClinicService = async (data) => {
+  if (!data.clinicId)
+    return {
+      errCode: 1,
+      message: "Missing parameter",
+    };
+  return await db.detail_clinic
+    .create({
+      clinicId: data.clinicId,
+      bookingMarkdown: data.bookingMarkdown ? data.bookingMarkdown : null,
+      bookingHTML: data.bookingHTML ? data.bookingHTML : null,
+      introduceMarkdown: data.introduceMarkdown ? data.introduceMarkdown : null,
+      introduceHTML: data.introduceHTML ? data.introduceHTML : null,
+      strengthMarkdown: data.strengthMarkdown ? data.strengthMarkdown : null,
+      strengthHTML: data.strengthHTML ? data.strengthHTML : null,
+      equipmentMarkdown: data.equipmentMarkdown ? data.equipmentMarkdown : null,
+      equipmentHTML: data.equipmentHTML ? data.equipmentHTML : null,
+      serviceMarkdown: data.serviceMarkdown ? data.serviceMarkdown : null,
+      serviceHTML: data.serviceHTML ? data.serviceHTML : null,
+      locationMarkdown: data.locationMarkdown ? data.locationMarkdown : null,
+      locationHTML: data.locationHTML ? data.locationHTML : null,
+      examinationMarkdown: data.examinationMarkdown
+        ? data.examinationMarkdown
+        : null,
+      examinationHTML: data.examinationHTML ? data.examinationHTML : null,
+    })
+    .then(() => {
+      console.log("create new detail clinic");
+      return {
+        errCode: 0,
+        message: "create new detail clinic succeed",
+      };
+    })
+    .catch((err) => {
+      console.log("🚀 ~ file: clinicService.js ~ line 249 ~ exports.createDetailClinicService= ~ err", err)
+      return {
+        errCode: 1,
+        message: "create new detail clinic failed",
       };
     });
 };

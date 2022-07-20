@@ -73,6 +73,11 @@ let initWebRoutes = (app) => {
   router.delete("/api/delete-specialty", specialtyController.deleteSpecialty);
   router.put("/api/update-specialty", specialtyController.updateSpecialty);
 
+   /*  detail clinic */
+  router.post("/api/create-detail-clinic", clinicController.createDetailClinic);
+   
+
+
   // without col image
   router.get("/api/get-list-specialty", specialtyController.getListSpecialty);
 

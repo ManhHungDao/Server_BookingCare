@@ -120,3 +120,21 @@ exports.getListDoctorClinic = async (req, res) => {
       });
     });
 };
+
+exports.createDetailClinic = async (req, res) => {
+  return await clinicService
+    .createDetailClinicService(req.body)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: clinicController.js ~ line 131 ~ exports.createDetailClinic= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
