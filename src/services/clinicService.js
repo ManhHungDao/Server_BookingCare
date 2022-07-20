@@ -246,10 +246,42 @@ exports.createDetailClinicService = async (data) => {
       };
     })
     .catch((err) => {
-      console.log("🚀 ~ file: clinicService.js ~ line 249 ~ exports.createDetailClinicService= ~ err", err)
+      console.log(
+        "🚀 ~ file: clinicService.js ~ line 249 ~ exports.createDetailClinicService= ~ err",
+        err
+      );
       return {
         errCode: 1,
         message: "create new detail clinic failed",
+      };
+    });
+};
+
+exports.getDetailClinicService = async (clinicId) => {
+  if (!clinicId) {
+    return {
+      errCode: 1,
+      message: "Missing parameter",
+    };
+  }
+  return await db.detail_clinic
+    .findOne({ where: { clinicId: clinicId } })
+    .then((result) => {
+      console.log("get detail clinic succeed");
+      return {
+        errCode: 0,
+        message: "get detail clinic succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: clinicService.js ~ line 277 ~ exports.getDetailClinicService= ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "get detail clinic failed",
       };
     });
 };
