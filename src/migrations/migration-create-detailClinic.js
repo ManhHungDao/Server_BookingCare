@@ -54,6 +54,12 @@ module.exports = {
       examinationHTML: {
         type: Sequelize.TEXT,
       },
+      noteMarkdown: {
+        type: Sequelize.TEXT,
+      },
+      noteHTML: {
+        type: Sequelize.TEXT,
+      },
 
       createdAt: {
         allowNull: false,

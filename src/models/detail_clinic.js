@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       locationHTML: DataTypes.TEXT,
       examinationMarkdown: DataTypes.TEXT,
       examinationHTML: DataTypes.TEXT,
+      noteHTML: DataTypes.TEXT,
+      noteMarkdown: DataTypes.TEXT,
     },
     {
       sequelize,
