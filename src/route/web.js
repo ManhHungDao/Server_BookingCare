@@ -3,8 +3,8 @@ import userController from "../controllers/userController";
 import doctorController from "../controllers/doctorController";
 import patientController from "../controllers/patientController";
 import specialtyController from "../controllers/specialtyController";
-
 import clinicController from "../controllers/clinicController.js";
+import detailClinicController from "../controllers/detailClinicController";
 
 let router = express.Router();
 
@@ -41,7 +41,7 @@ let initWebRoutes = (app) => {
 
   // clinic
   router.post("/api/create-clinic", clinicController.createClinic);
-  router.get("/api/get-detail-clinic", clinicController.getDetailClinic);
+  router.get("/api/get-clinic", clinicController.getDetailClinic);
   // update clinic
   router.put("/api/update-detail-clinic", clinicController.updateDetailClinic);
   router.delete("/api/delete-clinic", clinicController.deleteClinic);
@@ -74,8 +74,11 @@ let initWebRoutes = (app) => {
   router.put("/api/update-specialty", specialtyController.updateSpecialty);
 
   /*  detail clinic */
-  router.post("/api/create-detail-clinic", clinicController.createDetailClinic);
-  router.get("/api/get-detail-clinic", clinicController.getDetailClinic);
+  router.post(
+    "/api/create-detail-clinic",
+    detailClinicController.createDetailClinic
+  );
+  router.get("/api/get-detail-clinic", detailClinicController.getDetailClinic);
 
   // without col image
   router.get("/api/get-list-specialty", specialtyController.getListSpecialty);
