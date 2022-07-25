@@ -16,8 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       clinicId: DataTypes.STRING,
       bookingMarkdown: DataTypes.TEXT,
       bookingHTML: DataTypes.TEXT,
-      introduceMarkdown: DataTypes.TEXT,
-      introduceHTML: DataTypes.TEXT,
       strengthMarkdown: DataTypes.TEXT,
       strengthHTML: DataTypes.TEXT,
       equipmentMarkdown: DataTypes.TEXT,

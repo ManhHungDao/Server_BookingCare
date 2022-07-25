@@ -2,6 +2,7 @@ import db from "../models/index";
 import _ from "lodash";
 
 exports.createDetailClinicService = async (data) => {
+  console.log("clinic id", data.id);
   try {
     if (!data.id || !data.noteMarkdown || !data.noteHTML)
       return {
@@ -9,7 +10,7 @@ exports.createDetailClinicService = async (data) => {
         message: "Missing parameter",
       };
     const existedDetail = await db.detail_clinic.findOne({
-      where: { id: data.id },
+      where: { clinicId: data.id },
     });
     if (!existedDetail)
       return await db.detail_clinic
@@ -43,10 +44,10 @@ exports.createDetailClinicService = async (data) => {
           noteHTML: data.noteHTML,
         })
         .then(() => {
-          console.log("create new detail clinic");
+          console.log("update detail clinic");
           return {
             errCode: 0,
-            message: "create new detail clinic succeed",
+            message: "update detail clinic succeed",
           };
         });
     else {

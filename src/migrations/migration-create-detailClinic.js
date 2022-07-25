@@ -18,12 +18,6 @@ module.exports = {
       bookingHTML: {
         type: Sequelize.TEXT,
       },
-      introduceMarkdown: {
-        type: Sequelize.TEXT,
-      },
-      introduceHTML: {
-        type: Sequelize.TEXT,
-      },
       strengthMarkdown: {
         type: Sequelize.TEXT,
       },
@@ -75,5 +69,3 @@ module.exports = {
     await queryInterface.dropTable("detail_clinic");
   },
 };
-
-
