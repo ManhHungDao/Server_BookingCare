@@ -16,8 +16,8 @@ exports.createClinicService = async (data) => {
   return await db.Clinic.create({
     name: data.name,
     address: data.address,
-    contentMarkdown: data.contentMarkdown,
-    contentHTML: data.contentHTML,
+    introduceMarkdown: data.contentMarkdown,
+    introduceHTML: data.contentHTML,
     image: data.image,
   })
     .then(() => {
@@ -60,6 +60,7 @@ exports.getDetailClinicService = async (id) => {
       };
     })
     .catch((err) => {
+      console.log("🚀 ~ file: clinicService.js ~ line 63 ~ exports.getDetailClinicService= ~ err", err)
       return {
         errCode: 1,
         message: "get detail clinic failed",
@@ -165,8 +166,8 @@ exports.updateDetailClinicService = async (data) => {
     };
   return await db.Clinic.update(
     {
-      contentHTML: data.contentHTML,
-      contentMarkdown: data.contentMarkdown,
+      introduceHTML: data.contentHTML,
+      introduceMarkdown: data.contentMarkdown,
       name: data.name,
       image: data.image,
       address: data.address,

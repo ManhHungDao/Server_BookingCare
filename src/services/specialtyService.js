@@ -9,8 +9,8 @@ exports.createSpecialtyService = async (data) => {
   return await db.Specialty.create({
     name: data.name,
     image: data.image,
-    contentMarkdown: data.contentMarkdown,
-    contentHTML: data.contentHTML,
+    detailMarkdown: data.contentMarkdown,
+    detailHTML: data.contentHTML,
     clinicId: data.clinicId ? data.clinicId : null,
   })
     .then(() => {
@@ -212,8 +212,8 @@ exports.updateSpecialtyService = async (data) => {
     {
       name: data.name,
       image: data.image,
-      contentMarkdown: data.contentMarkdown,
-      contentHTML: data.contentHTML,
+      detailMarkdown: data.contentMarkdown,
+      detailHTML: data.contentHTML,
     },
     { where: { id: data.id } }
   )

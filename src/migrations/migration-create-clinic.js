@@ -14,10 +14,10 @@ module.exports = {
       address: {
         type: Sequelize.STRING,
       },
-      contentHTML: {
+      introduceHTML: {
         type: Sequelize.TEXT,
       },
-      contentMarkdown: {
+      introduceMarkdown: {
         type: Sequelize.TEXT,
       },
       image: {
