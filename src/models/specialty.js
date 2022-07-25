@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       clinicId: DataTypes.INTEGER,
       name: DataTypes.STRING,
-      contentMarkdown: DataTypes.TEXT,
-      contentHTML: DataTypes.TEXT,
+      detailMarkdown: DataTypes.TEXT,
+      detailHTML: DataTypes.TEXT,
       image: DataTypes.TEXT,
     },
     {

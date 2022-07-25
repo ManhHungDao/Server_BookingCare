@@ -143,33 +143,35 @@ exports.getDoctorSpecialtyService = async (data) => {
 };
 
 exports.getListSpecialtyByClinicIdService = async (id) => {
-  if (!id) {
-    return {
-      errCode: 1,
-      message: "Missing parameter",
-    };
-  }
-  return await db.Specialty.findAll({ where: { clinicId: id } })
-    .then((result) => {
-      console.log("get list specialty by clinicId succeed");
-      if (result && result.length > 0) {
-        result.map((item) => {
-          item.image = new Buffer.from(item.image, "base64").toString("binary");
-          return item;
-        });
-      }
-      return {
-        errCode: 0,
-        message: "get list specialty by clinicId succeed",
-        data: result,
-      };
-    })
-    .catch((err) => {
+  try {
+    if (!id)
       return {
         errCode: 1,
-        message: "get list specialty by clinicId failed",
+        message: "Missing parameter",
       };
-    });
+    let result;
+    if (id === "All")
+      result = await db.Specialty.findAll({ where: { clinicId: null } });
+    else {
+      result = await db.Specialty.findAll({ where: { clinicId: id } });
+    }
+    if (result && result.length > 0) {
+      result.map((item) => {
+        item.image = new Buffer.from(item.image, "base64").toString("binary");
+        return item;
+      });
+    }
+    return {
+      errCode: 0,
+      message: "get list specialty by clinicId succeed",
+      data: result,
+    };
+  } catch (error) {
+    return {
+      errCode: 1,
+      message: "get list specialty by clinicId failed",
+    };
+  }
 };
 
 exports.deleteSpecialtyService = async (id) => {
@@ -196,42 +198,61 @@ exports.deleteSpecialtyService = async (id) => {
 };
 
 exports.updateSpecialtyService = async (data) => {
-  if (
-    !data.id ||
-    !data.name ||
-    !data.image ||
-    !data.contentMarkdown ||
-    !data.contentHTML
-  ) {
-    return {
-      errCode: 1,
-      message: "Missing parameter",
-    };
-  }
-  return await db.Specialty.update(
-    {
-      name: data.name,
-      image: data.image,
-      detailMarkdown: data.contentMarkdown,
-      detailHTML: data.contentHTML,
-    },
-    { where: { id: data.id } }
-  )
-    .then(() => {
-      console.log("update specialty succeed");
-      return {
-        errCode: 0,
-        message: "update specialty succeed",
-      };
-    })
-    .catch((err) => {
-      console.log(
-        "🚀 ~ file: specialtyService.js ~ line 216 ~ exports.updateSpecialtyService= ~ err",
-        err
-      );
+  try {
+    if (
+      !data.name ||
+      !data.image ||
+      !data.contentMarkdown ||
+      !data.contentHTML
+    ) {
       return {
         errCode: 1,
-        message: "update specialty failed",
+        message: "Missing parameter",
       };
-    });
+    }
+    if (!data.idClinicEdit) {
+      return await db.Specialty.update(
+        {
+          name: data.name,
+          image: data.image,
+          detailMarkdown: data.contentMarkdown,
+          detailHTML: data.contentHTML,
+        },
+        { where: { id: data.idSpecialtyEdit } }
+      ).then(() => {
+        console.log("update specialty succeed");
+        return {
+          errCode: 0,
+          message: "update specialty succeed",
+        };
+      });
+    }
+    if (data.idClinicEdit) {
+      return await db.Specialty.update(
+        {
+          name: data.name,
+          image: data.image,
+          detailMarkdown: data.contentMarkdown,
+          detailHTML: data.contentHTML,
+        },
+        { where: { clinicId: data.idClinicEdit, id: data.idSpecialtyEdit } }
+      ).then(() => {
+        console.log("update specialty succeed");
+        return {
+          errCode: 0,
+          message: "update specialty succeed",
+        };
+      });
+    }
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: specialtyService.js ~ line 249 ~ exports.updateSpecialtyService= ~ error",
+      error
+    );
+
+    return {
+      errCode: 1,
+      message: "update specialty failed",
+    };
+  }
 };
