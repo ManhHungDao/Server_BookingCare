@@ -69,109 +69,100 @@ exports.getAllDoctorService = async () => {
     });
 };
 
-exports.saveDetailDoctorService = async (detailDoctor) => {
-  const action = detailDoctor.action;
-  if (action === "CREATE")
-    return await db.Markdown.create({
-      contentHTML: detailDoctor.contentHTML,
-      contentMarkdown: detailDoctor.contentMarkdown,
-      doctorId: detailDoctor.doctorId,
-      description: detailDoctor.description,
-    })
-      .then(() => {
-        return {
-          errCode: 0,
-          message: "create detail doctor succeed",
-        };
-      })
-      .catch(() => {
-        return {
-          errCode: 1,
-          message: "error from sever",
-        };
+exports.saveDetailDoctorService = async (data) => {
+  try {
+    if (!data.doctorId || !data.contentHTML || !data.contentMarkdown) {
+      return res.status(200).json({
+        errCode: 1,
+        message: "Missing parameter",
       });
-  else if (action === "EDIT")
-    return await db.Markdown.update(
-      {
-        contentHTML: detailDoctor.contentHTML,
-        contentMarkdown: detailDoctor.contentMarkdown,
-        description: detailDoctor.description,
-      },
-      {
-        where: {
-          doctorId: detailDoctor.doctorId,
+    }
+    const existedDetail = await db.Detail_doctor.findOne({
+      where: { doctorId: data.doctorId },
+    });
+    if (!existedDetail) {
+      await db.Detail_doctor.create({
+        detailHTML: data.contentHTML,
+        detailMarkdown: data.contentMarkdown,
+        doctorId: data.doctorId,
+        description: data.description,
+      });
+    } else {
+      await db.Detail_doctor.update(
+        {
+          detailHTML: data.contentHTML,
+          detailMarkdown: data.contentMarkdown,
+          description: data.description,
         },
-      }
-    )
-      .then(() => {
-        return {
-          errCode: 0,
-          message: "update detail doctor succeed",
-        };
-      })
-      .catch(() => {
-        return {
-          errCode: 1,
-          message: "update detail doctor failed",
-        };
-      });
+        {
+          where: {
+            doctorId: data.doctorId,
+          },
+        }
+      );
+    }
+    return {
+      errCode: 0,
+      message: "upload detail doctor succeed",
+    };
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: doctorService.js ~ line 88 ~ exports.saveDetailDoctorService= ~ error",
+      error
+    );
+    return {
+      errCode: 1,
+      message: "update detail doctor failed",
+    };
+  }
 };
 
 exports.saveSubDetailDoctorService = async (data) => {
-  const existedDetail = await db.Doctor_Info.findOne({
-    where: { doctorId: data.doctorId },
-    raw: false,
-  });
-  if (!existedDetail) {
-    return await db.Doctor_Info.create({
-      doctorId: data.doctorId,
-      priceId: data.selectedPrice,
-      provinceId: data.selectedProvince,
-      paymentId: data.selectedPayment,
-      note: data.note,
-      clinicId: data.clinicId,
-      specialtyId: data.specialtyId,
-    })
-      .then(() => {
-        return {
-          errCode: 0,
-          message: "create sub detail doctor succeed",
-        };
-      })
-      .catch(() => {
-        return {
-          errCode: 1,
-          message: "create sub detail doctor failed",
-        };
-      });
-  } else {
-    return await db.Doctor_Info.update(
-      {
+  try {
+    const existedDetail = await db.Doctor_Info.findOne({
+      where: { doctorId: data.doctorId },
+      raw: false,
+    });
+    if (!existedDetail) {
+      await db.Doctor_Info.create({
+        doctorId: data.doctorId,
         priceId: data.selectedPrice,
         provinceId: data.selectedProvince,
         paymentId: data.selectedPayment,
         note: data.note,
         clinicId: data.clinicId,
         specialtyId: data.specialtyId,
-      },
-      {
-        where: {
-          doctorId: data.doctorId,
-        },
-      }
-    )
-      .then(() => {
-        return {
-          errCode: 0,
-          message: "update sub detail doctor succeed",
-        };
-      })
-      .catch(() => {
-        return {
-          errCode: 1,
-          message: "update sub detail doctor failed",
-        };
       });
+    } else {
+      await db.Doctor_Info.update(
+        {
+          priceId: data.selectedPrice,
+          provinceId: data.selectedProvince,
+          paymentId: data.selectedPayment,
+          note: data.note,
+          clinicId: data.clinicId,
+          specialtyId: data.specialtyId,
+        },
+        {
+          where: {
+            doctorId: data.doctorId,
+          },
+        }
+      );
+    }
+    return {
+      errCode: 0,
+      message: "upload sub detail doctor succeed",
+    };
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: doctorService.js ~ line 124 ~ exports.saveSubDetailDoctorService= ~ error",
+      error
+    );
+    return {
+      errCode: 1,
+      message: "update sub detail doctor failed",
+    };
   }
 };
 
@@ -181,8 +172,8 @@ exports.getDetaiDoctorService = async (id) => {
     attributes: { exclude: ["password"] },
     include: [
       {
-        model: db.Markdown,
-        attributes: ["description", "contentHTML", "contentMarkdown"],
+        model: db.Detail_doctor,
+        attributes: ["description", "detailHTML", "detailMarkdown"],
       },
       {
         model: db.Allcode,
@@ -230,6 +221,10 @@ exports.getDetaiDoctorService = async (id) => {
       };
     })
     .catch((err) => {
+      console.log(
+        "🚀 ~ file: doctorService.js ~ line 233 ~ exports.getDetaiDoctorService= ~ err",
+        err
+      );
       return {
         errCode: 1,
         message: "get detail doctor by id failed",

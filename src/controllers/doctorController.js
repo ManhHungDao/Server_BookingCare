@@ -29,16 +29,6 @@ exports.getAllDoctor = async (req, res) => {
 
 exports.postInfoDoctor = async (req, res) => {
   try {
-    if (
-      !req.body.doctorId ||
-      !req.body.contentHTML ||
-      !req.body.contentMarkdown
-    ) {
-      return res.status(200).json({
-        errCode: 1,
-        message: "Missing parameter",
-      });
-    }
     const response = await doctorService.saveDetailDoctorService(req.body);
     return res.status(200).json(response);
   } catch (error) {
@@ -154,7 +144,10 @@ exports.getExtraInfoDoctor = async (req, res) => {
         return res.status(200).json(result);
       })
       .catch((err) => {
-        console.log("🚀 ~ file: doctorController.js ~ line 157 ~ exports.getExtraInfoDoctor= ~ err", err)
+        console.log(
+          "🚀 ~ file: doctorController.js ~ line 157 ~ exports.getExtraInfoDoctor= ~ err",
+          err
+        );
         return res.status(200).json({
           errCode: -1,
           message: "error from sever",
