@@ -153,7 +153,8 @@ exports.getExtraInfoDoctor = async (req, res) => {
       .then((result) => {
         return res.status(200).json(result);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log("🚀 ~ file: doctorController.js ~ line 157 ~ exports.getExtraInfoDoctor= ~ err", err)
         return res.status(200).json({
           errCode: -1,
           message: "error from sever",

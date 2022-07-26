@@ -332,6 +332,11 @@ exports.getExtraInfoDoctorService = async (id) => {
         as: "paymentTypeData",
         attributes: ["valueEN", "valueVI"],
       },
+      {
+        model: db.Clinic,
+        as: "clinicDataDoctor",
+        attributes: ["address", "name"],
+      },
     ],
     raw: true,
     nest: true,
