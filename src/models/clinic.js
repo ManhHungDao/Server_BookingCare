@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       introduceMarkdown: DataTypes.TEXT,
       introduceHTML: DataTypes.TEXT,
       image: DataTypes.TEXT,
+      logo: DataTypes.TEXT,
     },
     {
       sequelize,

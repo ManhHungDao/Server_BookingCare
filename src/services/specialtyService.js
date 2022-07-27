@@ -53,6 +53,7 @@ exports.getSpecialtiesService = async () => {
 exports.getListSpecialtyService = async () => {
   return await db.Specialty.findAll({
     attributes: ["name", "id"],
+    where: { clinicId: null },
   })
     .then((result) => {
       console.log("get list specialty succeed");

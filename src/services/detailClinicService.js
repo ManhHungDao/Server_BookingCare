@@ -18,10 +18,6 @@ exports.createDetailClinicService = async (data) => {
           clinicId: data.id,
           bookingMarkdown: data.bookingMarkdown ? data.bookingMarkdown : null,
           bookingHTML: data.bookingHTML ? data.bookingHTML : null,
-          introduceMarkdown: data.introduceMarkdown
-            ? data.introduceMarkdown
-            : null,
-          introduceHTML: data.introduceHTML ? data.introduceHTML : null,
           strengthMarkdown: data.strengthMarkdown
             ? data.strengthMarkdown
             : null,
