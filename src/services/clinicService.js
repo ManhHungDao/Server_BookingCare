@@ -7,7 +7,8 @@ exports.createClinicService = async (data) => {
     !data.address ||
     !data.contentMarkdown ||
     !data.contentHTML ||
-    !data.image
+    !data.image ||
+    !data.logo
   )
     return {
       errCode: 1,
@@ -19,6 +20,7 @@ exports.createClinicService = async (data) => {
     introduceMarkdown: data.contentMarkdown,
     introduceHTML: data.contentHTML,
     image: data.image,
+    logo: data.logo,
   })
     .then(() => {
       console.log("create a new clinic");
@@ -52,6 +54,10 @@ exports.getDetailClinicService = async (id) => {
         result.image = new Buffer.from(result.image, "base64").toString(
           "binary"
         );
+        if (result.logo)
+          result.logo = new Buffer.from(result.logo, "base64").toString(
+            "binary"
+          );
       }
       return {
         errCode: 0,
@@ -60,7 +66,10 @@ exports.getDetailClinicService = async (id) => {
       };
     })
     .catch((err) => {
-      console.log("🚀 ~ file: clinicService.js ~ line 63 ~ exports.getDetailClinicService= ~ err", err)
+      console.log(
+        "🚀 ~ file: clinicService.js ~ line 63 ~ exports.getDetailClinicService= ~ err",
+        err
+      );
       return {
         errCode: 1,
         message: "get detail clinic failed",
@@ -90,7 +99,7 @@ exports.getListClinicService = async () => {
 
 exports.getListClinicHomeService = async () => {
   return await db.Clinic.findAll({
-    attributes: { exclude: ["createdAt", "updatedAt"] },
+    attributes: { exclude: ["createdAt", "updatedAt", "logo"] },
   })
     .then((result) => {
       if (!result) {
@@ -158,6 +167,7 @@ exports.updateDetailClinicService = async (data) => {
     !data.contentMarkdown ||
     !data.contentHTML ||
     !data.image ||
+    !data.logo ||
     !data.id
   )
     return {
@@ -171,6 +181,7 @@ exports.updateDetailClinicService = async (data) => {
       name: data.name,
       image: data.image,
       address: data.address,
+      logo: data.logo,
     },
     { where: { id: data.id } }
   )
@@ -211,4 +222,3 @@ exports.deleteClinicService = async (id) => {
       };
     });
 };
-
