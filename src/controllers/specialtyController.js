@@ -58,11 +58,11 @@ exports.getListSpecialty = async (req, res) => {
     });
 };
 
-exports.getDetailSpecialty = async (req, res) => {
+exports.getSpecialty = async (req, res) => {
   return await specialtyService
     .getDetailSpecialtyService(req.query.specialtyId)
     .then((result) => {
-      console.log("get detail specialty");
+      console.log("get specialty");
       return res.status(200).json(result);
     })
     .catch((err) => {

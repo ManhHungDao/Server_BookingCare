@@ -5,6 +5,7 @@ import patientController from "../controllers/patientController";
 import specialtyController from "../controllers/specialtyController";
 import clinicController from "../controllers/clinicController.js";
 import detailClinicController from "../controllers/detailClinicController";
+import detailSpecialtyController from "../controllers/detailSpecialtyController";
 
 let router = express.Router();
 
@@ -59,7 +60,7 @@ let initWebRoutes = (app) => {
   router.get("/api/get-specialty", specialtyController.getSpecialties);
   router.get(
     "/api/get-detail-specialty",
-    specialtyController.getDetailSpecialty
+    specialtyController.getSpecialty
   );
   router.get(
     "/api/get-doctor-specialty",
@@ -79,6 +80,17 @@ let initWebRoutes = (app) => {
     detailClinicController.createDetailClinic
   );
   router.get("/api/get-detail-clinic", detailClinicController.getDetailClinic);
+
+  /* detail specialty */
+  router.post(
+    "/api/create-detail-specialty",
+    detailSpecialtyController.createDetailSpecialty
+  );
+
+   router.get(
+     "/api/get-detailSpecialty",
+     detailSpecialtyController.getDetailSpecialty
+   );
 
   // without col image
   router.get("/api/get-list-specialty", specialtyController.getListSpecialty);

@@ -2,7 +2,6 @@ import db from "../models/index";
 import _ from "lodash";
 
 exports.createDetailClinicService = async (data) => {
-  console.log("clinic id", data.id);
   try {
     if (!data.id || !data.noteMarkdown || !data.noteHTML)
       return {
