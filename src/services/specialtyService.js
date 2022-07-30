@@ -7,8 +7,8 @@ exports.createSpecialtyService = async (data) => {
       message: "Missing parameter",
     };
   return await db.Specialty.create({
-    name: data.name,
-    image: data.image ? data.image : '',
+    name: data.name.trim(),
+    image: data.image ? data.image : "",
     detailMarkdown: data.contentMarkdown,
     detailHTML: data.contentHTML,
     clinicId: data.clinicId ? data.clinicId : null,
@@ -172,7 +172,10 @@ exports.getListSpecialtyByClinicIdService = async (id) => {
       data: result,
     };
   } catch (error) {
-    console.log("🚀 ~ file: specialtyService.js ~ line 175 ~ exports.getListSpecialtyByClinicIdService= ~ error", error)
+    console.log(
+      "🚀 ~ file: specialtyService.js ~ line 175 ~ exports.getListSpecialtyByClinicIdService= ~ error",
+      error
+    );
     return {
       errCode: 1,
       message: "get list specialty by clinicId failed",
@@ -214,8 +217,8 @@ exports.updateSpecialtyService = async (data) => {
     if (!data.idClinicEdit) {
       await db.Specialty.update(
         {
-          name: data.name,
-          image: data.image ? data.image : '',
+          name: data.name.trim(),
+          image: data.image ? data.image : "",
           detailMarkdown: data.contentMarkdown,
           detailHTML: data.contentHTML,
         },
@@ -225,8 +228,8 @@ exports.updateSpecialtyService = async (data) => {
     if (data.idClinicEdit) {
       await db.Specialty.update(
         {
-          name: data.name,
-          image: data.image ? data.image : '',
+          name: data.name.trim(),
+          image: data.image ? data.image : "",
           detailMarkdown: data.contentMarkdown,
           detailHTML: data.contentHTML,
         },

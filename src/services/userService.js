@@ -99,11 +99,11 @@ exports.createNewUsers = async (data) => {
     return { errCode: 1, message: "Email is exist " };
   }
   return await db.User.create({
-    email: data.email,
+    email: data.email.trim(),
     password: hashPassword,
-    firstName: data.firstName,
-    lastName: data.lastName,
-    address: data.address,
+    firstName: data.firstName.trim(),
+    lastName: data.lastName.trim(),
+    address: data.address.trim(),
     phoneNumber: data.phoneNumber,
     gender: data.gender,
     image: data.image,
@@ -123,9 +123,9 @@ exports.updateUser = async (user) => {
   if (!checkUser) return { errCode: 1, message: "User not found" };
   return await db.User.update(
     {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      address: user.address,
+      firstName: user.firstName.trim(),
+      lastName: user.lastName.trim(),
+      address: user.address.trim(),
       phoneNumber: user.phoneNumber,
       gender: user.gender,
       roleId: user.roleId,

@@ -15,8 +15,8 @@ exports.createClinicService = async (data) => {
       message: "Missing parameter",
     };
   return await db.Clinic.create({
-    name: data.name,
-    address: data.address,
+    name: data.name.trim(),
+    address: data.address.trim(),
     introduceMarkdown: data.contentMarkdown,
     introduceHTML: data.contentHTML,
     image: data.image,
@@ -178,9 +178,9 @@ exports.updateDetailClinicService = async (data) => {
     {
       introduceHTML: data.contentHTML,
       introduceMarkdown: data.contentMarkdown,
-      name: data.name,
+      name: data.name.trim(),
       image: data.image,
-      address: data.address,
+      address: data.address.trim(),
       logo: data.logo,
     },
     { where: { id: data.id } }

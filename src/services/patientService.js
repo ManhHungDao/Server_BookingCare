@@ -14,11 +14,11 @@ exports.postBookAppoinmentService = async (data) => {
   return await db.User.findOrCreate({
     where: { email: data.email },
     defaults: {
-      email: data.email,
+      email: data.email.trim(),
       gender: data.gender,
-      address: data.address,
-      phoneNumber: data.phoneNumber,
-      firstName: data.fullName,
+      address: data.address.trim(),
+      phoneNumber: data.phoneNumber.trim(),
+      firstName: data.fullName.trim(),
       roleId: "R3",
     },
     raw: true,
@@ -26,10 +26,10 @@ exports.postBookAppoinmentService = async (data) => {
     .then((result) => {
       const token = uuidv4();
       sendMail({
-        reciverEmail: data.email,
-        patientName: data.fullName,
+        reciverEmail: data.email.trim(),
+        patientName: data.fullName.trim(),
         time: data.timeString,
-        doctorName: data.doctorName,
+        doctorName: data.doctorName.trim(),
         language: data.language,
         redirectLink: buildUrlEmail(data.doctorId, token),
       });

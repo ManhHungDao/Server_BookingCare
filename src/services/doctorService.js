@@ -85,14 +85,14 @@ exports.saveDetailDoctorService = async (data) => {
         detailHTML: data.contentHTML,
         detailMarkdown: data.contentMarkdown,
         doctorId: data.doctorId,
-        description: data.description,
+        description: data.description.trim(),
       });
     } else {
       await db.Detail_doctor.update(
         {
           detailHTML: data.contentHTML,
           detailMarkdown: data.contentMarkdown,
-          description: data.description,
+          description: data.description.trim(),
         },
         {
           where: {
