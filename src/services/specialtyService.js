@@ -1,14 +1,14 @@
 import db from "../models/index";
 
 exports.createSpecialtyService = async (data) => {
-  if (!data.image || !data.contentHTML || !data.contentMarkdown || !data.name)
-    return res.status(200).json({
+  if (!data.contentHTML || !data.contentMarkdown || !data.name)
+    return {
       errCode: 1,
       message: "Missing parameter",
-    });
+    };
   return await db.Specialty.create({
     name: data.name,
-    image: data.image,
+    image: data.image ? data.image : '',
     detailMarkdown: data.contentMarkdown,
     detailHTML: data.contentHTML,
     clinicId: data.clinicId ? data.clinicId : null,
@@ -20,6 +20,10 @@ exports.createSpecialtyService = async (data) => {
       };
     })
     .catch((err) => {
+      console.log(
+        "🚀 ~ file: specialtyService.js ~ line 23 ~ exports.createSpecialtyService= ~ err",
+        err
+      );
       return {
         errCode: 1,
         message: "create specialty failed",
@@ -28,7 +32,7 @@ exports.createSpecialtyService = async (data) => {
 };
 
 exports.getSpecialtiesService = async () => {
-  return await db.Specialty.findAll()
+  return await db.Specialty.findAll({ where: { clinicId: null } })
     .then((result) => {
       if (result && result.length > 0) {
         result.map((item) => {
@@ -168,6 +172,7 @@ exports.getListSpecialtyByClinicIdService = async (id) => {
       data: result,
     };
   } catch (error) {
+    console.log("🚀 ~ file: specialtyService.js ~ line 175 ~ exports.getListSpecialtyByClinicIdService= ~ error", error)
     return {
       errCode: 1,
       message: "get list specialty by clinicId failed",
@@ -200,51 +205,38 @@ exports.deleteSpecialtyService = async (id) => {
 
 exports.updateSpecialtyService = async (data) => {
   try {
-    if (
-      !data.name ||
-      !data.image ||
-      !data.contentMarkdown ||
-      !data.contentHTML
-    ) {
+    if (!data.name || !data.contentMarkdown || !data.contentHTML) {
       return {
         errCode: 1,
         message: "Missing parameter",
       };
     }
     if (!data.idClinicEdit) {
-      return await db.Specialty.update(
+      await db.Specialty.update(
         {
           name: data.name,
-          image: data.image,
+          image: data.image ? data.image : '',
           detailMarkdown: data.contentMarkdown,
           detailHTML: data.contentHTML,
         },
         { where: { id: data.idSpecialtyEdit } }
-      ).then(() => {
-        console.log("update specialty succeed");
-        return {
-          errCode: 0,
-          message: "update specialty succeed",
-        };
-      });
+      );
     }
     if (data.idClinicEdit) {
-      return await db.Specialty.update(
+      await db.Specialty.update(
         {
           name: data.name,
-          image: data.image,
+          image: data.image ? data.image : '',
           detailMarkdown: data.contentMarkdown,
           detailHTML: data.contentHTML,
         },
         { where: { clinicId: data.idClinicEdit, id: data.idSpecialtyEdit } }
-      ).then(() => {
-        console.log("update specialty succeed");
-        return {
-          errCode: 0,
-          message: "update specialty succeed",
-        };
-      });
+      );
     }
+    return {
+      errCode: 0,
+      message: "update specialty succeed",
+    };
   } catch (error) {
     console.log(
       "🚀 ~ file: specialtyService.js ~ line 249 ~ exports.updateSpecialtyService= ~ error",
