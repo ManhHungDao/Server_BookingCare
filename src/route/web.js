@@ -6,6 +6,7 @@ import specialtyController from "../controllers/specialtyController";
 import clinicController from "../controllers/clinicController.js";
 import detailClinicController from "../controllers/detailClinicController";
 import detailSpecialtyController from "../controllers/detailSpecialtyController";
+import handbookController from "../controllers/handbookController";
 
 let router = express.Router();
 
@@ -73,6 +74,8 @@ let initWebRoutes = (app) => {
   );
   router.delete("/api/delete-specialty", specialtyController.deleteSpecialty);
   router.put("/api/update-specialty", specialtyController.updateSpecialty);
+  // without col image
+  router.get("/api/get-list-specialty", specialtyController.getListSpecialty);
 
   /*  detail clinic */
   router.post(
@@ -92,8 +95,12 @@ let initWebRoutes = (app) => {
      detailSpecialtyController.getDetailSpecialty
    );
 
-  // without col image
-  router.get("/api/get-list-specialty", specialtyController.getListSpecialty);
+  /* handbook */
+  router.post("/api/create-handbook", handbookController.createHandbook);
+  router.get("/api/get-handbook", handbookController.getHandBook);
+  router.get("/api/get-list-handbook", handbookController.getListHandBook);
+  router.put("/api/update-handbook", handbookController.updateHandbook);
+  router.delete("/api/delete-handbook", handbookController.deleteHandbook);
 
   return app.use("/", router);
 };

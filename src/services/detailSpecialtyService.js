@@ -74,14 +74,14 @@ exports.createDetailSpecialtyService = async (data) => {
   }
 };
 
-exports.getDetailSpecialtyService = async (clinicId, specialtyId) => {
-  if (!clinicId || !specialtyId)
+exports.getDetailSpecialtyService = async (specialtyId) => {
+  if (!specialtyId)
     return {
       errCode: 1,
       message: "Missing parameter",
     };
   return await db.Detail_specialty.findOne({
-    where: { clinicId: clinicId, specialtyId: specialtyId },
+    where: { specialtyId: specialtyId },
   })
     .then((result) => {
       console.log("get detail specialty succeed");
