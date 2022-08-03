@@ -7,6 +7,7 @@ import clinicController from "../controllers/clinicController.js";
 import detailClinicController from "../controllers/detailClinicController";
 import detailSpecialtyController from "../controllers/detailSpecialtyController";
 import handbookController from "../controllers/handbookController";
+import detailHandbookController from "../controllers/detailHandbookController";
 
 let router = express.Router();
 
@@ -59,10 +60,7 @@ let initWebRoutes = (app) => {
   // specialty
   router.post("/api/create-specialty", specialtyController.createSpecialty);
   router.get("/api/get-specialty", specialtyController.getSpecialties);
-  router.get(
-    "/api/get-detail-specialty",
-    specialtyController.getSpecialty
-  );
+  router.get("/api/get-detail-specialty", specialtyController.getSpecialty);
   router.get(
     "/api/get-doctor-specialty",
     specialtyController.getDoctorSpecialty
@@ -90,10 +88,10 @@ let initWebRoutes = (app) => {
     detailSpecialtyController.createDetailSpecialty
   );
 
-   router.get(
-     "/api/get-detailSpecialty",
-     detailSpecialtyController.getDetailSpecialty
-   );
+  router.get(
+    "/api/get-detailSpecialty",
+    detailSpecialtyController.getDetailSpecialty
+  );
 
   /* handbook */
   router.post("/api/create-handbook", handbookController.createHandbook);
@@ -101,6 +99,24 @@ let initWebRoutes = (app) => {
   router.get("/api/get-list-handbook", handbookController.getListHandBook);
   router.put("/api/update-handbook", handbookController.updateHandbook);
   router.delete("/api/delete-handbook", handbookController.deleteHandbook);
+
+  /* detail handbook */
+  router.post(
+    "/api/create-detail-handbook",
+    detailHandbookController.createDetailHandbook
+  );
+  router.get(
+    "/api/get-detail-handbook",
+    detailHandbookController.getDetailHandbook
+  );
+  router.put(
+    "/api/update-detail-handbook",
+    detailHandbookController.updateDetailHandbook
+  );
+  router.delete(
+    "/api/delete-detail-handbook",
+    detailHandbookController.deleteDetailHandbook
+  );
 
   return app.use("/", router);
 };
