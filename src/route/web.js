@@ -109,6 +109,10 @@ let initWebRoutes = (app) => {
     "/api/get-detail-handbook",
     detailHandbookController.getDetailHandbook
   );
+  router.get(
+    "/api/get-list-detail-handbook",
+    detailHandbookController.getListDetailHandbook
+  );
   router.put(
     "/api/update-detail-handbook",
     detailHandbookController.updateDetailHandbook

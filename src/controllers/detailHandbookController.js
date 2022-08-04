@@ -71,3 +71,20 @@ exports.getDetailHandbook = async (req, res) => {
       });
     });
 };
+exports.getListDetailHandbook = async (req, res) => {
+  return await detailHandbookService
+    .getListDetailHandbookService(req.query.id)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailHandbookController.js ~ line 81 ~ exports.getListDetailHandbook= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};

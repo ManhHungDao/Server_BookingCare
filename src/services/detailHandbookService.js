@@ -121,6 +121,10 @@ exports.getDetailHandbookService = async (id) => {
   }
   return await db.Detail_handbook.findOne({ where: { id: id } })
     .then((result) => {
+      if (result)
+        result.image = new Buffer.from(result.image, "base64").toString(
+          "binary"
+        );
       return {
         errCode: 0,
         message: "get detail handbook succeed",
@@ -135,6 +139,39 @@ exports.getDetailHandbookService = async (id) => {
       return {
         errCode: 1,
         message: "get detail handbook failed",
+      };
+    });
+};
+
+exports.getListDetailHandbookService = async (id) => {
+  if (!id) {
+    return {
+      errCode: 1,
+      message: "Missing parameter",
+    };
+  }
+  return await db.Detail_handbook.findAll({ where: { handbookId: id } })
+    .then((result) => {
+      if (result) {
+        result.map((item) => {
+          item.image = new Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      }
+      return {
+        errCode: 0,
+        message: "get list detail handbook succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailHandbookService.js ~ line 168 ~ exports.getListDetailHandbookService= ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "get list detail handbook failed",
       };
     });
 };
