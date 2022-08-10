@@ -7,6 +7,7 @@ exports.getTopDoctorHome = async (req, res) => {
     const doctors = await doctorService.getTopDoctorHomeService(+limit);
     return res.status(200).json(doctors);
   } catch (error) {
+    console.log("🚀 ~ file: doctorController.js ~ line 10 ~ exports.getTopDoctorHome= ~ error", error)
     return res.status(200).json({
       errCode: -1,
       message: "error from server",

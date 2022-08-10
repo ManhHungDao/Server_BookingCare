@@ -9,7 +9,7 @@ exports.getTopDoctorHomeService = async (limit) => {
     limit: limit,
     where: { roleId: "R2" },
     order: [["createdAt", "DESC"]],
-    attributes: { exclude: ["password"] },
+    attributes: { exclude: ["password", "createdAt", "updatedAt"] },
     include: [
       {
         model: db.Allcode,
@@ -21,10 +21,17 @@ exports.getTopDoctorHomeService = async (limit) => {
         as: "genderData",
         attributes: ["valueEN", "valueVI"],
       },
-      // {
-      //   model: db.Specialty,
-      //   as: "doctorSpecialtyData",
-      // },
+      {
+        model: db.Doctor_Info,
+        attributes: ["specialtyId"],
+        include: [
+          {
+            model: db.Specialty,
+            as: "doctorSpecialtyData",
+            attributes: ["name"],
+          },
+        ],
+      },
     ],
     raw: true,
     nest: true,
@@ -43,6 +50,10 @@ exports.getTopDoctorHomeService = async (limit) => {
       };
     })
     .catch((err) => {
+      console.log(
+        "🚀 ~ file: doctorService.js ~ line 64 ~ exports.getTopDoctorHomeService= ~ err",
+        err
+      );
       return {
         errCode: 1,
         message: "get top doctor home failed",
