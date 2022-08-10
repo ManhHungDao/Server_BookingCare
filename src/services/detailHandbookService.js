@@ -17,9 +17,9 @@ exports.createDetailHandbookService = async (data) => {
   }
   return await db.Detail_handbook.create({
     handbookId: data.handbookId,
-    title: data.title,
-    note: data.note,
-    description: data.description,
+    title: data.title.trim(),
+    note: data.note.trim(),
+    description: data.description.trim(),
     contentMarkdown: data.contentMarkdown,
     contentHTML: data.contentHTML,
     image: data.image,
@@ -59,9 +59,9 @@ exports.updateDetailHandbookService = async (data) => {
   }
   return await db.Detail_handbook.update(
     {
-      title: data.title,
-      note: data.note,
-      description: data.description,
+      title: data.title.trim(),
+      note: data.note.trim(),
+      description: data.description.trim(),
       contentMarkdown: data.contentMarkdown,
       contentHTML: data.contentHTML,
       image: data.image,
@@ -158,6 +158,7 @@ exports.getListDetailHandbookService = async (id) => {
           return item;
         });
       }
+      console.log("get list detail handbook succeed");
       return {
         errCode: 0,
         message: "get list detail handbook succeed",

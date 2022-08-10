@@ -30,9 +30,12 @@ exports.getTopDoctorHomeService = async (limit) => {
     nest: true,
   })
     .then((result) => {
-      // if (result && result.image) {
-      //   result.image = new Buffer.from(result.image, "base64").toString("binary");
-      // }
+      if (result && result.length > 0) {
+        result.map((item) => {
+          item.image = new Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      }
       return {
         errCode: 0,
         message: "get top doctor succeed",
