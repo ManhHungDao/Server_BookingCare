@@ -19,7 +19,7 @@ exports.createDetailSpecialty = async (req, res) => {
 };
 exports.getDetailSpecialty = async (req, res) => {
   return await detailSpecialtyService
-    .getDetailSpecialtyService( req.query.specialtyId)
+    .getDetailSpecialtyService(req.query.specialtyId)
     .then((result) => {
       return res.status(200).json(result);
     })
@@ -34,3 +34,4 @@ exports.getDetailSpecialty = async (req, res) => {
       });
     });
 };
+

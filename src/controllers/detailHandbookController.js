@@ -88,3 +88,40 @@ exports.getListDetailHandbook = async (req, res) => {
       });
     });
 };
+
+exports.getHandBookHome = async (req, res) => {
+  return await detailHandbookService
+    .getHandBookHomeService()
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailHandbookController.js ~ line 99 ~ exports.getHandBookHome= ~ err",
+        err
+      );
+
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
+
+exports.getRelatedHandbook = async (req, res) => {
+  return await detailHandbookService
+    .getRelatedHandbookService(req.query.id)
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailHandbookController.js ~ line 118 ~ exports.getRelatedHandbook= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};

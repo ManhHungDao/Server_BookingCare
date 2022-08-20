@@ -131,3 +131,25 @@ exports.deleteHandbookService = async (id) => {
       };
     });
 };
+
+exports.getListNameHandbookService = async () => {
+  return await db.Handbook.findAll({ attributes: ["name", "id"] })
+    .then((result) => {
+      console.log("get list handbook name succeed");
+      return {
+        errCode: 0,
+        message: "get list handbook name succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: handbookService.js ~ line 146 ~ exports.deleteHandbookHomeService ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "get list handbook name failed",
+      };
+    });
+};

@@ -7,7 +7,7 @@ exports.createDetailHandbookService = async (data) => {
     !data.note ||
     !data.description ||
     !data.contentMarkdown ||
-    !data.image ||
+    // !data.image ||
     !data.contentHTML
   ) {
     return {
@@ -22,7 +22,7 @@ exports.createDetailHandbookService = async (data) => {
     description: data.description.trim(),
     contentMarkdown: data.contentMarkdown,
     contentHTML: data.contentHTML,
-    image: data.image,
+    image: data.image ? data.image : "",
   })
     .then(() => {
       return {
@@ -45,7 +45,7 @@ exports.createDetailHandbookService = async (data) => {
 exports.updateDetailHandbookService = async (data) => {
   if (
     !data.id ||
-    !data.image ||
+    // !data.image ||
     !data.title ||
     !data.note ||
     !data.description ||
@@ -64,7 +64,7 @@ exports.updateDetailHandbookService = async (data) => {
       description: data.description.trim(),
       contentMarkdown: data.contentMarkdown,
       contentHTML: data.contentHTML,
-      image: data.image,
+      image: data.image ? data.image : "",
     },
     { where: { id: data.id } }
   )
@@ -173,6 +173,69 @@ exports.getListDetailHandbookService = async (id) => {
       return {
         errCode: 1,
         message: "get list detail handbook failed",
+      };
+    });
+};
+
+exports.getHandBookHomeService = async () => {
+  return await db.Detail_handbook.findAll({
+    limit: 4,
+    attributes: ["image", "title"],
+  })
+    .then((result) => {
+      if (result)
+        result.map((item) => {
+          item.image = new Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      console.log("get handbook home succeed");
+      return {
+        errCode: 0,
+        message: "get handbook home succeed",
+        data: result ? result : {},
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailSpecialtyService.js ~ line 120 ~ exports.getHandBookHomeService= ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "get handbook home failed",
+      };
+    });
+};
+
+exports.getRelatedHandbookService = async (handbookId) => {
+  return await db.Detail_handbook.findAll(
+    {
+      limit: 6,
+      attributes: ["image", "title"],
+    },
+    { where: { handbookId: handbookId } }
+  )
+    .then((result) => {
+      if (result)
+        result.map((item) => {
+          item.image = new Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      console.log("get related handbook home succeed");
+      return {
+        errCode: 0,
+        message: "get related handbook home succeed",
+        data: result,
+      };
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailHandbookService.js ~ line 232 ~ exports.getRelatedHandbookService= ~ err",
+        err
+      );
+      return {
+        errCode: 1,
+        message: "get related handbook home failed",
       };
     });
 };

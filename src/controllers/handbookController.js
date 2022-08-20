@@ -90,3 +90,21 @@ exports.deleteHandbook = async (req, res) => {
       });
     });
 };
+
+exports.getListNameHandbook = async (req, res) => {
+  return await handbookService
+    .getListNameHandbookService()
+    .then((result) => {
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(
+        "🚀 ~ file: handbookController.js ~ line 102 ~ exports.getHandBookHome= ~ err",
+        err
+      );
+      return res.status(200).json({
+        errCode: -1,
+        message: "error from sever",
+      });
+    });
+};
