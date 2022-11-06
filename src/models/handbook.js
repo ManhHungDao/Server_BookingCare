@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
   Handbook.init(
     {
       name: DataTypes.STRING,
+      note: DataTypes.STRING,
       image: DataTypes.TEXT,
     },
     {

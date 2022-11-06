@@ -63,34 +63,66 @@ let getBodyHTMLEmailRemedy = (dataSent) => {
 let getBodyHTMLEmail = (dataSent) => {};
 exports.sendAttachment = async (dataSent) => {
   try {
-   let transporter = nodemailer.createTransport({
-     host: "smtp.gmail.com",
-     port: 587,
-     secure: false,
-     auth: {
-       type: "OAuth2",
-       user: process.env.EMAIL,
-       pass: process.env.EMAIL_PASSWORD,
-       clientId: process.env.CLIENTID,
-       clientSecret: process.env.CLIENTSECRET,
-       refreshToken: process.env.REFRESHTOK,
-       accessToken: process.env.ACCESSTOK,
-     },
-   });
-   let info = await transporter.sendMail({
-     from: '"BookingCare VN" <daomanhhung1202@gmail.com>',
-     to: dataSent.email,
-     subject: "Kết quả đặt lịch khám bệnh",
-     html: getBodyHTMLEmailRemedy(dataSent),
-     attachments: [
-       {
-         filename: `remedy-${dataSent.patientId}-${new Date().getTime()}.png`,
-         content: dataSent.image.split("base64,")[1],
-         encoding: "base64",
-       },
-     ],
-   }); 
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        type: "OAuth2",
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+        clientId: process.env.CLIENTID,
+        clientSecret: process.env.CLIENTSECRET,
+        refreshToken: process.env.REFRESHTOK,
+        accessToken: process.env.ACCESSTOK,
+      },
+    });
+    let info = await transporter.sendMail({
+      from: '"BookingCare VN" <daomanhhung1202@gmail.com>',
+      to: dataSent.email,
+      subject: "Kết quả đặt lịch khám bệnh",
+      html: getBodyHTMLEmailRemedy(dataSent),
+      attachments: [
+        {
+          filename: `remedy-${dataSent.patientId}-${new Date().getTime()}.png`,
+          content: dataSent.image.split("base64,")[1],
+          encoding: "base64",
+        },
+      ],
+    });
   } catch (error) {
-  console.log("🚀 ~ file: emailService.js ~ line 94 ~ exports.sendAttachment= ~ error", error)
+    console.log(
+      "🚀 ~ file: emailService.js ~ line 94 ~ exports.sendAttachment= ~ error",
+      error
+    );
   }
+};
+
+exports.handleemailForgetPassService = async (reciveEmail,otp) => {
+  // let testAccount = await nodemailer.createTestAccount();
+
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      // user: "process.env.EMAIL_USER", // generated ethereal user
+      // pass: "process.env.EMAIL_PASSWORD", //process.env.EMAIL_PASSWORD, // generated ethereal password
+      user: process.env.EMAIL_USER, // generated ethereal user
+      pass: process.env.EMAIL_PASSWORD,
+      
+    },
+  });
+ 
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"Fred Foo 👻" <foo@example.com>', // sender address
+    to: reciveEmail, // "bar@example.com, baz@example.com",
+    subject: "Hello ✔", // Subject line
+   
+    // html: "<b>pass la", randomNum,"</b>", // html body
+    html:`Mã OTP của bạn là : <b> ${otp}<b>`
+  });
 };

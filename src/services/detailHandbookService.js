@@ -31,10 +31,6 @@ exports.createDetailHandbookService = async (data) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailHandbookService.js ~ line 29 ~ exports.createDetailHandbookService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "create detail handbook failed",
@@ -75,10 +71,6 @@ exports.updateDetailHandbookService = async (data) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailHandbookService.js ~ line 74 ~ exports.updateDetailHandbookService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "update detail handbook failed",
@@ -101,10 +93,6 @@ exports.deleteDetailHandbookService = async (id) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailHandbookService.js ~ line 101 ~ exports.deleteDetailHandbookService ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "delete detail handbook failed",
@@ -132,10 +120,6 @@ exports.getDetailHandbookService = async (id) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailHandbookService.js ~ line 126 ~ exports.getDetailHandbookService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get detail handbook failed",
@@ -166,10 +150,6 @@ exports.getListDetailHandbookService = async (id) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailHandbookService.js ~ line 168 ~ exports.getListDetailHandbookService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get list detail handbook failed",
@@ -180,7 +160,7 @@ exports.getListDetailHandbookService = async (id) => {
 exports.getHandBookHomeService = async () => {
   return await db.Detail_handbook.findAll({
     limit: 4,
-    attributes: ["image", "title"],
+    attributes: ["image", "title", "id"],
   })
     .then((result) => {
       if (result)
@@ -196,10 +176,6 @@ exports.getHandBookHomeService = async () => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailSpecialtyService.js ~ line 120 ~ exports.getHandBookHomeService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get handbook home failed",
@@ -207,14 +183,12 @@ exports.getHandBookHomeService = async () => {
     });
 };
 
-exports.getRelatedHandbookService = async (handbookId) => {
-  return await db.Detail_handbook.findAll(
-    {
-      limit: 6,
-      attributes: ["image", "title"],
-    },
-    { where: { handbookId: handbookId } }
-  )
+exports.getRelatedHandbookService = async (id) => {
+  return await db.Detail_handbook.findAll({
+    limit: 6,
+    attributes: ["image", "title", "id"],
+    where: { handbookId: id },
+  })
     .then((result) => {
       if (result)
         result.map((item) => {
@@ -229,10 +203,6 @@ exports.getRelatedHandbookService = async (handbookId) => {
       };
     })
     .catch((err) => {
-      console.log(
-        "🚀 ~ file: detailHandbookService.js ~ line 232 ~ exports.getRelatedHandbookService= ~ err",
-        err
-      );
       return {
         errCode: 1,
         message: "get related handbook home failed",

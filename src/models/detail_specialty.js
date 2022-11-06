@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here - định danh các mối qhe
+      Detail_specialty.belongsTo(models.Specialty, {
+        foreignKey: "specialtyId",
+        targetKey: "id",
+        as: "detailSpecialtyData",
+      });
     }
   }
   Detail_specialty.init(

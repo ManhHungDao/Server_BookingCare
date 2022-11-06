@@ -100,7 +100,7 @@ exports.getDetailSpecialtyService = async (id) => {
       return {
         errCode: 0,
         message: "get detail specialty succeed",
-        data: result,
+        data: result ? result : {},
       };
     })
     .catch((err) => {

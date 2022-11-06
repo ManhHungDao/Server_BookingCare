@@ -55,6 +55,7 @@ exports.getListHandBook = async (req, res) => {
       });
     });
 };
+
 exports.updateHandbook = async (req, res) => {
   return await handbookService
     .updateHandbookService(req.body)

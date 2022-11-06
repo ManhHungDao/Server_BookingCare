@@ -1,13 +1,14 @@
 import db from "../models/index";
 
 exports.createHandbookService = async (data) => {
-  if (!data.name)
+  if (!data.name || !data.note)
     return {
       errCode: 1,
       message: "Missing parameter",
     };
   return await db.Handbook.create({
     name: data.name.trim(),
+    note: data.note.trim(),
     image: data.image ? data.image : "",
   })
     .then(() => {
@@ -78,13 +79,13 @@ exports.getListHandbookService = async () => {
 };
 
 exports.updateHandbookService = async (data) => {
-  if (!data.id || !data.name)
+  if (!data.id || !data.name || !data.note)
     return {
       errCode: 1,
       message: "Missing parameter",
     };
   return await db.Handbook.update(
-    { name: data.name, image: data.image ? data.image : "" },
+    { name: data.name, note: data.note, image: data.image ? data.image : "" },
     { where: { id: data.id } }
   )
     .then((result) => {

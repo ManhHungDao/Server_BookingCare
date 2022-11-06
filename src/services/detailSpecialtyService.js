@@ -82,6 +82,15 @@ exports.getDetailSpecialtyService = async (specialtyId) => {
     };
   return await db.Detail_specialty.findOne({
     where: { specialtyId: specialtyId },
+    include: [
+      {
+        model: db.Specialty,
+        as: "detailSpecialtyData",
+        attributes: ["name"],
+      },
+    ],
+    raw: true,
+    nest: true,
   })
     .then((result) => {
       console.log("get detail specialty succeed");
