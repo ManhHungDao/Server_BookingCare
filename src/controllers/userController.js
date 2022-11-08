@@ -1,7 +1,7 @@
 import { result } from "lodash";
 import userService from "../services/userService";
 
-import {handleemailForgetPassService} from "../services/emailService"
+import { handleemailForgetPassService } from "../services/emailService";
 
 exports.handleLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -19,8 +19,6 @@ exports.handleLogin = async (req, res) => {
     user: userData.user ? userData.user : {},
   });
 };
-
-
 
 exports.handleGetAllUers = async (req, res) => {
   const { id } = req.query;
@@ -105,38 +103,38 @@ exports.getAllCode = async (req, res) => {
   // });
 };
 
-
-
-exports.handleemailForgetPass = async (req, res) => {
-  const { email,otp } = req.body;
-  if (!email ) {
+exports.handleCheckExistMail = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
     return res.status(500).json({
       errCode: 1,
       message: "missing input parameters",
     });
   }
-  await handleemailForgetPassService(email,otp);
-  return res.status(200).json({
-    // errCode: userData.errCode,
-    // message: userData.message,
-    // user: userData.user ? userData.user : {},
-  });
+  const message = await userService.checkExistedEmail(email);
+  return res.status(200).json(message);
 };
 
-
-
-exports.updatePass = async (req, res) => {
-  const { email,password } = req.body;
-  if (!email ) {
+exports.handleemailForgetPass = async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email) {
     return res.status(500).json({
       errCode: 1,
       message: "missing input parameters",
     });
   }
-  await userService.updatePass(email,password);
-  return res.status(200).json({
-    // errCode: userData.errCode,
-    // message: userData.message,
-    // user: userData.user ? userData.user : {},
-  });
+  const message = await handleemailForgetPassService(email, otp);
+  return res.status(200).json(message);
+};
+
+exports.updatePass = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email) {
+    return res.status(500).json({
+      errCode: 1,
+      message: "missing input parameters",
+    });
+  }
+  const message = await userService.updatePass(email, password);
+  return res.status(200).json(message);
 };

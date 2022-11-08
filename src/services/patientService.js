@@ -11,7 +11,7 @@ const buildUrlEmail = (doctorId, token) => {
 };
 
 exports.postBookAppoinmentService = async (data) => {
-  return await db.User.findOrCreate({
+  return await db.Patient.findOrCreate({
     where: { email: data.email },
     defaults: {
       email: data.email.trim(),
@@ -19,7 +19,6 @@ exports.postBookAppoinmentService = async (data) => {
       address: data.address.trim(),
       phoneNumber: data.phoneNumber.trim(),
       firstName: data.fullName.trim(),
-      roleId: "R3",
     },
     raw: true,
   })
@@ -70,7 +69,7 @@ async function sendMail(email) {
   await emailService
     .sendSimpleEmail(email)
     .then(() => {
-      console.log("send maild succeed");
+      console.log("send mail patient succeed");
     })
     .catch((err) => console.log(err));
 }

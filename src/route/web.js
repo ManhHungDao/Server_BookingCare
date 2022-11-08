@@ -20,6 +20,7 @@ let initWebRoutes = (app) => {
   router.get("/api/allcode", userController.getAllCode);
   router.post("/api/forgetpass", userController.handleemailForgetPass);
   router.post("/api/updatePass", userController.updatePass);
+  router.post("/api/checkMailExist", userController.handleCheckExistMail);
   // doctor
   router.get("/api/top-doctor-home", doctorController.getTopDoctorHome);
   router.get("/api/top-all-doctor", doctorController.getAllDoctor);

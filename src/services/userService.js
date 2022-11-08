@@ -212,19 +212,34 @@ exports.getAllCodeService = async (type) => {
   }
 };
 
-exports.updatePass = async (email,password) => {
-  // const checkUser = await checkExisUser(user.id);
-  const newPassword= await hashUserPassword(password)
-  console.log("pass:",newPassword,email)
-  // return {
-  //   pass: pass,
-  //   email: email,
-  //       };
+exports.checkExistedEmail = async (email) => {
+  const existedEmail = await db.User.findOne({ where: { email: email } }).catch(
+    (err) => {
+      console.log(err);
+      return {
+        errCode: -1,
+        message: "server error",
+      };
+    }
+  );
+  if (existedEmail) {
+    return {
+      errCode: 0,
+      message: true,
+    };
+  }
+  return {
+    errCode: 0,
+    message: false,
+  };
+};
 
-  // if (!checkUser) return { errCode: 1, message: "User not found" };
+exports.updatePass = async (email, password) => {
+  const newPassword = await hashUserPassword(password.trim());
+  console.log("pass:", newPassword, email);
   return await db.User.update(
     {
-      password:newPassword,
+      password: newPassword,
     },
     {
       where: {

@@ -463,7 +463,7 @@ async function sendMail(email) {
   await emailService
     .sendSimpleEmail(email)
     .then(() => {
-      console.log("send maild succeed");
+      console.log("send mail doctor succeed");
     })
     .catch((err) => console.log(err));
 }
