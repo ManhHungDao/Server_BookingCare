@@ -4,17 +4,24 @@ const nodemailer = require("nodemailer");
 
 exports.sendSimpleEmail = async (data) => {
   let transporter = nodemailer.createTransport({
+    // host: "smtp.gmail.com",
+    // port: 587,
+    // secure: false,
+    // auth: {
+    //   type: "OAuth2",
+    //   user: process.env.EMAIL,
+    //   pass: process.env.EMAIL_PASSWORD,
+    //   clientId: process.env.CLIENTID,
+    //   clientSecret: process.env.CLIENTSECRET,
+    //   refreshToken: process.env.REFRESHTOK,
+    //   accessToken: process.env.ACCESSTOK,
+    // },
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
     auth: {
-      type: "OAuth2",
-      user: process.env.EMAIL,
+      user: process.env.EMAIL, // generated ethereal user
       pass: process.env.EMAIL_PASSWORD,
-      clientId: process.env.CLIENTID,
-      clientSecret: process.env.CLIENTSECRET,
-      refreshToken: process.env.REFRESHTOK,
-      accessToken: process.env.ACCESSTOK,
     },
   });
 
@@ -64,17 +71,24 @@ let getBodyHTMLEmail = (dataSent) => {};
 exports.sendAttachment = async (dataSent) => {
   try {
     let transporter = nodemailer.createTransport({
+      // host: "smtp.gmail.com",
+      // port: 587,
+      // secure: false,
+      // auth: {
+      //   type: "OAuth2",
+      //   user: process.env.EMAIL,
+      //   pass: process.env.EMAIL_PASSWORD,
+      //   clientId: process.env.CLIENTID,
+      //   clientSecret: process.env.CLIENTSECRET,
+      //   refreshToken: process.env.REFRESHTOK,
+      //   accessToken: process.env.ACCESSTOK,
+      // },
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
-        type: "OAuth2",
-        user: process.env.EMAIL,
+        user: process.env.EMAIL, 
         pass: process.env.EMAIL_PASSWORD,
-        clientId: process.env.CLIENTID,
-        clientSecret: process.env.CLIENTSECRET,
-        refreshToken: process.env.REFRESHTOK,
-        accessToken: process.env.ACCESSTOK,
       },
     });
     let info = await transporter.sendMail({
@@ -109,7 +123,7 @@ exports.handleemailForgetPassService = async (reciveEmail,otp) => {
     auth: {
       // user: "process.env.EMAIL_USER", // generated ethereal user
       // pass: "process.env.EMAIL_PASSWORD", //process.env.EMAIL_PASSWORD, // generated ethereal password
-      user: process.env.EMAIL_USER, // generated ethereal user
+      user: process.env.EMAIL, // generated ethereal user
       pass: process.env.EMAIL_PASSWORD,
       
     },
@@ -120,9 +134,9 @@ exports.handleemailForgetPassService = async (reciveEmail,otp) => {
   let info = await transporter.sendMail({
     from: '"Fred Foo 👻" <foo@example.com>', // sender address
     to: reciveEmail, // "bar@example.com, baz@example.com",
-    subject: "Hello ✔", // Subject line
+    subject: " Mã xác nhận mật khẩu ✔", // Subject line
    
     // html: "<b>pass la", randomNum,"</b>", // html body
-    html:`Mã OTP của bạn là : <b> ${otp}<b>`
+    html:`Mã xác nhận OTP của bạn là : <b> ${otp}<b>`
   });
 };
