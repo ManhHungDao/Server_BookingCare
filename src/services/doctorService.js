@@ -379,13 +379,13 @@ exports.getListPatientService = async (data) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
     include: [
       {
-        model: db.User,
+        model: db.Patient,
         attributes: ["email", "address", "gender", "firstName"],
         as: "patientData",
         include: [
           {
             model: db.Allcode,
-            as: "genderData",
+            as: "genderDataPatient",
             attributes: ["valueEN", "valueVI"],
           },
         ],
