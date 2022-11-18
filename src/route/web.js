@@ -140,11 +140,13 @@ let initWebRoutes = (app) => {
     detailHandbookController.getRelatedHandbook
   );
 
-    //packet
-    router.post(
-      "/api/createPacket",
-      packetController.createPacket
-    );
+  //packet
+  router.post("/api/createPacket", packetController.createPacket);
+  router.get("/api/getAllPacket", packetController.getAllPacket);
+  router.get("/api/getDetailPacket/:id", packetController.getDetailPacket);
+  router.get("/api/getPacketByDanhMuc", packetController.getPacketByDanhMuc);
+  router.delete("/api/delete-packet", packetController.deletePacket);
+  router.post("/api/update-packet", packetController.updatePacket);
   return app.use("/", router);
 };
 

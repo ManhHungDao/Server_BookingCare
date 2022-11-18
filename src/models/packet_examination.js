@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       contentHTML: DataTypes.TEXT("long"),
       price: DataTypes.STRING,
       clinicId: DataTypes.STRING,
+      description:DataTypes.TEXT("long"),
       image: DataTypes.TEXT("long"),
       typepacket:DataTypes.STRING,
     },
