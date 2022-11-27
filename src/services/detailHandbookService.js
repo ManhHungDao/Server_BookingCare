@@ -157,10 +157,17 @@ exports.getListDetailHandbookService = async (id) => {
     });
 };
 
-exports.getHandBookHomeService = async () => {
+exports.getHandBookHomeService = async (limit, offset = 0) => {
+  if (!limit || !offset) {
+    return {
+      errCode: -1,
+      message: "limit and offset are required",
+    };
+  }
   return await db.Detail_handbook.findAll({
-    limit: 4,
     attributes: ["image", "title", "id"],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
   })
     .then((result) => {
       if (result)
@@ -176,6 +183,10 @@ exports.getHandBookHomeService = async () => {
       };
     })
     .catch((err) => {
+      console.log(
+        "🚀 ~ file: detailHandbookService.js ~ line 179 ~ exports.getHandBookHomeService= ~ err",
+        err
+      );
       return {
         errCode: 1,
         message: "get handbook home failed",

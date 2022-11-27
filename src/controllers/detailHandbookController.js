@@ -90,8 +90,9 @@ exports.getListDetailHandbook = async (req, res) => {
 };
 
 exports.getHandBookHome = async (req, res) => {
+  const { limit, offset } = req.query;
   return await detailHandbookService
-    .getHandBookHomeService()
+    .getHandBookHomeService(limit, offset)
     .then((result) => {
       return res.status(200).json(result);
     })
