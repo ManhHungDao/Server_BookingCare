@@ -1,19 +1,19 @@
 {
   "name": "nodejs",
   "version": "1.0.0",
-  "description": "backend nodejs hoiDanIT",
+  "description": "backend nodejs",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node src/server.js"
+    "start": "nodemon --exec babel-node src/server.js",
+    "build": "echo build"
   },
   "keywords": [
     "fullstack",
     "nodejs",
-    "express",
-    "hoiDanIT"
+    "express"
   ],
-  "author": "Eric HoiDanIT",
+  "author": "Manh Hung",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "2.4.3",
