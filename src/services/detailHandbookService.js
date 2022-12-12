@@ -164,6 +164,18 @@ exports.getHandBookHomeService = async (limit, offset = 0) => {
       message: "limit and offset are required",
     };
   }
+  if (!Number.isInteger(+limit)) {
+    return {
+      errCode: -1,
+      message: "limit is invalid",
+    };
+  }
+  if (!Number.isInteger(+offset)) {
+    return {
+      errCode: -1,
+      message: "offset is invalid",
+    };
+  }
   return await db.Detail_handbook.findAll({
     attributes: ["image", "title", "id"],
     limit: parseInt(limit),
