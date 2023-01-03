@@ -1,8 +1,6 @@
 import express from "express";
+import mongoose from "mongoose";
 import bodyParser from "body-parser";
-import viewEngine from "./config/viewEngine";
-import initWebRoutes from "./route/web";
-import connectDB from "./config/connectDB";
 // import cors from "cors";
 
 require("dotenv").config();
@@ -25,20 +23,21 @@ app.use((req, res, next) => {
 
 //config app
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-viewEngine(app);
-initWebRoutes(app);
-
-connectDB();
-
+// connect database
 let port = process.env.PORT || 6969;
-//Port === undefined => port = 6969
+mongoose.set('strictQuery', false);
+const MongoDB_URI =
+  "mongodb+srv://daomanhhung:12022001Hung@cluster0.taold.mongodb.net/booking_care?retryWrites=true&w=majority";
+mongoose
+  .connect(MongoDB_URI)
+  .then(() => {
+    console.log("connect to database succeed");
+  })
+  .catch((err) => console.log(err));
 
 app.listen(port, () => {
-  //callback
   console.log("Backend Nodejs is runing on the port : " + port);
 });

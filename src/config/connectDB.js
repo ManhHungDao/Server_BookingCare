@@ -1,18 +1,14 @@
-const { Sequelize } = require("sequelize");
-
-// Option 3: Passing parameters separately (other dialects)
-const sequelize = new Sequelize("daomanhhung", "root", null, {
-  host: "localhost",
-  dialect: "mysql",
-  logging: false,
+const MongoDB_URI =
+  "mongodb+srv://daomanhhung:12022001Hung@cluster0.taold.mongodb.net/booking_care?retryWrites=true&w=majority";
+const store = new MongoDBStore({
+  uri: MongoDB_URI,
+  collection: "sessions",
 });
-
-let connectDB = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-};
+mongoose
+  .connect(MongoDB_URI)
+  .then((result) => {
+    console.log("🚀 ~ file: connectDB.js:11 ~ .then ~ result", result)
+    app.listen(PORT);
+  })
+  .catch((err) => console.log(err));
 module.exports = connectDB;
