@@ -9,20 +9,21 @@ exports.handleUserLogin = async (email, password) => {
     const isExist = await checkUserEmail(email);
     if (isExist) {
       const user = await db.User.findOne({
-        attributes: [
-          "id",
-          "roleId",
-          "email",
-          "password",
-          "firstName",
-          "lastName",
-        ],
+        // attributes: [
+        //   "id",
+        //   "roleId",
+        //   "email",
+        //   "password",
+        //   "firstName",
+        //   "lastName",
+        // ],
         where: { email: email },
       });
       if (user) {
         const check = await bcrypt.compareSync(password, user.password);
         if (check) {
           delete user.password; // delete password
+          user.image = new Buffer.from(user.image, "base64").toString("binary");
           userData = {
             errCode: 0,
             message: "Ok",
@@ -42,7 +43,8 @@ exports.handleUserLogin = async (email, password) => {
     }
     return userData;
   } catch (error) {
-    throw new Error(error.message);
+    return { errCode: -1, message: "Sever Error" };
+    // throw new Error(error.message);
   }
 };
 

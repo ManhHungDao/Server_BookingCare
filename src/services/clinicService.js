@@ -99,7 +99,7 @@ exports.getListClinicService = async () => {
 
 exports.getListClinicHomeService = async () => {
   return await db.Clinic.findAll({
-    attributes: { exclude: ["createdAt", "updatedAt", "logo"] },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((result) => {
       if (!result) {
@@ -107,6 +107,7 @@ exports.getListClinicHomeService = async () => {
       } else if (result && result.length > 0) {
         result.map((item) => {
           item.image = new Buffer.from(item.image, "base64").toString("binary");
+          item.logo = new Buffer.from(item.logo, "base64").toString("binary");
           return item;
         });
       }
