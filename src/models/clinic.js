@@ -1,32 +1,39 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-  class Clinic extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      Clinic.hasMany(models.Doctor_Info, {
-        foreignKey: "clinicId",
-        as: "clinicDataDoctor",
-      });
-    }
-  }
-  Clinic.init(
-    {
-      name: DataTypes.STRING,
-      address: DataTypes.STRING,
-      introduceMarkdown: DataTypes.TEXT,
-      introduceHTML: DataTypes.TEXT,
-      image: DataTypes.TEXT,
-      logo: DataTypes.TEXT,
+const mongoose = require("mongoose");
+
+const Schema = mongoose.Schema;
+const clinicSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  address: {
+    province: {
+      type: String,
+      required: true,
     },
-    {
-      sequelize,
-      modelName: "Clinic",
-    }
-  );
-  return Clinic;
-};
+    detail: {
+      type: String,
+      required: true,
+    },
+  },
+  image: {
+    data: Buffer,
+    contentType: String,
+    required: true,
+  },
+  logo: {
+    data: Buffer,
+    contentType: String,
+    required: true,
+  },
+  introduce: {
+    type: String,
+    required: true,
+  },
+  detail: {
+    type: String,
+    required: true,
+  },
+});
+
+module.exports = mongoose.model("Clinic", clinicSchema);
