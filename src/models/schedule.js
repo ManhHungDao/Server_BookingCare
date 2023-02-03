@@ -7,17 +7,13 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 const scheduleSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   doctorId: {
     type: mongoose.Schema.ObjectId,
     ref: "user",
   },
-  note: {
-    type: String,
-    required: true,
+  packetId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "packet",
   },
   schedule: [
     {
@@ -39,9 +35,10 @@ const scheduleSchema = new Schema({
           required: true,
         },
       },
-      name: {
-        type: String,
+      status: {
+        type: Number,
         required: true,
+        default: 0,
       },
       rating: {
         type: Number,
@@ -54,8 +51,8 @@ const scheduleSchema = new Schema({
     },
   ],
   date: {
-    type: Date,
-    default: Date.now,
+    type: String,
+    required: true,
   },
 });
 

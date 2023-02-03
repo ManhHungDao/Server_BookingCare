@@ -7,6 +7,7 @@ const userSchema = new Schema({
   },
   name: {
     type: String,
+    unique: true,
     required: true,
   },
   password: {
@@ -40,11 +41,11 @@ const userSchema = new Schema({
   detail: {
     clinicId: {
       type: mongoose.Schema.ObjectId,
-      ref: "Clinic",
+      ref: "clinic",
     },
     specialtyId: {
       type: mongoose.Schema.ObjectId,
-      ref: "Specialty",
+      ref: "specialty",
     },
     priceId: {
       type: String,
