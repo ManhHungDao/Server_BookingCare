@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const fileUpload = require("express-fileupload");
+// const fileUpload = require("express-fileupload");
+// import user from "./route/user";
+const user = require('./route/user')
 require("dotenv").config();
 
 const ErrorMiddleware = require("./middlewares/errors");
@@ -27,15 +29,13 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(fileUpload());
+// app.use(fileUpload());
 
 //import all routes
-// const products = require('./routes/product');
 // const auth = require('./routes/auth');
 // const order = require('./routes/order');
 // const payment = require('./routes/payment');
-
-// app.use('/api/v1', products);
+app.use("/api/v1", user);
 // app.use('/api/v1', auth);
 // app.use('/api/v1', order);
 // app.use('/api/v1', payment);

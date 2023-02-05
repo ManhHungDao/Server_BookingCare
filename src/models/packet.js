@@ -16,12 +16,12 @@ const packetSchema = new Schema({
     required: true,
   },
   clinicId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "clinic",
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Clinic",
   },
   specialtyId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "specialty",
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Specialty",
   },
   priceId: {
     type: String,

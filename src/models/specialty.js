@@ -13,7 +13,7 @@ const specialtySchema = new Schema({
     required: true,
   },
   clinicId: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Clinic",
   },
   image: {

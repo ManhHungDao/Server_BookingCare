@@ -7,7 +7,7 @@ const handbookSchema = new Schema({
     required: true,
   },
   specialtyId: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Specialty",
   },
   note: {
