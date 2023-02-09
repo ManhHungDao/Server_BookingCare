@@ -28,9 +28,14 @@ const packetSchema = new Schema({
     required: true,
   },
   image: {
-    data: Buffer,
-    contentType: String,
-    required: true,
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
   introduce: {
     type: String,

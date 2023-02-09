@@ -17,14 +17,24 @@ const clinicSchema = new Schema({
     },
   },
   image: {
-    data: Buffer,
-    contentType: String,
-    required: true,
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
   logo: {
-    data: Buffer,
-    contentType: String,
-    required: true,
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
   introduce: {
     type: String,
