@@ -2,9 +2,8 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-// const fileUpload = require("express-fileupload");
-// import user from "./route/user";
-const user = require('./route/user')
+const fileUpload = require("express-fileupload");
+const user = require("./route/user");
 require("dotenv").config();
 
 const ErrorMiddleware = require("./middlewares/errors");
@@ -12,7 +11,8 @@ const ErrorMiddleware = require("./middlewares/errors");
 //setting up config file
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", process.env.URL_REACT);
+  res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
+  // res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,HEAD,PUT,PATCH,POST,DELETE"
@@ -29,13 +29,13 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-// app.use(fileUpload());
+app.use(fileUpload());
 
 //import all routes
 // const auth = require('./routes/auth');
 // const order = require('./routes/order');
 // const payment = require('./routes/payment');
-app.use("/api/v1", user);
+app.use("/api", user);
 // app.use('/api/v1', auth);
 // app.use('/api/v1', order);
 // app.use('/api/v1', payment);

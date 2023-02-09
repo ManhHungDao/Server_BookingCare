@@ -1,8 +1,9 @@
 import express from "express";
 let router = express.Router();
 
-import { create } from "../controllers/user.js";
+import { create ,getAll} from "../controllers/user.js";
 
-router.route("/create-new-user").post(create);
+router.route("/create-user").post(create);
+router.route("/get-all-user").get(getAll);
 
 module.exports = router;

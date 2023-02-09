@@ -5,12 +5,22 @@ import bcrypt from "bcryptjs";
 const userSchema = new Schema({
   email: {
     type: String,
-    required: [true, 'Please enter product email'],
+    required: true,
   },
   name: {
     type: String,
     unique: true,
     required: true,
+  },
+  image: {
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
   password: {
     type: String,
@@ -24,51 +34,47 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  roleId: {
-    type: String,
-    required: true,
-  },
+  // roleId: {
+  //   type: String,
+  //   required: true,
+  // },
   positionId: {
     type: String,
-  },
-  image: {
-    type: Buffer,
-    required: true,
   },
   dateOfBirth: {
     type: String,
     required: true,
   },
-  detail: {
-    clinicId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Clinic",
-    },
-    specialtyId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Specialty",
-    },
-    priceId: {
-      type: String,
-      required: true,
-    },
-    paymentId: {
-      type: String,
-      required: true,
-    },
-    introduce: {
-      type: String,
-      required: true,
-    },
-    note: {
-      type: String,
-      required: true,
-    },
-    detail: {
-      type: String,
-      required: true,
-    },
-  },
+  // detail: {
+  //   clinicId: {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Clinic",
+  //   },
+  //   specialtyId: {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Specialty",
+  //   },
+  //   priceId: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   paymentId: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   introduce: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   note: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   detail: {
+  //     type: String,
+  //     required: true,
+  //   },
+  // },
 });
 
 //ecrypting password before save
