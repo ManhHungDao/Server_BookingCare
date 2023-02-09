@@ -78,7 +78,7 @@ const userSchema = new Schema({
 });
 
 //ecrypting password before save
-/* userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -112,6 +112,6 @@ userSchema.methods.getResetPassword = function () {
   this.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
 
   return restToken;
-}; */
+};
 
 module.exports = mongoose.model("User", userSchema);

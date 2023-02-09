@@ -108,23 +108,71 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find();
+exports.delete = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
+  if (!id) {
+    return next(new ErrorHandler("Required user id", 400));
+  }
+  let user = await User.findById(id);
+  if (!user) {
+    return next(new ErrorHandler("User not Found", 404));
+  }
+  cloudinary.v2.uploader.destroy(user.image.public_id);
+  await User.remove();
   res.status(200).json({
     success: true,
-    users,
+    message: "User deleted successfully",
   });
 });
 
-// exports.login = catchAsyncErrors(async (req, res, next) => {
-//   const { email, password } = req.body;
-//   checkUserInput(req.body);
-//   const createUser = await user.create({
-//     email,
-//     password,
-//   });
-//   res.status(200).json({
-//     success: true,
-//     createUser,
-//   });
-// });
+exports.update = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
+  if (!id) {
+    return next(new ErrorHandler("Required user id", 400));
+  }
+  let user = await User.findById(id);
+  if (!user) {
+    return next(new ErrorHandler("User not Found", 404));
+  }
+  await cloudinary.v2.uploader.destroy(user.image.public_id);
+
+  const result = await cloudinary.v2.uploader.upload(req.body.image, {
+    folder: "bookingcare",
+    width: 150,
+    crop: "scale",
+  });
+
+  req.body.image = {
+    public_id: result.public_id,
+    url: result.secure_url,
+  };
+
+  user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  res.status(200).json({
+    user,
+    success: true,
+  });
+});
+
+exports.getSingle = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.find(req.params.id);
+  if (!user) {
+    return next(new ErrorHandler("User not Found", 404));
+  }
+  res.status(200).json({
+    user,
+    success: true,
+  });
+});
+
+exports.getAll = catchAsyncErrors(async (req, res, next) => {
+  const users = await User.find();
+  res.status(200).json({
+    users,
+    success: true,
+  });
+});
