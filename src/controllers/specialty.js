@@ -4,15 +4,64 @@ import cloudinary from "cloudinary";
 import Specialty from "../models/specialty";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const specialty = await Specialty.find();
+  const { name, clinicId, image, detail } = req.body;
+  if (!name) {
+    return next(new ErrorHandler("Required name", 400));
+  }
+  if (!image) {
+    return next(new ErrorHandler("Required image", 400));
+  }
+  if (!detail) {
+    return next(new ErrorHandler("Required detail", 400));
+  }
+  if (!clinicId) {
+    return next(new ErrorHandler("Required clinic id", 400));
+  }
+  const result = await cloudinary.v2.uploader.upload(image, {
+    folder: "bookingcare",
+    width: 150,
+    crop: "scale",
+  });
+  const createClinic = await User.create({
+    name,
+    image: {
+      public_id: result.public_id,
+      url: result.secure_url,
+    },
+    clinicId,
+    detail,
+  });
+
   res.status(200).json({
-    specialty,
+    createClinic,
     success: true,
   });
 });
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
-  const specialty = await Specialty.find();
+  const id = req.params.id;
+  if (!id) {
+    return next(new ErrorHandler("Required specialty id", 400));
+  }
+  let specialty = await Specialty.findById(id);
+  if (!specialty) {
+    return next(new ErrorHandler("Specialty not Found", 404));
+  }
+  await cloudinary.v2.uploader.destroy(specialty.image.public_id);
+  const result = await cloudinary.v2.uploader.upload(req.body.image, {
+    folder: "bookingcare",
+    width: 150,
+    crop: "scale",
+  });
+  req.body.image = {
+    public_id: result.public_id,
+    url: result.secure_url,
+  };
+  specialty = await Specialty.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
   res.status(200).json({
     specialty,
     success: true,

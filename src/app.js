@@ -4,6 +4,10 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const user = require("./route/user");
+const clinic = require("./route/clinic");
+const specialty = require("./route/specialty");
+const handbook = require("./route/handbook");
+const packet = require("./route/packet");
 require("dotenv").config();
 
 const ErrorMiddleware = require("./middlewares/errors");
@@ -12,7 +16,6 @@ const ErrorMiddleware = require("./middlewares/errors");
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
-  // res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,HEAD,PUT,PATCH,POST,DELETE"
@@ -32,13 +35,12 @@ app.use(cookieParser());
 app.use(fileUpload());
 
 //import all routes
-// const auth = require('./routes/auth');
-// const order = require('./routes/order');
-// const payment = require('./routes/payment');
+
 app.use("/api", user);
-// app.use('/api/v1', auth);
-// app.use('/api/v1', order);
-// app.use('/api/v1', payment);
+app.use("/api", clinic);
+// app.use("/api", specialty);
+// app.use("/api", handbook);
+// app.use("/api", packet);
 
 //Middleware error handler
 app.use(ErrorMiddleware);

@@ -108,7 +108,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.delete = catchAsyncErrors(async (req, res, next) => {
+exports.remove = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   if (!id) {
     return next(new ErrorHandler("Required user id", 400));

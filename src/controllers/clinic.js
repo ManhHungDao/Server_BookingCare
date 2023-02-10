@@ -6,21 +6,22 @@ import Clinic from "../models/clinic";
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const { name, province, detailAddress, image, logo, introduce, detail } =
     req.body;
+
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
+
   if (!province) {
     return next(new ErrorHandler("Required province", 400));
   }
+
   if (!detailAddress) {
     return next(new ErrorHandler("Required address detail", 400));
   }
   if (!image) {
     return next(new ErrorHandler("Required image", 400));
   }
-  if (!phone) {
-    return next(new ErrorHandler("Required phone", 400));
-  }
+
   if (!introduce) {
     return next(new ErrorHandler("Required introduce", 400));
   }
@@ -38,7 +39,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     width: 150,
     crop: "scale",
   });
-  const createClinic = await User.create({
+  const createClinic = await Clinic.create({
     name,
     image: {
       public_id: resultImg.public_id,
@@ -106,7 +107,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.delete = catchAsyncErrors(async (req, res, next) => {
+exports.remove = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   if (!id) {
     return next(new ErrorHandler("Required clinic id", 400));
