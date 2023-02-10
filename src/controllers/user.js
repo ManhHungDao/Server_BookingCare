@@ -10,7 +10,6 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     password,
     gender,
     phone,
-    roleId,
     positionId,
     dateOfBirth,
     clinicId,
@@ -49,9 +48,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!dateOfBirth) {
     return next(new ErrorHandler("Required day of birth", 400));
   }
-  // if (!roleId) {
-  //   return next(new ErrorHandler("Required role id", 400));
-  // }
+
   // if (!clinicId) {
   //   return next(new ErrorHandler("Required clinic id", 400));
   // }
@@ -74,7 +71,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   //   return next(new ErrorHandler("Required note", 400));
   // }
   const result = await cloudinary.v2.uploader.upload(image, {
-    folder: "bookingcare",
+    folder: "user",
     width: 150,
     crop: "scale",
   });
@@ -90,7 +87,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     phone,
     positionId,
     dateOfBirth,
-    // roleId,
+    roleId: ["R1"],
     // detail: {
     //   clinicId,
     //   specialtyId,
@@ -137,7 +134,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   await cloudinary.v2.uploader.destroy(user.image.public_id);
 
   const result = await cloudinary.v2.uploader.upload(req.body.image, {
-    folder: "bookingcare",
+    folder: "user",
     width: 150,
     crop: "scale",
   });

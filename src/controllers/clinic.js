@@ -30,12 +30,12 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   }
 
   const resultImg = await cloudinary.v2.uploader.upload(image, {
-    folder: "bookingcare",
+    folder: "clinic",
     width: 150,
     crop: "scale",
   });
   const resultLogo = await cloudinary.v2.uploader.upload(logo, {
-    folder: "bookingcare",
+    folder: "clinic",
     width: 150,
     crop: "scale",
   });
@@ -58,6 +58,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   });
   res.status(200).json({
     createClinic,
+    message: "Create Clinic Success",
     success: true,
   });
 });
@@ -74,12 +75,12 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   cloudinary.v2.uploader.destroy(clinic.image.public_id);
   cloudinary.v2.uploader.destroy(clinic.logo.public_id);
   const resultImg = await cloudinary.v2.uploader.upload(image, {
-    folder: "bookingcare",
+    folder: "clinic",
     width: 150,
     crop: "scale",
   });
   const resultLogo = await cloudinary.v2.uploader.upload(logo, {
-    folder: "bookingcare",
+    folder: "clinic",
     width: 150,
     crop: "scale",
   });
