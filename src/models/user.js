@@ -5,11 +5,11 @@ import bcrypt from "bcryptjs";
 const userSchema = new Schema({
   email: {
     type: String,
+    unique: true,
     required: true,
   },
   name: {
     type: String,
-    unique: true,
     required: true,
   },
   image: {
@@ -41,6 +41,16 @@ const userSchema = new Schema({
   dateOfBirth: {
     type: String,
     required: true,
+  },
+  address: {
+    province: {
+      type: String,
+      required: true,
+    },
+    detail: {
+      type: String,
+      required: true,
+    },
   },
   // detail: {
   //   clinicId: {

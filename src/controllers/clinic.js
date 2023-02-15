@@ -4,22 +4,31 @@ import cloudinary from "cloudinary";
 import Clinic from "../models/clinic";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { name, province, detailAddress, image, logo, introduce, detail } =
-    req.body;
+  const {
+    name,
+    province,
+    detailAddress,
+    image,
+    logo,
+    introduce,
+    detail,
+    lat,
+    lng,
+  } = req.body;
 
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
 
-  if (!province) {
-    return next(new ErrorHandler("Required province", 400));
+  if (!province || !detailAddress || !lat || !lng) {
+    return next(new ErrorHandler("Required address", 400));
   }
 
-  if (!detailAddress) {
-    return next(new ErrorHandler("Required address detail", 400));
-  }
   if (!image) {
     return next(new ErrorHandler("Required image", 400));
+  }
+  if (!logo) {
+    return next(new ErrorHandler("Required logo", 400));
   }
 
   if (!introduce) {
@@ -52,6 +61,8 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     address: {
       province,
       detail: detailAddress,
+      lat,
+      lng,
     },
     introduce,
     detail,

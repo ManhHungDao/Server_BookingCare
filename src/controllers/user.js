@@ -12,6 +12,8 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     phone,
     positionId,
     dateOfBirth,
+    province,
+    detailAddress,
     clinicId,
     specialtyId,
     priceId,
@@ -48,7 +50,9 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!dateOfBirth) {
     return next(new ErrorHandler("Required day of birth", 400));
   }
-
+  if (!province || !detailAddress) {
+    return next(new ErrorHandler("Required address", 400));
+  }
   // if (!clinicId) {
   //   return next(new ErrorHandler("Required clinic id", 400));
   // }
@@ -88,6 +92,10 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     positionId,
     dateOfBirth,
     roleId: ["R1"],
+    address: {
+      province,
+      detail: detailAddress,
+    },
     // detail: {
     //   clinicId,
     //   specialtyId,
