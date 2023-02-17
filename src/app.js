@@ -4,10 +4,10 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 
+// route
 const specialty = require("./route/specialty");
 const handbook = require("./route/handbook");
 const packet = require("./route/packet");
-// route
 const user = require("./route/user");
 const clinic = require("./route/clinic");
 const allcode = require("./route/allcode");
@@ -42,7 +42,7 @@ app.use(fileUpload());
 app.use("/api", user);
 app.use("/api", clinic);
 app.use("/api", allcode);
-// app.use("/api", handbook);
+app.use("/api", specialty);
 // app.use("/api", packet);
 
 //Middleware error handler

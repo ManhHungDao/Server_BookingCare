@@ -19,18 +19,15 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
-
   if (!province || !detailAddress || !lat || !lng) {
     return next(new ErrorHandler("Required address", 400));
   }
-
   if (!image) {
     return next(new ErrorHandler("Required image", 400));
   }
   if (!logo) {
     return next(new ErrorHandler("Required logo", 400));
   }
-
   if (!introduce) {
     return next(new ErrorHandler("Required introduce", 400));
   }
@@ -69,7 +66,6 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   });
   res.status(200).json({
     createClinic,
-    message: "Create Clinic Success",
     success: true,
   });
 });

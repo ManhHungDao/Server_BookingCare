@@ -14,21 +14,18 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!detail) {
     return next(new ErrorHandler("Required detail", 400));
   }
-  if (!clinicId) {
-    return next(new ErrorHandler("Required clinic id", 400));
-  }
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "bookingcare",
     width: 150,
     crop: "scale",
   });
-  const createClinic = await User.create({
+  const createClinic = await Specialty.create({
     name,
     image: {
       public_id: result.public_id,
       url: result.secure_url,
     },
-    clinicId,
+    clinicId: clinicId ? clinicId : null,
     detail,
   });
 
@@ -68,7 +65,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.delete = catchAsyncErrors(async (req, res, next) => {
+exports.remove = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   if (!id) {
     return next(new ErrorHandler("Required specialty id", 400));

@@ -34,7 +34,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  roleId: [{ type: String, required: true }],
+  roleId: { type: String, required: true },
   positionId: {
     type: String,
   },
