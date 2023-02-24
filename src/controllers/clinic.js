@@ -37,7 +37,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 
   const resultImg = await cloudinary.v2.uploader.upload(image, {
     folder: "clinic",
-    width: 150,
+    width: 250,
     crop: "scale",
   });
   const resultLogo = await cloudinary.v2.uploader.upload(logo, {
@@ -83,13 +83,9 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   cloudinary.v2.uploader.destroy(clinic.logo.public_id);
   const resultImg = await cloudinary.v2.uploader.upload(image, {
     folder: "clinic",
-    width: 150,
-    crop: "scale",
   });
   const resultLogo = await cloudinary.v2.uploader.upload(logo, {
     folder: "clinic",
-    width: 150,
-    crop: "scale",
   });
   res.status(200).json({
     clinic,
@@ -148,6 +144,19 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   const clinics = await Clinic.find();
   res.status(200).json({
     clinics,
+    success: true,
+  });
+});
+
+exports.increatmentViews = catchAsyncErrors(async (req, res, next) => {
+  let clinic = await Clinic.findById(req.body.id);
+  if (!clinic) {
+    return next(new ErrorHandler("Clinic not Found", 404));
+  }
+  clinic.views++;
+  await clinic.save();
+  res.status(200).json({
+    clinic,
     success: true,
   });
 });

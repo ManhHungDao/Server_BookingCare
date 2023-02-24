@@ -15,8 +15,8 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Required detail", 400));
   }
   const result = await cloudinary.v2.uploader.upload(image, {
-    folder: "bookingcare",
-    width: 150,
+    folder: "specialty",
+    width: 250,
     crop: "scale",
   });
   const createClinic = await Specialty.create({
@@ -46,9 +46,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   }
   await cloudinary.v2.uploader.destroy(specialty.image.public_id);
   const result = await cloudinary.v2.uploader.upload(req.body.image, {
-    folder: "bookingcare",
-    width: 150,
-    crop: "scale",
+    folder: "specialty",
   });
   req.body.image = {
     public_id: result.public_id,
