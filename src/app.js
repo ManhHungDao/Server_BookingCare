@@ -11,6 +11,7 @@ const packet = require("./route/packet");
 const user = require("./route/user");
 const clinic = require("./route/clinic");
 const allcode = require("./route/allcode");
+const auth = require("./route/auth");
 require("dotenv").config();
 
 const ErrorMiddleware = require("./middlewares/errors");
@@ -43,6 +44,7 @@ app.use("/api", user);
 app.use("/api", clinic);
 app.use("/api", allcode);
 app.use("/api", specialty);
+app.use("/api", auth);
 // app.use("/api", packet);
 
 //Middleware error handler

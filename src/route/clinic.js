@@ -5,6 +5,7 @@ import {
   update,
   create,
   getAll,
+  getAllHomePatient,
   remove,
   getSingle,
   increatmentViews,
@@ -14,6 +15,7 @@ router.route("/delete-clinic").delete(remove);
 router.route("/update-clinic").put(update);
 router.route("/get-clinic").get(getSingle);
 router.route("/get-all-clinic").get(getAll);
+router.route("/get-all-clinic-home").get(getAllHomePatient);
 router.route("/increment-view-count").post(increatmentViews);
 
 module.exports = router;

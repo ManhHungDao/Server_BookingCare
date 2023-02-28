@@ -15,9 +15,15 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid Password", 400));
   }
-
+  let data = {
+    image: user.image.url,
+    email: user.email,
+    name: user.name,
+    roleId: user.roleId,
+    positionId: user.positionId,
+  };
   res.status(200).json({
-    message: "Login successfully",
+    user: data,
     success: true,
   });
 });
