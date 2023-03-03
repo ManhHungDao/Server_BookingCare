@@ -128,7 +128,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const clinic = await Clinic.findOne(req.params.id);
+  const clinic = await Clinic.findById(req.query.id);
   if (!clinic) {
     return next(new ErrorHandler("Clinic not Found", 404));
   }

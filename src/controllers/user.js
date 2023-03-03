@@ -2,6 +2,8 @@ import User from "../models/user";
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
+import sendToken from "../utils/jwtToken";
+
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const {
     name,
@@ -106,11 +108,12 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     //   detail,
     // },
   });
+  sendToken(createUser, 200, res);
 
-  res.status(200).json({
-    createUser,
-    success: true,
-  });
+  // res.status(200).json({
+  //   createUser,
+  //   success: true,
+  // });
 });
 
 exports.remove = catchAsyncErrors(async (req, res, next) => {
@@ -164,7 +167,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.find(req.params.id);
+  const user = await User.findById(req.query.id);
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }

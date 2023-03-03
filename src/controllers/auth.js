@@ -1,6 +1,7 @@
 import User from "../models/user";
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
+import sendToken from "../utils/jwtToken";
 
 exports.login = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
@@ -15,17 +16,19 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid Password", 400));
   }
-  let data = {
-    image: user.image.url,
-    email: user.email,
-    name: user.name,
-    roleId: user.roleId,
-    positionId: user.positionId,
-  };
-  res.status(200).json({
-    user: data,
-    success: true,
-  });
+  // let data = {
+  //   image: user.image.url,
+  //   email: user.email,
+  //   name: user.name,
+  //   roleId: user.roleId,
+  //   positionId: user.positionId,
+  // };
+  sendToken(user, 200, res);
+
+  // res.status(200).json({
+  //   user: data,
+  //   success: true,
+  // });
 });
 
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {

@@ -85,7 +85,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const specialty = await Specialty.find(req.params.id);
+  const specialty = await Specialty.findById(req.params.id);
   if (!specialty) {
     return next(new ErrorHandler("Specialty not Found", 404));
   }
