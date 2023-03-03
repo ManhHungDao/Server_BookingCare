@@ -69,7 +69,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required clinic id", 400));
   }
@@ -77,28 +77,29 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   if (!clinic) {
     return next(new ErrorHandler("Clinic not Found", 404));
   }
-  cloudinary.v2.uploader.destroy(clinic.image.public_id);
-  cloudinary.v2.uploader.destroy(clinic.logo.public_id);
-  const resultImg = await cloudinary.v2.uploader.upload(image, {
-    folder: "clinic",
-  });
-  const resultLogo = await cloudinary.v2.uploader.upload(logo, {
-    folder: "clinic",
-  });
-  res.status(200).json({
-    clinic,
-    success: true,
-  });
-  req.body.image = {
-    public_id: resultImg.public_id,
-    url: resultImg.secure_url,
-  };
-  req.body.logo = {
-    public_id: resultLogo.public_id,
-    url: resultLogo.secure_url,
-  };
 
-  clinic = await Clinic.findByIdAndUpdate(req.params.id, req.body, {
+  if (req.body.image !== null) {
+    cloudinary.v2.uploader.destroy(clinic.image.public_id);
+    let resultImg = await cloudinary.v2.uploader.upload(image, {
+      folder: "clinic",
+    });
+    req.body.image = {
+      public_id: resultImg.public_id,
+      url: resultImg.secure_url,
+    };
+  } else req.body.image = { ...clinic.image };
+
+  if (req.body.logo !== null) {
+    cloudinary.v2.uploader.destroy(clinic.logo.public_id);
+    let resultLogo = await cloudinary.v2.uploader.upload(logo, {
+      folder: "clinic",
+    });
+    req.body.logo = {
+      public_id: resultLogo.public_id,
+      url: resultLogo.secure_url,
+    };
+  } else req.body.logo = { ...clinic.logo };
+  clinic = await Clinic.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
