@@ -26,16 +26,18 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
+    default: "123456Aa.",
   },
   gender: {
     type: String,
     required: true,
+    default: "M",
   },
   phone: {
     type: String,
     required: true,
   },
-  roleId: { type: String, required: true },
+  roleId: { type: String, required: true, default: "R2" },
   positionId: {
     type: String,
   },

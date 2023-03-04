@@ -111,7 +111,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.remove = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required clinic id", 400));
   }
@@ -121,7 +121,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   }
   cloudinary.v2.uploader.destroy(clinic.image.public_id);
   cloudinary.v2.uploader.destroy(clinic.logo.public_id);
-  await Clinic.remove();
+  await Clinic.deleteOne({ _id: id });
   res.status(200).json({
     message: "Clinic deleted successfully",
     success: true,

@@ -117,7 +117,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.remove = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required user id", 400));
   }
@@ -125,8 +125,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }
-  cloudinary.v2.uploader.destroy(user.image.public_id);
-  await User.remove();
+  await User.deleteOne({ _id: id });
   res.status(200).json({
     success: true,
     message: "User deleted successfully",
@@ -134,7 +133,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required user id", 400));
   }
@@ -142,20 +141,19 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }
-  await cloudinary.v2.uploader.destroy(user.image.public_id);
-
-  const result = await cloudinary.v2.uploader.upload(req.body.image, {
-    folder: "user",
-    width: 150,
-    crop: "scale",
-  });
-
-  req.body.image = {
-    public_id: result.public_id,
-    url: result.secure_url,
-  };
-
-  user = await User.findByIdAndUpdate(req.params.id, req.body, {
+  if (req.body.image !== null) {
+    await cloudinary.v2.uploader.destroy(user.image.public_id);
+    const result = await cloudinary.v2.uploader.upload(req.body.image, {
+      folder: "user",
+      width: 150,
+      crop: "scale",
+    });
+    req.body.image = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  } else req.body.image = { ...user.image };
+  user = await User.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
