@@ -11,9 +11,6 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!image) {
     return next(new ErrorHandler("Required image", 400));
   }
-  if (!detail) {
-    return next(new ErrorHandler("Required detail", 400));
-  }
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "specialty",
     width: 250,
@@ -26,7 +23,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
       url: result.secure_url,
     },
     clinicId: clinicId ? clinicId : null,
-    detail,
+    detail: detail ? detail : null,
   });
 
   res.status(200).json({

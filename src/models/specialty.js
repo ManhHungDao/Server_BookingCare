@@ -28,7 +28,6 @@ const specialtySchema = new Schema({
   },
   detail: {
     type: String,
-    required: true,
   },
 });
 
