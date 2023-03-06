@@ -1,6 +1,8 @@
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import Allcode from "../models/allcode";
+import Specialty from "../models/specialty";
+import Clinic from "../models/clinic";
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
   const allcodes = await Allcode.find();
@@ -33,6 +35,14 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
+  const keyMap = allcode.keyMap;
+  const keyMapUpload = req.body.keyMap;
+  if (keyMap !== keyMapUpload) {
+    const existed = Specialty.findOne({ keyMap: keyMap });
+    if (existed) {
+      await Specialty.updateMany({ keyMap: keyMap }, { keyMap: keyMapUpload });
+    }
+  }
   allcode = await Allcode.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -52,6 +62,11 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   let allcode = await Allcode.findById(id);
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
+  }
+  const keyMap = allcode.keyMap;
+  const existed = Specialty.findOne({ keyMap: keyMap });
+  if (existed) {
+    return next(new ErrorHandler("Existed feild in other model", 500));
   }
   await Allcode.deleteOne({ _id: id });
   res.status(200).json({

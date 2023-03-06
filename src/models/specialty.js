@@ -12,9 +12,18 @@ const specialtySchema = new Schema({
     type: String,
     required: true,
   },
-  clinicId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Clinic",
+  keyMap: {
+    type: String,
+    required: true,
+  },
+  clinic: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+    },
+    name: {
+      type: String,
+    },
   },
   image: {
     public_id: {
@@ -28,6 +37,10 @@ const specialtySchema = new Schema({
   },
   detail: {
     type: String,
+  },
+  popular: {
+    type: Boolean,
+    required: true,
   },
 });
 

@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const allcodeSchema = new Schema({
   keyMap: {
     type: String,
+    unique: true,
   },
   type: {
     type: String,
