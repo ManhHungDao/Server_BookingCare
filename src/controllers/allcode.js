@@ -10,6 +10,20 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+exports.getByType = catchAsyncErrors(async (req, res, next) => {
+  const type = req.query.type;
+  if (!type) {
+    return next(new ErrorHandler("Required allcode type", 400));
+  }
+  const allcodes = await Allcode.find({ type: type });
+  res.status(200).json({
+    allcodes,
+    type,
+    count: allcodes.length,
+    success: true,
+  });
+});
+
 exports.update = catchAsyncErrors(async (req, res, next) => {
   const id = req.query.id;
   if (!id) {
@@ -42,6 +56,20 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   await Allcode.deleteOne({ _id: id });
   res.status(200).json({
     message: "Allcode deleted successfully",
+    success: true,
+  });
+});
+
+exports.create = catchAsyncErrors(async (req, res, next) => {
+  const { keyMap, type, valueEN, valueVI } = req.body;
+  const createAllcode = await Allcode.create({
+    keyMap,
+    type,
+    valueEN,
+    valueVI,
+  });
+  res.status(200).json({
+    createAllcode,
     success: true,
   });
 });
