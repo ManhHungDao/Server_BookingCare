@@ -12,9 +12,9 @@ const specialtySchema = new Schema({
     type: String,
     required: true,
   },
-  keyMap: {
-    type: String,
-    required: true,
+  key: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Allcode",
   },
   clinic: {
     id: {

@@ -2,19 +2,32 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Specialty from "../models/specialty";
-import Clinic from "../models/clinic"
+import Clinic from "../models/clinic";
+import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { popular, name, clinic, image, detail, keyMap } = req.body;
+  const { popular, name, clinic, image, detail, key } = req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
-  if (!keyMap) {
-    return next(new ErrorHandler("Required key map", 400));
+  if (!key) {
+    return next(new ErrorHandler("Required key", 400));
   }
   if (!image) {
     return next(new ErrorHandler("Required image", 400));
   }
+
+  let existed = null;
+  if (popular === false) {
+    existed = await Specialty.findOne({
+      "clinic.id": clinic.id,
+      key: key,
+    });
+  } else {
+    existed = await Specialty.findOne({ key: key, popular: true });
+  }
+  if (existed !== null)
+    return next(new ErrorHandler("Duplicate specialty", 400));
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "specialty",
     width: 250,
@@ -22,7 +35,6 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   });
   const specialty = await Specialty.create({
     name,
-    keyMap,
     image: {
       public_id: result.public_id,
       url: result.secure_url,
@@ -30,8 +42,8 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     clinic,
     detail: detail ? detail : null,
     popular,
+    key,
   });
-
   res.status(200).json({
     specialty,
     success: true,
@@ -39,7 +51,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required specialty id", 400));
   }
@@ -67,7 +79,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.remove = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required specialty id", 400));
   }
@@ -75,6 +87,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!specialty) {
     return next(new ErrorHandler("Specialty not Found", 404));
   }
+  // if (specialty.popular === true)
   cloudinary.v2.uploader.destroy(specialty.image.public_id);
   await Specialty.deleteOne({ _id: id });
   res.status(200).json({
@@ -84,7 +97,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const specialty = await Specialty.findById(req.params.id);
+  const specialty = await Specialty.findById(req.query.id);
   if (!specialty) {
     return next(new ErrorHandler("Specialty not Found", 404));
   }
@@ -96,6 +109,18 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
   const specialties = await Specialty.find();
+  res.status(200).json({
+    specialties,
+    success: true,
+  });
+});
+
+exports.getByClinicId = catchAsyncErrors(async (req, res, next) => {
+  const id = req.query.id;
+  if (!id) {
+    return next(new ErrorHandler("Required clinic id", 400));
+  }
+  const specialties = await Specialty.find({ "clinic.id": id }, "_id name");
   res.status(200).json({
     specialties,
     success: true,

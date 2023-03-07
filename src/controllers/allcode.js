@@ -35,14 +35,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
-  const keyMap = allcode.keyMap;
-  const keyMapUpload = req.body.keyMap;
-  if (keyMap !== keyMapUpload) {
-    const existed = Specialty.findOne({ keyMap: keyMap });
-    if (existed) {
-      await Specialty.updateMany({ keyMap: keyMap }, { keyMap: keyMapUpload });
-    }
-  }
+
   allcode = await Allcode.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -63,8 +56,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
-  const keyMap = allcode.keyMap;
-  const existed = Specialty.findOne({ keyMap: keyMap });
+  const existed = Specialty.findById(allcode.id);
   if (existed) {
     return next(new ErrorHandler("Existed feild in other model", 500));
   }
@@ -76,9 +68,14 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { keyMap, type, valueEN, valueVI } = req.body;
+  const { type, valueEN, valueVI } = req.body;
+  if (!type) {
+    return next(new ErrorHandler("Required type", 400));
+  }
+  if (!valueEN || !valueVI) {
+    return next(new ErrorHandler("Required value name", 400));
+  }
   const createAllcode = await Allcode.create({
-    keyMap,
     type,
     valueEN,
     valueVI,
