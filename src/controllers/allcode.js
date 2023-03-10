@@ -32,15 +32,20 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Required allcode id", 400));
   }
   let allcode = await Allcode.findById(id);
+  let idAllcode = allcode._id;
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
-
   allcode = await Allcode.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
+    Specialty,
   });
+  await Specialty.updateMany(
+    { key: idAllcode },
+    { $set: { name: req.body.valueVI } }
+  );
   res.status(200).json({
     allcode,
     success: true,
@@ -56,7 +61,8 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
-  const existed = Specialty.findById(allcode.id);
+  const existed = await Specialty.findById(id);
+
   if (existed) {
     return next(new ErrorHandler("Existed feild in other model", 500));
   }

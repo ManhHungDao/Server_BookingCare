@@ -38,9 +38,7 @@ const userSchema = new Schema({
     required: true,
   },
   roleId: { type: String, required: true, default: "R2" },
-  positionId: {
-    type: String,
-  },
+
   dateOfBirth: {
     type: String,
     required: true,
@@ -55,36 +53,70 @@ const userSchema = new Schema({
       required: true,
     },
   },
-  // detail: {
-  //   clinicId: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "Clinic",
-  //   },
-  //   specialtyId: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "Specialty",
-  //   },
-  //   priceId: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   paymentId: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   introduce: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   note: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   detail: {
-  //     type: String,
-  //     required: true,
-  //   },
-  // },
+  detail: {
+    clinic: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Clinic",
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    specialty: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Specialty",
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    position: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    price: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    payment: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    introduce: {
+      type: String,
+      required: true,
+    },
+    note: {
+      type: String,
+      required: true,
+    },
+    detail: {
+      type: String,
+      required: true,
+    },
+  },
 });
 
 //ecrypting password before save

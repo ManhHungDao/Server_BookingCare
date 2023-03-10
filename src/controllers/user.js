@@ -12,17 +12,16 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     password,
     gender,
     phone,
-    positionId,
+    position,
     dateOfBirth,
-    province,
-    detailAddress,
-    clinicId,
-    specialtyId,
-    priceId,
-    paymentId,
+    specialty,
+    clinic,
+    price,
+    payment,
     introduce,
     note,
     detail,
+    address,
   } = req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
@@ -45,37 +44,36 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!phone) {
     return next(new ErrorHandler("Required phone", 400));
   }
-
-  if (!positionId) {
-    return next(new ErrorHandler("Required position id", 400));
+  if (!position) {
+    return next(new ErrorHandler("Required position", 400));
   }
   if (!dateOfBirth) {
     return next(new ErrorHandler("Required day of birth", 400));
   }
-  if (!province || !detailAddress) {
+  if (!address) {
     return next(new ErrorHandler("Required address", 400));
   }
-  // if (!clinicId) {
-  //   return next(new ErrorHandler("Required clinic id", 400));
-  // }
-  // if (!specialtyId) {
-  //   return next(new ErrorHandler("Required specialty id", 400));
-  // }
-  // if (!priceId) {
-  //   return next(new ErrorHandler("Required price id", 400));
-  // }
-  // if (!paymentId) {
-  //   return next(new ErrorHandler("Required payment id", 400));
-  // }
-  // if (!detail) {
-  //   return next(new ErrorHandler("Required detail", 400));
-  // }
-  // if (!introduce) {
-  //   return next(new ErrorHandler("Required introduce", 400));
-  // }
-  // if (!note) {
-  //   return next(new ErrorHandler("Required note", 400));
-  // }
+  if (!clinic) {
+    return next(new ErrorHandler("Required clinic", 400));
+  }
+  if (!specialty) {
+    return next(new ErrorHandler("Required specialty", 400));
+  }
+  if (!price) {
+    return next(new ErrorHandler("Required price", 400));
+  }
+  if (!payment) {
+    return next(new ErrorHandler("Required payment", 400));
+  }
+  if (!detail) {
+    return next(new ErrorHandler("Required detail", 400));
+  }
+  if (!introduce) {
+    return next(new ErrorHandler("Required introduce", 400));
+  }
+  if (!note) {
+    return next(new ErrorHandler("Required note", 400));
+  }
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "user",
     width: 150,
@@ -91,22 +89,19 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     password,
     gender,
     phone,
-    positionId,
     dateOfBirth,
-    roleId: "R1",
-    address: {
-      province,
-      detail: detailAddress,
+    roleId: "R2",
+    address,
+    detail: {
+      clinic,
+      specialty,
+      position,
+      price,
+      payment,
+      introduce,
+      note,
+      detail,
     },
-    // detail: {
-    //   clinicId,
-    //   specialtyId,
-    //   priceId,
-    //   paymentId,
-    //   introduce,
-    //   note,
-    //   detail,
-    // },
   });
   sendToken(createUser, 200, res);
 
@@ -165,7 +160,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.query.id);
+  const user = await User.findById(req.query.id).select("-password");
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }
@@ -176,7 +171,7 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find();
+  const users = await User.find().select("-password");
   res.status(200).json({
     users,
     success: true,
