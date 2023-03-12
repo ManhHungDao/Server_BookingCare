@@ -88,7 +88,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
-  const existed = await Specialty.findById(id);
+  const existed = await Specialty.find({ key: id });
 
   if (existed) {
     return next(new ErrorHandler("Existed feild in other model", 500));

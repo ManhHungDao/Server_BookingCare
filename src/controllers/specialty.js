@@ -2,7 +2,7 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Specialty from "../models/specialty";
-import Clinic from "../models/clinic";
+import User from "../models/user";
 import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
@@ -87,7 +87,13 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!specialty) {
     return next(new ErrorHandler("Specialty not Found", 404));
   }
-  // if (specialty.popular === true)
+  const key = specialty.key;
+
+  // kiểm tra chuyên khoa có tồn tại trong người dùng
+  const user = await User.findOne({ "detail.specialty.id": key });
+  if (user) return next(new ErrorHandler("Existed feild in other model", 500));
+  // kiểm tra chuyên khoa có bài đăng
+
   cloudinary.v2.uploader.destroy(specialty.image.public_id);
   await Specialty.deleteOne({ _id: id });
   res.status(200).json({

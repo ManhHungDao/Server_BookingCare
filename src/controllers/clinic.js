@@ -2,24 +2,22 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Clinic from "../models/clinic";
+import Specialty from "../models/specialty";
+import User from "../models/user";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const {
     name,
-    province,
-    detailAddress,
     image,
     logo,
     introduce,
-    detail,
-    lat,
-    lng,
+    detail,address
   } = req.body;
 
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
-  if (!province || !detailAddress || !lat || !lng) {
+  if (!address) {
     return next(new ErrorHandler("Required address", 400));
   }
   if (!image) {
@@ -53,12 +51,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
       public_id: resultLogo.public_id,
       url: resultLogo.secure_url,
     },
-    address: {
-      province,
-      detail: detailAddress,
-      lat,
-      lng,
-    },
+    address,
     introduce,
     detail,
   });
@@ -119,6 +112,19 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!clinic) {
     return next(new ErrorHandler("Clinic not Found", 404));
   }
+
+  // xóa người dùng thuộc bệnh viên
+  await User.deleteMany({ "detail.clinic.id": clinic._id });
+
+  // xóa các chuyên khoa thuộc bệnh viện
+  await Specialty.deleteMany({ "clinic.id": clinic._id });
+
+  // xóa các bài đăng thuộc bệnh viện
+
+  // xóa các bài đăng thuộc chuyên khoa thuộc bệnh viện
+
+  // xóa bệnh viện, chuyên khoa thuộc bệnh viện trong miêu tả bác sĩ
+
   cloudinary.v2.uploader.destroy(clinic.image.public_id);
   cloudinary.v2.uploader.destroy(clinic.logo.public_id);
   await Clinic.deleteOne({ _id: id });
