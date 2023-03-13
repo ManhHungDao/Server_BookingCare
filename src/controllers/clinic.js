@@ -11,7 +11,8 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     image,
     logo,
     introduce,
-    detail,address
+    detail,
+    address
   } = req.body;
 
   if (!name) {
@@ -73,25 +74,29 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 
   if (req.body.image !== null) {
     cloudinary.v2.uploader.destroy(clinic.image.public_id);
-    let resultImg = await cloudinary.v2.uploader.upload(image, {
+    let resultImg = await cloudinary.v2.uploader.upload(req.body.image, {
       folder: "clinic",
     });
     req.body.image = {
       public_id: resultImg.public_id,
       url: resultImg.secure_url,
     };
-  } else req.body.image = { ...clinic.image };
+  } else req.body.image = {
+    ...clinic.image
+  };
 
   if (req.body.logo !== null) {
     cloudinary.v2.uploader.destroy(clinic.logo.public_id);
-    let resultLogo = await cloudinary.v2.uploader.upload(logo, {
+    let resultLogo = await cloudinary.v2.uploader.upload(req.body.logo, {
       folder: "clinic",
     });
     req.body.logo = {
       public_id: resultLogo.public_id,
       url: resultLogo.secure_url,
     };
-  } else req.body.logo = { ...clinic.logo };
+  } else req.body.logo = {
+    ...clinic.logo
+  };
   clinic = await Clinic.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -114,10 +119,14 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   }
 
   // xóa người dùng thuộc bệnh viên
-  await User.deleteMany({ "detail.clinic.id": clinic._id });
+  await User.deleteMany({
+    "detail.clinic.id": clinic._id
+  });
 
   // xóa các chuyên khoa thuộc bệnh viện
-  await Specialty.deleteMany({ "clinic.id": clinic._id });
+  await Specialty.deleteMany({
+    "clinic.id": clinic._id
+  });
 
   // xóa các bài đăng thuộc bệnh viện
 
@@ -127,7 +136,9 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 
   cloudinary.v2.uploader.destroy(clinic.image.public_id);
   cloudinary.v2.uploader.destroy(clinic.logo.public_id);
-  await Clinic.deleteOne({ _id: id });
+  await Clinic.deleteOne({
+    _id: id
+  });
   res.status(200).json({
     message: "Clinic deleted successfully",
     success: true,
@@ -146,10 +157,47 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const clinics = await Clinic.find();
+  let {
+    page,
+    size,
+    sort,
+    filter
+  } = req.query;
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let clinics = null;
+  if (filter !== null)
+    clinics = await Specialty.aggregate([{
+        $match: {
+          'name': {
+            '$regex': filter,
+            '$options': 'i'
+          }
+        },
+      },
+      {
+        $limit: size
+      }
+    ]);
+  else {
+    clinics = await Specialty.aggregate([{
+        $limit: size
+      },
+      {
+        $skip: size * page - size
+      },
+    ]);
+  }
+  const count = await Specialty.count();
   res.status(200).json({
     clinics,
     success: true,
+    count
   });
 });
 

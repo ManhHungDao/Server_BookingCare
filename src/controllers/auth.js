@@ -4,11 +4,16 @@ import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import sendToken from "../utils/jwtToken";
 
 exports.login = catchAsyncErrors(async (req, res, next) => {
-  const { email, password } = req.body;
+  const {
+    email,
+    password
+  } = req.body;
   if (!email || !password) {
     return next(new ErrorHandler("Please enter email or Password", 400));
   }
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({
+    email
+  }, "email name roleId password");
   if (!user) {
     return next(new ErrorHandler("Invalid email or Password", 400));
   }
@@ -16,48 +21,47 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid Password", 400));
   }
-  // let data = {
-  //   image: user.image.url,
-  //   email: user.email,
-  //   name: user.name,
-  //   roleId: user.roleId,
-  //   positionId: user.positionId,
-  // };
   sendToken(user, 200, res);
+});
 
-  // res.status(200).json({
-  //   user: data,
-  //   success: true,
-  // });
+exports.changePassword = catchAsyncErrors(async (req, res, next) => {
+  const {
+    email,
+    oldPassword,
+    newPassword
+  } = req.body;
+  if (!oldPassword) {
+    return next(new ErrorHandler("Requied old password", 400));
+  }
+  if (!newPassword) {
+    return next(new ErrorHandler("Requied new password", 400));
+  }
+  const user = await User.findOne({
+    email
+  }, "email name roleId password");
+  if (!user) {
+    return next(new ErrorHandler("Không thể xác định tài khoản", 400));
+  }
+  const isPasswordMatched = await user.comparePassword(oldPassword);
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Mật khẩu cũ chưa chính xác", 400));
+  }
+  user.password = newPassword;
+  await user.save();
+  sendToken(user, 200, res);
 });
 
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
-  //Has URL token
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
-
+  const {
+    email
+  } = req.body;
   const user = await User.findOne({
-    resetPasswordToken,
-    // resetPasswordExpires : { $lt : Date.now()}
-  });
-
+    email
+  }, "email name roleId password");
   if (!user) {
-    return next(new ErrorHandler("Token is invalid or has been expored", 400));
+    return next(new ErrorHandler("Không thể xác định tài khoản", 400));
   }
-
-  if (req.body.password !== req.body.confirmPassword) {
-    return next(new ErrorHandler("Password doesnot match", 400));
-  }
-
-  //setup new password
-  user.password = req.body.password;
-
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-
+  user.password = "123456Aa.";
   await user.save();
-
   sendToken(user, 200, res);
 });

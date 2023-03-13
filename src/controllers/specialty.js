@@ -6,7 +6,14 @@ import User from "../models/user";
 import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { popular, name, clinic, image, detail, key } = req.body;
+  const {
+    popular,
+    name,
+    clinic,
+    image,
+    detail,
+    key
+  } = req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
@@ -24,7 +31,10 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
       key: key,
     });
   } else {
-    existed = await Specialty.findOne({ key: key, popular: true });
+    existed = await Specialty.findOne({
+      key: key,
+      popular: true
+    });
   }
   if (existed !== null)
     return next(new ErrorHandler("Duplicate specialty", 400));
@@ -59,15 +69,19 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   if (!specialty) {
     return next(new ErrorHandler("Specialty not Found", 404));
   }
-  await cloudinary.v2.uploader.destroy(specialty.image.public_id);
-  const result = await cloudinary.v2.uploader.upload(req.body.image, {
-    folder: "specialty",
-  });
-  req.body.image = {
-    public_id: result.public_id,
-    url: result.secure_url,
+  if (req.body.image !== null) {
+    await cloudinary.v2.uploader.destroy(specialty.image.public_id);
+    const result = await cloudinary.v2.uploader.upload(req.body.image, {
+      folder: "specialty",
+    });
+    req.body.image = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  } else req.body.image = {
+    ...specialty.image
   };
-  specialty = await Specialty.findByIdAndUpdate(req.params.id, req.body, {
+  specialty = await Specialty.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
@@ -90,12 +104,16 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   const key = specialty.key;
 
   // kiểm tra chuyên khoa có tồn tại trong người dùng
-  const user = await User.findOne({ "detail.specialty.id": key });
+  const user = await User.findOne({
+    "detail.specialty.id": key
+  });
   if (user) return next(new ErrorHandler("Existed feild in other model", 500));
   // kiểm tra chuyên khoa có bài đăng
 
   cloudinary.v2.uploader.destroy(specialty.image.public_id);
-  await Specialty.deleteOne({ _id: id });
+  await Specialty.deleteOne({
+    _id: id
+  });
   res.status(200).json({
     message: "Specialty deleted successfully",
     success: true,
@@ -114,10 +132,60 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const specialties = await Specialty.find();
+  let {
+    page,
+    size,
+    sort,
+    filter,
+    clinicId
+  } = req.query;
+
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+
+  let specialties = null;
+  if (clinicId) {
+    specialties = await Specialty.find({
+      "clinic.id": clinicId
+    }).limit(size)
+    length = specialties.length
+    if (length > 10) {
+      const listSpecialties = specialties.
+      specialties = listSpecialties.slice((size * page - size), (size * page))
+    }
+
+  } else
+  if (filter !== null)
+    specialties = await Specialty.find({
+      'name': {
+        '$regex': filter,
+        '$options': 'i'
+      }
+    })
+  length = specialties.length
+  if (length > 10) {
+    const listSpecialties = specialties
+    specialties = listSpecialties.slice((size * page - size), (size * page))
+  } else {
+    specialties = await Specialty.aggregate([{
+      $skip: size * page - size
+    }, {
+      $limit: size
+    }, ]);
+    length = await Specialty.count();
+
+  }
   res.status(200).json({
     specialties,
     success: true,
+    count: length,
   });
 });
 
@@ -126,7 +194,9 @@ exports.getByClinicId = catchAsyncErrors(async (req, res, next) => {
   if (!id) {
     return next(new ErrorHandler("Required clinic id", 400));
   }
-  const specialties = await Specialty.find({ "clinic.id": id }, "_id name");
+  const specialties = await Specialty.find({
+    "clinic.id": id
+  }, "_id name");
   res.status(200).json({
     specialties,
     success: true,
