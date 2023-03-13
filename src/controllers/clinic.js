@@ -170,34 +170,36 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   if (!size) {
     size = 10;
   }
+  let length = 0;
   let clinics = null;
-  if (filter !== null)
-    clinics = await Specialty.aggregate([{
-        $match: {
-          'name': {
-            '$regex': filter,
-            '$options': 'i'
-          }
-        },
+  if (filter !== null) {
+
+    clinics = await Clinic.aggregate([{
+      $match: {
+        'name': {
+          '$regex': filter,
+          '$options': 'i'
+        }
       },
-      {
-        $limit: size
-      }
-    ]);
-  else {
-    clinics = await Specialty.aggregate([{
+    }]);
+    length = clinics.length
+    if (length > 10) {
+      clinics = clinics.slice((size * page - size), (size * page))
+    }
+  } else {
+    clinics = await Clinic.aggregate([{
         $limit: size
       },
       {
         $skip: size * page - size
       },
     ]);
+    length = await Clinic.count();
   }
-  const count = await Specialty.count();
   res.status(200).json({
     clinics,
     success: true,
-    count
+    count: length
   });
 });
 

@@ -149,7 +149,6 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     size = 10;
   }
   let length = 0;
-
   let specialties = null;
   if (clinicId) {
     specialties = await Specialty.find({
@@ -157,22 +156,21 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     }).limit(size)
     length = specialties.length
     if (length > 10) {
-      const listSpecialties = specialties.
       specialties = listSpecialties.slice((size * page - size), (size * page))
     }
 
   } else
-  if (filter !== null)
+  if (filter !== null) {
     specialties = await Specialty.find({
       'name': {
         '$regex': filter,
         '$options': 'i'
       }
     })
-  length = specialties.length
-  if (length > 10) {
-    const listSpecialties = specialties
-    specialties = listSpecialties.slice((size * page - size), (size * page))
+    length = specialties.length
+    if (length > 10) {
+      specialties = specialties.slice((size * page - size), (size * page))
+    }
   } else {
     specialties = await Specialty.aggregate([{
       $skip: size * page - size
