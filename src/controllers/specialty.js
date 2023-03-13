@@ -156,11 +156,10 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     }).limit(size)
     length = specialties.length
     if (length > 10) {
-      specialties = listSpecialties.slice((size * page - size), (size * page))
+      specialties = specialties.slice((size * page - size), (size * page))
     }
 
-  } else
-  if (filter !== null) {
+  } else if (filter) {
     specialties = await Specialty.find({
       'name': {
         '$regex': filter,

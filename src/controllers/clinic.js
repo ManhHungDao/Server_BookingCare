@@ -172,8 +172,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   }
   let length = 0;
   let clinics = null;
-  if (filter !== null) {
-
+  if (filter) {
     clinics = await Clinic.aggregate([{
       $match: {
         'name': {

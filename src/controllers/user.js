@@ -120,7 +120,9 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }
-  await User.deleteOne({ _id: id });
+  await User.deleteOne({
+    _id: id
+  });
   res.status(200).json({
     success: true,
     message: "User deleted successfully",
@@ -147,7 +149,9 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
       public_id: result.public_id,
       url: result.secure_url,
     };
-  } else req.body.image = { ...user.image };
+  } else req.body.image = {
+    ...user.image
+  };
   user = await User.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -171,9 +175,53 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find().select("-password");
+  let {
+    page,
+    size,
+    sort,
+    filter,
+    clinicId
+  } = req.query;
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+  let users = null;
+
+  if (clinicId) {
+    users = await User.find({
+        "detail.clinic.id": clinicId
+      },
+      "name"
+    ).limit(size)
+    length = users.length
+    if (length > 10) {
+      users = users.slice((size * page - size), (size * page))
+    }
+  } else if (filter) {
+    users = await User.find({
+      'name': {
+        '$regex': filter,
+        '$options': 'i'
+      }
+    }, "name")
+    length = users.length
+    if (length > 10) {
+      users = users.slice((size * page - size), (size * page))
+    }
+  } else {
+    users = await User.find().select("name").skip(size * page - size).limit(size)
+    length = await User.count();
+  }
+
   res.status(200).json({
     users,
     success: true,
+    count: length
   });
 });
