@@ -6,14 +6,7 @@ import User from "../models/user";
 import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const {
-    popular,
-    name,
-    clinic,
-    image,
-    detail,
-    key
-  } = req.body;
+  const { popular, name, clinic, image, detail, key } = req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
@@ -33,14 +26,13 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   } else {
     existed = await Specialty.findOne({
       key: key,
-      popular: true
+      popular: true,
     });
   }
   if (existed !== null)
     return next(new ErrorHandler("Duplicate specialty", 400));
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "specialty",
-    width: 250,
     crop: "scale",
   });
   const specialty = await Specialty.create({
@@ -78,9 +70,10 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
       public_id: result.public_id,
       url: result.secure_url,
     };
-  } else req.body.image = {
-    ...specialty.image
-  };
+  } else
+    req.body.image = {
+      ...specialty.image,
+    };
   specialty = await Specialty.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -105,14 +98,14 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 
   // kiểm tra chuyên khoa có tồn tại trong người dùng
   const user = await User.findOne({
-    "detail.specialty.id": key
+    "detail.specialty.id": key,
   });
   if (user) return next(new ErrorHandler("Existed feild in other model", 500));
   // kiểm tra chuyên khoa có bài đăng
 
   cloudinary.v2.uploader.destroy(specialty.image.public_id);
   await Specialty.deleteOne({
-    _id: id
+    _id: id,
   });
   res.status(200).json({
     message: "Specialty deleted successfully",
@@ -132,13 +125,7 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  let {
-    page,
-    size,
-    sort,
-    filter,
-    clinicId
-  } = req.query;
+  let { page, size, sort, filter, clinicId } = req.query;
 
   page = parseInt(page);
   if (!page) {
@@ -152,32 +139,33 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   let specialties = null;
   if (clinicId) {
     specialties = await Specialty.find({
-      "clinic.id": clinicId
-    }).limit(size)
-    length = specialties.length
+      "clinic.id": clinicId,
+    });
+    length = specialties.length;
     if (length > 10) {
-      specialties = specialties.slice((size * page - size), (size * page))
+      specialties = specialties.slice(size * page - size, size * page);
     }
-
   } else if (filter) {
     specialties = await Specialty.find({
-      'name': {
-        '$regex': filter,
-        '$options': 'i'
-      }
-    })
-    length = specialties.length
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
+    });
+    length = specialties.length;
     if (length > 10) {
-      specialties = specialties.slice((size * page - size), (size * page))
+      specialties = specialties.slice(size * page - size, size * page);
     }
   } else {
-    specialties = await Specialty.aggregate([{
-      $skip: size * page - size
-    }, {
-      $limit: size
-    }, ]);
+    specialties = await Specialty.aggregate([
+      {
+        $skip: size * page - size,
+      },
+      {
+        $limit: size,
+      },
+    ]);
     length = await Specialty.count();
-
   }
   res.status(200).json({
     specialties,
@@ -191,9 +179,25 @@ exports.getByClinicId = catchAsyncErrors(async (req, res, next) => {
   if (!id) {
     return next(new ErrorHandler("Required clinic id", 400));
   }
-  const specialties = await Specialty.find({
-    "clinic.id": id
-  }, "_id name");
+  const specialties = await Specialty.find(
+    {
+      "clinic.id": id,
+    },
+    "_id name"
+  );
+  res.status(200).json({
+    specialties,
+    success: true,
+  });
+});
+
+exports.getPopularHome = catchAsyncErrors(async (req, res, next) => {
+  const specialties = await Specialty.find(
+    {
+      popular: true,
+    },
+    "_id name image"
+  );
   res.status(200).json({
     specialties,
     success: true,

@@ -6,13 +6,13 @@ import {
   getAll,
   remove,
   update,
-  create,
+  create,getTypePagination
 } from "../controllers/allcode";
 
 router.route("/get-all-allcode").get(getAll);
-router.route("/get-allcode-type").get(getByType);
 router.route("/create-allcode").post(create);
 router.route("/delete-allcode").delete(remove);
 router.route("/update-allcode").put(update);
+router.route("/get-allcode-pagination").get(getTypePagination);
 
 module.exports = router;

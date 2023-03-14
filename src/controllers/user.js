@@ -77,7 +77,6 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "user",
     width: 150,
-    crop: "scale",
   });
   const createUser = await User.create({
     email,
@@ -197,8 +196,8 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     users = await User.find({
         "detail.clinic.id": clinicId
       },
-      "name"
-    ).limit(size)
+      "-password"
+    )
     length = users.length
     if (length > 10) {
       users = users.slice((size * page - size), (size * page))
@@ -209,13 +208,13 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
         '$regex': filter,
         '$options': 'i'
       }
-    }, "name")
+    }, "-password")
     length = users.length
     if (length > 10) {
       users = users.slice((size * page - size), (size * page))
     }
   } else {
-    users = await User.find().select("name").skip(size * page - size).limit(size)
+    users = await User.find().select("-password").skip(size * page - size).limit(size)
     length = await User.count();
   }
 

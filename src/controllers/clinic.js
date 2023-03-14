@@ -39,8 +39,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   });
   const resultLogo = await cloudinary.v2.uploader.upload(logo, {
     folder: "clinic",
-    width: 150,
-    crop: "scale",
+    width: 250,
   });
   const createClinic = await Clinic.create({
     name,
@@ -89,6 +88,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     cloudinary.v2.uploader.destroy(clinic.logo.public_id);
     let resultLogo = await cloudinary.v2.uploader.upload(req.body.logo, {
       folder: "clinic",
+      width: 250,
     });
     req.body.logo = {
       public_id: resultLogo.public_id,

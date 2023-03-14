@@ -4,6 +4,7 @@ import Allcode from "../models/allcode";
 import Specialty from "../models/specialty";
 import Clinic from "../models/clinic";
 import User from "../models/user";
+import _ from "lodash";
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
   const allcodes = await Allcode.find();
@@ -13,17 +14,33 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.getByType = catchAsyncErrors(async (req, res, next) => {
-  const type = req.query.type;
-  if (!type) {
-    return next(new ErrorHandler("Required allcode type", 400));
+exports.getTypePagination = catchAsyncErrors(async (req, res, next) => {
+  let { page, size, filter } = req.query;
+  if (!page) {
+    page = 1;
   }
-  const allcodes = await Allcode.find({ type: type });
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  if (!filter) {
+    return next(new ErrorHandler("Required filter", 404));
+  }
+
+  let length = 0;
+  let allcodes = null;
+  allcodes = await Allcode.find({
+    type: filter,
+  }).sort({ valueVI: 1 });
+  length = allcodes.length;
+  if (length > 10) {
+    allcodes = allcodes.slice(size * page - size, size * page);
+  }
+
   res.status(200).json({
     allcodes,
-    type,
-    count: allcodes.length,
     success: true,
+    count: length,
   });
 });
 
@@ -38,6 +55,10 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
+  let { valueVI } = req.body;
+  valueVI = valueVI.trimStart().trim();
+  const exist = await Allcode.findOne({ valueVI });
+  if (exist) return next(new ErrorHandler("Existed code", 409));
   allcode = await Allcode.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -49,29 +70,28 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     { $set: { name: req.body.valueVI } }
   );
 
-  const type = req.body.type;
-
-  if (type === "SPECIALTY") {
-    await User.updateMany(
-      { "detail.specialty.id": idAllcode },
-      { $set: { "detail.specialty.name": req.body.valueVI } }
-    );
-  } else if (type === "PAYMENT") {
-    await User.updateMany(
-      { "detail.payment.id": idAllcode },
-      { $set: { "detail.payment.name": req.body.valueVI } }
-    ).then((e) => console.log(e));
-  } else if (type === "PRICE") {
-    await User.updateMany(
-      { "detail.price.id": idAllcode },
-      { $set: { "detail.price.name": req.body.valueVI } }
-    );
-  } else if (type === "POSITION") {
-    await User.updateMany(
-      { "detail.position.id": idAllcode },
-      { $set: { "detail.position.name": req.body.valueVI } }
-    );
-  }
+  // const type = req.body.type;
+  // if (type === "SPECIALTY") {
+  //   await User.updateMany(
+  //     { "detail.specialty.id": idAllcode },
+  //     { $set: { "detail.specialty.name": req.body.valueVI } }
+  //   );
+  // } else if (type === "PAYMENT") {
+  //   await User.updateMany(
+  //     { "detail.payment.id": idAllcode },
+  //     { $set: { "detail.payment.name": req.body.valueVI } }
+  //   ).then((e) => console.log(e));
+  // } else if (type === "PRICE") {
+  //   await User.updateMany(
+  //     { "detail.price.id": idAllcode },
+  //     { $set: { "detail.price.name": req.body.valueVI } }
+  //   );
+  // } else if (type === "POSITION") {
+  //   await User.updateMany(
+  //     { "detail.position.id": idAllcode },
+  //     { $set: { "detail.position.name": req.body.valueVI } }
+  //   );
+  // }
 
   res.status(200).json({
     allcode,
@@ -89,8 +109,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
   const existed = await Specialty.find({ key: id });
-
-  if (existed) {
+  if (!_.isEmpty(existed)) {
     return next(new ErrorHandler("Existed feild in other model", 500));
   }
   await Allcode.deleteOne({ _id: id });
@@ -101,13 +120,18 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { type, valueEN, valueVI } = req.body;
+  let { type, valueEN, valueVI } = req.body;
+  valueVI = valueVI.trimStart().trim();
   if (!type) {
     return next(new ErrorHandler("Required type", 400));
   }
-  if (!valueEN || !valueVI) {
+  if (!valueVI) {
     return next(new ErrorHandler("Required value name", 400));
   }
+
+  const exist = await Allcode.findOne({ valueVI });
+  if (exist) return next(new ErrorHandler("Existed code", 409));
+
   const createAllcode = await Allcode.create({
     type,
     valueEN,
