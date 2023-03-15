@@ -6,10 +6,6 @@ const handbookSchema = new Schema({
     type: String,
     required: true,
   },
-  specialtyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Specialty",
-  },
   note: {
     type: String,
     required: true,
@@ -24,6 +20,26 @@ const handbookSchema = new Schema({
       required: true,
     },
     url: {
+      type: String,
+      required: true,
+    },
+  },
+  clinic: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+    },
+    name: {
+      type: String,
+    },
+  },
+  specialty: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Specialty",
+      required: true,
+    },
+    name: {
       type: String,
       required: true,
     },

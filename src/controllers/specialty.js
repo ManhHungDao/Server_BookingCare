@@ -183,7 +183,7 @@ exports.getByClinicId = catchAsyncErrors(async (req, res, next) => {
     {
       "clinic.id": id,
     },
-    "_id name"
+    "_id name key"
   );
   res.status(200).json({
     specialties,
@@ -196,7 +196,7 @@ exports.getPopularHome = catchAsyncErrors(async (req, res, next) => {
     {
       popular: true,
     },
-    "_id name image"
+    "_id name image key"
   );
   res.status(200).json({
     specialties,

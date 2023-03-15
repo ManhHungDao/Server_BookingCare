@@ -2,9 +2,44 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Handbook from "../models/handbook";
+import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const handbook = await Handbook.find();
+  let { name, note, image, detail, clinic, specialty } = req.body;
+  if (_.isEmpty(clinic) === true)
+    clinic = {
+      id: null,
+      name: null,
+    };
+  if (!name) {
+    return next(new ErrorHandler("Required name", 400));
+  }
+  if (!note) {
+    return next(new ErrorHandler("Required note", 400));
+  }
+  if (!image) {
+    return next(new ErrorHandler("Required image", 400));
+  }
+  if (!detail) {
+    return next(new ErrorHandler("Required detail", 400));
+  }
+  if (!specialty) {
+    return next(new ErrorHandler("Required specialty", 400));
+  }
+  const result = await cloudinary.v2.uploader.upload(image, {
+    folder: "handbook",
+  });
+  const handbook = await Handbook.create({
+    name,
+    note,
+    image: {
+      public_id: result.public_id,
+      url: result.secure_url,
+    },
+    detail,
+    specialty,
+    clinic: clinic,
+  });
   res.status(200).json({
     handbook,
     success: true,

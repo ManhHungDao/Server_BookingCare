@@ -45,7 +45,7 @@ app.use("/api", clinic);
 app.use("/api", allcode);
 app.use("/api", specialty);
 app.use("/api", auth);
-// app.use("/api", packet);
+app.use("/api", handbook);
 
 //Middleware error handler
 app.use(ErrorMiddleware);

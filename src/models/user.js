@@ -58,6 +58,7 @@ const userSchema = new Schema({
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Clinic",
+        required: true,
       },
       name: {
         type: String,
@@ -68,16 +69,18 @@ const userSchema = new Schema({
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Specialty",
+        // required: true,
       },
       name: {
         type: String,
-        required: true,
+        // required: true,
       },
     },
     position: {
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Allcode",
+        required: true,
       },
       name: {
         type: String,
@@ -88,6 +91,7 @@ const userSchema = new Schema({
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Allcode",
+        required: true,
       },
       name: {
         type: String,
@@ -98,6 +102,7 @@ const userSchema = new Schema({
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Allcode",
+        required: true,
       },
       name: {
         type: String,

@@ -70,28 +70,28 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     { $set: { name: req.body.valueVI } }
   );
 
-  // const type = req.body.type;
-  // if (type === "SPECIALTY") {
-  //   await User.updateMany(
-  //     { "detail.specialty.id": idAllcode },
-  //     { $set: { "detail.specialty.name": req.body.valueVI } }
-  //   );
-  // } else if (type === "PAYMENT") {
-  //   await User.updateMany(
-  //     { "detail.payment.id": idAllcode },
-  //     { $set: { "detail.payment.name": req.body.valueVI } }
-  //   ).then((e) => console.log(e));
-  // } else if (type === "PRICE") {
-  //   await User.updateMany(
-  //     { "detail.price.id": idAllcode },
-  //     { $set: { "detail.price.name": req.body.valueVI } }
-  //   );
-  // } else if (type === "POSITION") {
-  //   await User.updateMany(
-  //     { "detail.position.id": idAllcode },
-  //     { $set: { "detail.position.name": req.body.valueVI } }
-  //   );
-  // }
+  const type = req.body.type;
+  if (type === "SPECIALTY") {
+    await User.updateMany(
+      { "detail.specialty.id": idAllcode },
+      { $set: { "detail.specialty.name": req.body.valueVI } }
+    );
+  } else if (type === "PAYMENT") {
+    await User.updateMany(
+      { "detail.payment.id": idAllcode },
+      { $set: { "detail.payment.name": req.body.valueVI } }
+    ).then((e) => console.log(e));
+  } else if (type === "PRICE") {
+    await User.updateMany(
+      { "detail.price.id": idAllcode },
+      { $set: { "detail.price.name": req.body.valueVI } }
+    );
+  } else if (type === "POSITION") {
+    await User.updateMany(
+      { "detail.position.id": idAllcode },
+      { $set: { "detail.position.name": req.body.valueVI } }
+    );
+  }
 
   res.status(200).json({
     allcode,

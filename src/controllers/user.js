@@ -89,7 +89,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     gender,
     phone,
     dateOfBirth,
-    roleId: "R2",
+    roleId: "R3",
     address,
     detail: {
       clinic,
