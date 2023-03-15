@@ -54,22 +54,19 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.delete = catchAsyncErrors(async (req, res, next) => {
-  const id = req.params.id;
+exports.remove = catchAsyncErrors(async (req, res, next) => {
+  const id = req.query.id;
   if (!id) {
     return next(new ErrorHandler("Required handbook id", 400));
   }
-
-  let handbook = await Handbook.findById(id);
-
+  const handbook = await Handbook.findById(id);
   if (!handbook) {
     return next(new ErrorHandler("Handbook not Found", 404));
   }
-
   cloudinary.v2.uploader.destroy(handbook.image.public_id);
-  cloudinary.v2.uploader.destroy(handbook.logo.public_id);
-
-  await Handbook.remove();
+  await Handbook.deleteOne({
+    _id: id,
+  });
   res.status(200).json({
     message: "Handbook deleted successfully",
     success: true,
@@ -77,7 +74,9 @@ exports.delete = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const handbook = await Handbook.find(req.params.id);
+  const id = req.query.id;
+  if (!id) return next(new ErrorHandler("Required handbook id", 400));
+  const handbook = await Handbook.findById(id);
   if (!handbook) {
     return next(new ErrorHandler("Handbook not Found", 404));
   }
@@ -88,9 +87,44 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const handbooks = await Handbook.find();
+  let { page, size, sort, filter, clinicId } = req.query;
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+  let handbooks = null;
+  if (clinicId) {
+    handbooks = await Handbook.find({
+      "clinic.id": clinicId,
+    });
+    length = handbooks.length;
+    if (length > 10) {
+      handbooks = Handbook.slice(size * page - size, size * page);
+    }
+  } else if (filter) {
+    handbooks = await Handbook.find({
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
+    });
+    length = handbooks.length;
+    if (length > 10) {
+      handbooks = handbooks.slice(size * page - size, size * page);
+    }
+  } else {
+    handbooks = await Handbook.find().skip(size * page - size)
+    .limit(size);
+    length = await Handbook.count();
+  }
   res.status(200).json({
     handbooks,
     success: true,
+    count: length,
   });
 });

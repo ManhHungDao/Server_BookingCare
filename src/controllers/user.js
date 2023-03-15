@@ -163,7 +163,11 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.query.id).select("-password");
+  const id = req.query.id;
+  if (!id) {
+    return next(new ErrorHandler("Required handbook id", 400));
+  }
+  const user = await User.findById(id).select("-password");
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }

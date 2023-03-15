@@ -147,9 +147,9 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     }
   } else if (filter) {
     specialties = await Specialty.find({
-      name: {
-        $regex: filter,
-        $options: "i",
+      "name": {
+       "$regex": filter,
+        "$options": "i",
       },
     });
     length = specialties.length;
