@@ -4,16 +4,10 @@ import cloudinary from "cloudinary";
 import Clinic from "../models/clinic";
 import Specialty from "../models/specialty";
 import User from "../models/user";
+import Handbook from "../models/handbook";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const {
-    name,
-    image,
-    logo,
-    introduce,
-    detail,
-    address
-  } = req.body;
+  const { name, image, logo, introduce, detail, address } = req.body;
 
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
@@ -80,9 +74,10 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
       public_id: resultImg.public_id,
       url: resultImg.secure_url,
     };
-  } else req.body.image = {
-    ...clinic.image
-  };
+  } else
+    req.body.image = {
+      ...clinic.image,
+    };
 
   if (req.body.logo !== null) {
     cloudinary.v2.uploader.destroy(clinic.logo.public_id);
@@ -94,9 +89,10 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
       public_id: resultLogo.public_id,
       url: resultLogo.secure_url,
     };
-  } else req.body.logo = {
-    ...clinic.logo
-  };
+  } else
+    req.body.logo = {
+      ...clinic.logo,
+    };
   clinic = await Clinic.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -120,24 +116,21 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
 
   // xóa người dùng thuộc bệnh viên
   await User.deleteMany({
-    "detail.clinic.id": clinic._id
+    "detail.clinic.id": clinic._id,
   });
 
   // xóa các chuyên khoa thuộc bệnh viện
   await Specialty.deleteMany({
-    "clinic.id": clinic._id
+    "clinic.id": clinic._id,
   });
 
   // xóa các bài đăng thuộc bệnh viện
-
-  // xóa các bài đăng thuộc chuyên khoa thuộc bệnh viện
-
-  // xóa bệnh viện, chuyên khoa thuộc bệnh viện trong miêu tả bác sĩ
+  await Handbook.deleteMany({ "clinic.id": clinic._id });
 
   cloudinary.v2.uploader.destroy(clinic.image.public_id);
   cloudinary.v2.uploader.destroy(clinic.logo.public_id);
   await Clinic.deleteOne({
-    _id: id
+    _id: id,
   });
   res.status(200).json({
     message: "Clinic deleted successfully",
@@ -157,12 +150,7 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  let {
-    page,
-    size,
-    sort,
-    filter
-  } = req.query;
+  let { page, size, sort, filter } = req.query;
   if (!page) {
     page = 1;
   }
@@ -183,14 +171,15 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     }]);
     length = clinics.length
     if (length > 10) {
-      clinics = clinics.slice((size * page - size), (size * page))
+      clinics = clinics.slice(size * page - size, size * page);
     }
   } else {
-    clinics = await Clinic.aggregate([{
-        $limit: size
+    clinics = await Clinic.aggregate([
+      {
+        $limit: size,
       },
       {
-        $skip: size * page - size
+        $skip: size * page - size,
       },
     ]);
     length = await Clinic.count();
@@ -198,7 +187,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     clinics,
     success: true,
-    count: length
+    count: length,
   });
 });
 

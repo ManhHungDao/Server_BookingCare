@@ -3,6 +3,8 @@ import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Specialty from "../models/specialty";
 import User from "../models/user";
+import Handbook from "../models/handbook";
+
 import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
@@ -101,7 +103,20 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
     "detail.specialty.id": key,
   });
   if (user) return next(new ErrorHandler("Existed feild in other model", 500));
-  // kiểm tra chuyên khoa có bài đăng
+  // kiểm tra chuyên khoa có bài đăng - xóa tất cả bài đăng thuộc chuyên khoa
+  if (specialty.popular === true) {
+    // - xóa chuyên khoa nổi bật   popular:true , - handbook clinic.id:null
+    await Handbook.deleteMany({
+      "specialty.id": specialty.key,
+      "clinic.id": null,
+    });
+  } else {
+    // - xóa chuyên khoa nổi bật   popular:false , - handbook clinic.id:!null
+    await Handbook.deleteMany({
+      "specialty.id": specialty.key,
+      "clinic.id": specialty.clinic.id,
+    });
+  }
 
   cloudinary.v2.uploader.destroy(specialty.image.public_id);
   await Specialty.deleteOne({

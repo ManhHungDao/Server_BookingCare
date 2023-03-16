@@ -47,7 +47,33 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
-  const handbook = await Handbook.find();
+  const id = req.query.id;
+  if (!id) {
+    return next(new ErrorHandler("Required handbook id", 400));
+  }
+  let handbook = await Handbook.findById(id);
+  if (!handbook) {
+    return next(new ErrorHandler("Handbook not Found", 404));
+  }
+  if (req.body.image !== null) {
+    await cloudinary.v2.uploader.destroy(handbook.image.public_id);
+    const result = await cloudinary.v2.uploader.upload(req.body.image, {
+      folder: "handbook",
+    });
+    req.body.image = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  } else {
+    req.body.image = {
+      ...handbook.image,
+    };
+  }
+  handbook = await Handbook.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
   res.status(200).json({
     handbook,
     success: true,
@@ -118,8 +144,9 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
       handbooks = handbooks.slice(size * page - size, size * page);
     }
   } else {
-    handbooks = await Handbook.find().skip(size * page - size)
-    .limit(size);
+    handbooks = await Handbook.find()
+      .skip(size * page - size)
+      .limit(size);
     length = await Handbook.count();
   }
   res.status(200).json({
