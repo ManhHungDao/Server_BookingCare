@@ -7,13 +7,51 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 const scheduleSchema = new Schema({
-  doctorId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+  doctor: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    name: {
+      type: String,
+    },
   },
-  packetId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Packet",
+  packet: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Packet",
+    },
+    name: {
+      type: String,
+    },
+  },
+  detail: {
+    price: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    payment: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+    note: {
+      type: String,
+      required: true,
+    },
   },
   schedule: [
     {
