@@ -20,17 +20,15 @@ exports.createOrUpdate = catchAsyncErrors(async (req, res, next) => {
   }
 
   let query = {
-    $or: [
+    $and: [
+      {
+        date: date,
+      },
       {
         "doctor.id": doctor.id,
       },
       {
         "packet.id": packet.id,
-      },
-    ],
-    $and: [
-      {
-        date: date,
       },
     ],
   };
@@ -49,7 +47,10 @@ exports.createOrUpdate = catchAsyncErrors(async (req, res, next) => {
 exports.getSingle = catchAsyncErrors(async (req, res, next) => {
   const { id, date } = req.query;
   if (!id) {
-    return next(new ErrorHandler("Required schedule id", 400));
+    return next(new ErrorHandler("Required doctor id", 400));
+  }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
   }
   const schedule = await Schedule.findOne({
     "doctor.id": id,
@@ -60,6 +61,24 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
   }
   res.status(200).json({
     schedule,
+    success: true,
+  });
+});
+
+exports.remove = catchAsyncErrors(async (req, res, next) => {
+  const { id, date } = req.query;
+  if (!id) {
+    return next(new ErrorHandler("Required doctor id", 400));
+  }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  await Schedule.findOneAndRemove({
+    "doctor.id": id,
+    date: date,
+  });
+  res.status(200).json({
+    message: "Schedule deleted successfully",
     success: true,
   });
 });

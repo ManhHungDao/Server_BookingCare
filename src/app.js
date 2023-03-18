@@ -48,6 +48,7 @@ app.use("/api", specialty);
 app.use("/api", auth);
 app.use("/api", handbook);
 app.use("/api", schedule);
+app.use("/api", packet);
 
 //Middleware error handler
 app.use(ErrorMiddleware);

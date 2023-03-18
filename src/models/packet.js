@@ -15,17 +15,36 @@ const packetSchema = new Schema({
     type: String,
     required: true,
   },
-  clinicId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Clinic",
+  clinic: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
   },
-  specialtyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Specialty",
+  specialty: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Specialty",
+    },
+    name: {
+      type: String,
+    },
   },
-  priceId: {
-    type: String,
-    required: true,
+  price: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Allcode",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
   },
   image: {
     public_id: {
@@ -44,9 +63,6 @@ const packetSchema = new Schema({
   detail: {
     type: String,
     required: true,
-  },
-  checkList: {
-    type: String,
   },
 });
 
