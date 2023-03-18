@@ -50,41 +50,40 @@ const scheduleSchema = new Schema({
     },
     note: {
       type: String,
-      required: true,
     },
   },
   schedule: [
     {
-      timeType: {
-        type: String,
+      time: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
         required: true,
       },
       user: {
         email: {
           type: String,
-          required: true,
+          default: null,
         },
         name: {
           type: String,
-          required: true,
+          default: null,
         },
         phone: {
           type: String,
-          required: true,
+          default: null,
         },
       },
       status: {
-        type: Number,
-        required: true,
-        default: 0,
+        type: String,
+        default: "Lịch hẹn mới",
       },
       rating: {
         type: Number,
-        required: true,
+        default: null,
       },
       comment: {
         type: String,
-        required: true,
+        default: null,
       },
     },
   ],

@@ -4,7 +4,6 @@ import cloudinary from "cloudinary";
 import Specialty from "../models/specialty";
 import User from "../models/user";
 import Handbook from "../models/handbook";
-
 import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {

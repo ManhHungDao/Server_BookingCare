@@ -120,7 +120,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("User not Found", 404));
   }
   await User.deleteOne({
-    _id: id
+    _id: id,
   });
   res.status(200).json({
     success: true,
@@ -148,9 +148,10 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
       public_id: result.public_id,
       url: result.secure_url,
     };
-  } else req.body.image = {
-    ...user.image
-  };
+  } else
+    req.body.image = {
+      ...user.image,
+    };
   user = await User.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -178,13 +179,7 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  let {
-    page,
-    size,
-    sort,
-    filter,
-    clinicId
-  } = req.query;
+  let { page, size, sort, filter, clinicId } = req.query;
   page = parseInt(page);
   if (!page) {
     page = 1;
@@ -197,34 +192,43 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   let users = null;
 
   if (clinicId) {
-    users = await User.find({
-        "detail.clinic.id": clinicId
+    users = await User.find(
+      {
+        "detail.clinic.id": clinicId,
+        roleId: { $not: { $regex: "R0" } },
       },
       "-password"
-    )
-    length = users.length
+    );
+    length = users.length;
     if (length > 10) {
-      users = users.slice((size * page - size), (size * page))
+      users = users.slice(size * page - size, size * page);
     }
   } else if (filter) {
-    users = await User.find({
-      'name': {
-        '$regex': filter,
-        '$options': 'i'
-      }
-    }, "-password")
-    length = users.length
+    users = await User.find(
+      {
+        name: {
+          $regex: filter,
+          $options: "i",
+        },
+        roleId: { $not: { $regex: "R0" } },
+      },
+      "-password"
+    );
+    length = users.length;
     if (length > 10) {
-      users = users.slice((size * page - size), (size * page))
+      users = users.slice(size * page - size, size * page);
     }
   } else {
-    users = await User.find().select("-password").skip(size * page - size).limit(size)
+    users = await User.find({ roleId: { $not: { $regex: "R0" } } })
+      .select("-password")
+      .skip(size * page - size)
+      .limit(size);
     length = await User.count();
   }
 
   res.status(200).json({
     users,
     success: true,
-    count: length
+    count: length,
   });
 });
