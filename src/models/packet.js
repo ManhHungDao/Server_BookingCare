@@ -46,6 +46,17 @@ const packetSchema = new Schema({
       required: true,
     },
   },
+  payment: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Allcode",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+  },
   image: {
     public_id: {
       type: String,

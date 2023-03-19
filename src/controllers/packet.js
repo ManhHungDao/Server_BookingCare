@@ -4,7 +4,8 @@ import cloudinary from "cloudinary";
 import Packet from "../models/packet";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { name, image, specialty, clinic, price, introduce, detail } = req.body;
+  const { name, image, specialty, clinic, price, introduce, detail, payment } =
+    req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
@@ -13,6 +14,9 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   }
   if (!price) {
     return next(new ErrorHandler("Required price", 400));
+  }
+  if (!payment) {
+    return next(new ErrorHandler("Required payment", 400));
   }
   if (!clinic) {
     return next(new ErrorHandler("Required clinic", 400));
@@ -35,6 +39,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     specialty,
     clinic,
     price,
+    payment,
     introduce,
     detail,
   });
@@ -45,7 +50,30 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
-  const packet = await Packet.find();
+  const { id } = req.query;
+  if (!id) return next(new ErrorHandler("Required id", 400));
+  let packet = await Packet.findById(id);
+  if (!packet) {
+    return next(new ErrorHandler("Packet not Found", 404));
+  }
+  if (req.body.image !== null) {
+    await cloudinary.v2.uploader.destroy(packet.image.public_id);
+    const result = await cloudinary.v2.uploader.upload(req.body.image, {
+      folder: "packet",
+    });
+    req.body.image = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  } else
+    req.body.image = {
+      ...packet.image,
+    };
+  packet = await Packet.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
   res.status(200).json({
     packet,
     success: true,
