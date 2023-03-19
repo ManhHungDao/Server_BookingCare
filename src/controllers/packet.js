@@ -92,7 +92,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Packet not Found", 404));
   }
   cloudinary.v2.uploader.destroy(packet.image.public_id);
-  await User.deleteOne({
+  await Packet.deleteOne({
     _id: id,
   });
   res.status(200).json({
