@@ -72,6 +72,14 @@ const scheduleSchema = new Schema({
           type: String,
           default: null,
         },
+        dayOfBirth: {
+          type: String,
+          default: null,
+        },
+        reason: {
+          type: String,
+          default: null,
+        },
       },
       status: {
         type: String,

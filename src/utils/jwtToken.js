@@ -11,7 +11,6 @@ const sendToken = (user, statusCode, res) => {
     httpOnly: true,
   };
   user.password = undefined;
-  user._id = null;
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
     token,

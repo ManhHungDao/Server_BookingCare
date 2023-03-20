@@ -224,6 +224,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
       .skip(size * page - size)
       .limit(size);
     length = await User.count();
+    length--;
   }
 
   res.status(200).json({
