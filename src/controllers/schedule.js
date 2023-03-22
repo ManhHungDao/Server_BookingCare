@@ -44,7 +44,7 @@ exports.createOrUpdate = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.getSingle = catchAsyncErrors(async (req, res, next) => {
+exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
   const { id, date } = req.query;
   if (!id) {
     return next(new ErrorHandler("Required doctor id", 400));
@@ -55,6 +55,9 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
   const schedule = await Schedule.findOne({
     "doctor.id": id,
     date: date,
+  }).populate({
+    path: "doctor.id",
+    select: "email image.url detail.clinic.name detail.specialty.name ",
   });
   if (!schedule) {
     return next(new ErrorHandler("Schedule not Found", 404));
@@ -68,9 +71,9 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 exports.getUserScheduleByDate = catchAsyncErrors(async (req, res, next) => {
   let { page, size, sort, filter, clinicId, date } = req.query;
 
-  // if (!date) {
-  //   return next(new ErrorHandler("Required date", 400));
-  // }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
   if (!page) {
     page = 1;
   }
@@ -81,8 +84,7 @@ exports.getUserScheduleByDate = catchAsyncErrors(async (req, res, next) => {
 
   let length = 0;
   let schedules = null;
-  // { date: date }
-  schedules = await Schedule.find({ "doctor.id": { $ne: null } })
+  schedules = await Schedule.find({ "doctor.id": { $ne: null }, date: date })
     .populate({
       path: "doctor.id",
       select: "email image.url detail.clinic.name detail.specialty.name ",
@@ -101,9 +103,9 @@ exports.getUserScheduleByDate = catchAsyncErrors(async (req, res, next) => {
 exports.getPacketScheduleByDate = catchAsyncErrors(async (req, res, next) => {
   let { page, size, sort, filter, date } = req.query;
 
-  // if (!date) {
-  //   return next(new ErrorHandler("Required date", 400));
-  // }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
   if (!page) {
     page = 1;
   }
@@ -114,8 +116,11 @@ exports.getPacketScheduleByDate = catchAsyncErrors(async (req, res, next) => {
 
   let length = 0;
   let schedules = null;
-  // { date: date }
-  schedules = await Schedule.find({ "packet.id": { $ne: null } })
+  schedules = await Schedule.find({ "packet.id": { $ne: null }, date: date })
+    .populate({
+      path: "packet.id",
+      select: "image clinic specialty",
+    })
     .skip(size * page - size)
     .limit(size);
   length = schedules.length;
@@ -123,6 +128,27 @@ exports.getPacketScheduleByDate = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     schedules,
     count: length,
+    success: true,
+  });
+});
+
+exports.getSinglePacket = catchAsyncErrors(async (req, res, next) => {
+  const { id, date } = req.query;
+  if (!id) {
+    return next(new ErrorHandler("Required packet id", 400));
+  }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  const schedule = await Schedule.findOne({
+    "packet.id": id,
+    date: date,
+  });
+  if (!schedule) {
+    return next(new ErrorHandler("Schedule not Found", 404));
+  }
+  res.status(200).json({
+    schedule,
     success: true,
   });
 });
@@ -174,6 +200,44 @@ exports.sendMail = catchAsyncErrors(async (req, res, next) => {
   });
   res.status(200).json({
     message: "Send mail successfully",
+    success: true,
+  });
+});
+
+exports.updateStatus = catchAsyncErrors(async (req, res, next) => {
+  let { doctorId, packetId, date, status, time } = req.body;
+  if (!doctorId && !packetId) {
+    return next(new ErrorHandler("Required doctor id or  packet id", 400));
+  }
+  if (!status) {
+    return next(new ErrorHandler("Required status", 400));
+  }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  if (!time) {
+    return next(new ErrorHandler("Required time", 400));
+  }
+  let query = {
+    date: date,
+    "doctor.id": doctorId,
+    "packet.id": packetId,
+    "schedule.time": time,
+  };
+  let options = { upsert: false, new: true, setDefaultsOnInsert: true };
+
+  let schedule = await Schedule.findOneAndUpdate(
+    query,
+    {
+      $set: {
+        "schedule.$.status": req.body.status,
+      },
+    },
+    options
+  );
+
+  res.status(200).json({
+    schedule,
     success: true,
   });
 });
