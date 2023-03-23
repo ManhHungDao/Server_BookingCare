@@ -84,14 +84,49 @@ exports.getUserScheduleByDate = catchAsyncErrors(async (req, res, next) => {
 
   let length = 0;
   let schedules = null;
-  schedules = await Schedule.find({ "doctor.id": { $ne: null }, date: date })
-    .populate({
-      path: "doctor.id",
-      select: "email image.url detail.clinic.name detail.specialty.name ",
+  if (clinicId) {
+    schedules = await Schedule.find({ "doctor.id": { $ne: null }, date: date })
+      .populate({
+        path: "doctor.id",
+        match: { "detail.clinic.id": clinicId },
+        select: "email image.url detail.clinic.name detail.specialty.name ",
+      })
+      .skip(size * page - size)
+      .limit(size);
+    schedules = schedules.filter((e) => e.doctor.id !== null);
+    length = schedules.length;
+    if (length > 10) {
+      schedules = schedules.slice(size * page - size, size * page);
+    }
+  } else if (filter) {
+    schedules = await Schedule.find({
+      "doctor.id": { $ne: null },
+      date: date,
+      "doctor.name": {
+        $regex: filter,
+        $options: "i",
+      },
     })
-    .skip(size * page - size)
-    .limit(size);
-  length = schedules.length;
+      .populate({
+        path: "doctor.id",
+        select: "email image.url detail.clinic.name detail.specialty.name ",
+      })
+      .skip(size * page - size)
+      .limit(size);
+    length = schedules.length;
+  } else {
+    schedules = await Schedule.find({ "doctor.id": { $ne: null }, date: date })
+      .populate({
+        path: "doctor.id",
+        select: "email image.url detail.clinic.name detail.specialty.name ",
+      })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Schedule.find({
+      "doctor.id": { $ne: null },
+      date: date,
+    }).count();
+  }
 
   res.status(200).json({
     schedules,
@@ -101,7 +136,7 @@ exports.getUserScheduleByDate = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getPacketScheduleByDate = catchAsyncErrors(async (req, res, next) => {
-  let { page, size, sort, filter, date } = req.query;
+  let { page, size, sort, clinicId, date } = req.query;
 
   if (!date) {
     return next(new ErrorHandler("Required date", 400));
@@ -116,14 +151,27 @@ exports.getPacketScheduleByDate = catchAsyncErrors(async (req, res, next) => {
 
   let length = 0;
   let schedules = null;
-  schedules = await Schedule.find({ "packet.id": { $ne: null }, date: date })
-    .populate({
-      path: "packet.id",
-      select: "image clinic specialty",
-    })
-    .skip(size * page - size)
-    .limit(size);
-  length = schedules.length;
+  if (clinicId) {
+    schedules = await Schedule.find({ "packet.id": { $ne: null }, date: date })
+      .populate({
+        path: "packet.id",
+        match: { "clinic.id": clinicId },
+        select: "image clinic specialty",
+      })
+      .skip(size * page - size)
+      .limit(size);
+    schedules = schedules.filter((e) => e.packet.id !== null);
+    length = schedules.length;
+  } else {
+    schedules = await Schedule.find({ "packet.id": { $ne: null }, date: date })
+      .populate({
+        path: "packet.id",
+        select: "image clinic specialty",
+      })
+      .skip(size * page - size)
+      .limit(size);
+    length = schedules.length;
+  }
 
   res.status(200).json({
     schedules,
