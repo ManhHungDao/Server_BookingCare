@@ -289,3 +289,47 @@ exports.updateStatus = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
+  let { doctorId, packetId, date, patient, time } = req.body;
+  if (!doctorId && !packetId) {
+    return next(new ErrorHandler("Required doctor id or  packet id", 400));
+  }
+  if (!patient) {
+    return next(new ErrorHandler("Required patient information", 400));
+  }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  if (!time) {
+    return next(new ErrorHandler("Required time", 400));
+  }
+  let query = {
+    date: date,
+    "doctor.id": doctorId,
+    "packet.id": packetId,
+    "schedule.time": time,
+  };
+  let options = { upsert: false, new: true, setDefaultsOnInsert: true };
+
+  let schedule = await Schedule.findOneAndUpdate(
+    query,
+    {
+      $set: {
+        "schedule.$.user.email": patient.email,
+        "schedule.$.user.name": patient.name,
+        "schedule.$.user.phone": patient.phone,
+        "schedule.$.user.address": patient.address,
+        "schedule.$.user.gender": patient.gender,
+        "schedule.$.user.dayOfBirth": patient.date,
+        "schedule.$.user.reason": patient.reason,
+      },
+    },
+    options
+  );
+
+  res.status(200).json({
+    schedule,
+    success: true,
+  });
+});

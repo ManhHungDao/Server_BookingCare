@@ -7,7 +7,7 @@ import {
   create,
   getAll,
   remove,
-  getSingle,
+  getSingle,getAllHomePatient
 } from "../controllers/user.js";
 
 import {getAllCount} from "../controllers/dashboard";
@@ -18,5 +18,6 @@ router.route("/update-user").put(update);
 router.route("/get-user").get(getSingle);
 router.route("/get-all-user").get(getAll);
 router.route("/get-all-count").get(getAllCount);
+router.route("/get-all-user-home").get(getAllHomePatient);
 
 module.exports = router;

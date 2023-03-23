@@ -2,7 +2,7 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import Allcode from "../models/allcode";
 import Specialty from "../models/specialty";
-import Clinic from "../models/clinic";
+import Schedule from "../models/schedule";
 import User from "../models/user";
 import _ from "lodash";
 
@@ -110,8 +110,9 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!allcode) {
     return next(new ErrorHandler("Allcode not Found", 404));
   }
-  const existed = await Specialty.find({ key: id });
-  if (!_.isEmpty(existed)) {
+  const existSpe = await Specialty.find({ key: id });
+  const existTime = await Schedule.find({ "schedule.time": id });
+  if (!_.isEmpty(existSpe) || !_.isEmpty(existTime)) {
     return next(new ErrorHandler("Existed feild in other model", 500));
   }
   await Allcode.deleteOne({ _id: id });

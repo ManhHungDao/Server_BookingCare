@@ -247,7 +247,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAllHomePatient = catchAsyncErrors(async (req, res, next) => {
-  const clinics = await Clinic.find().select("name image");
+  const clinics = await Clinic.find().sort({'views': -1}).select("name image");
   res.status(200).json({
     clinics,
     success: true,
