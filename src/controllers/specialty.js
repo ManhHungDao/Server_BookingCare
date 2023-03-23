@@ -154,22 +154,25 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   if (clinicId) {
     specialties = await Specialty.find({
       "clinic.id": clinicId,
-    });
-    length = specialties.length;
-    if (length > 10) {
-      specialties = specialties.slice(size * page - size, size * page);
-    }
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Specialty.find({
+      "clinic.id": clinicId,
+    }).count();
   } else if (filter) {
     specialties = await Specialty.find({
-      "name": {
-       "$regex": filter,
-        "$options": "i",
+      name: {
+        $regex: filter,
+        $options: "i",
       },
     });
-    length = specialties.length;
-    if (length > 10) {
-      specialties = specialties.slice(size * page - size, size * page);
-    }
+    length = await Specialty.find({
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
+    }).count();
   } else {
     specialties = await Specialty.aggregate([
       {

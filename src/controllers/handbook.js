@@ -127,22 +127,27 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   if (clinicId) {
     handbooks = await Handbook.find({
       "clinic.id": clinicId,
-    });
-    length = handbooks.length;
-    if (length > 10) {
-      handbooks = Handbook.slice(size * page - size, size * page);
-    }
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Handbook.find({
+      "clinic.id": clinicId,
+    }).count();
   } else if (filter) {
     handbooks = await Handbook.find({
       name: {
         $regex: filter,
         $options: "i",
       },
-    });
-    length = handbooks.length;
-    if (length > 10) {
-      handbooks = handbooks.slice(size * page - size, size * page);
-    }
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Handbook.find({
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
+    }).count();
   } else {
     handbooks = await Handbook.find()
       .skip(size * page - size)

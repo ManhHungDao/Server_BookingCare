@@ -131,22 +131,27 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   if (clinicId) {
     packets = await Packet.find({
       "clinic.id": clinicId,
-    });
-    length = packets.length;
-    if (length > 10) {
-      packets = packets.slice(size * page - size, size * page);
-    }
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Packet.find({
+      "clinic.id": clinicId,
+    }).count();
   } else if (filter) {
     packets = await Packet.find({
       name: {
         $regex: filter,
         $options: "i",
       },
-    });
-    length = packets.length;
-    if (length > 10) {
-      packets = packets.slice(size * page - size, size * page);
-    }
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Packet.find({
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
+    }).count();
   } else {
     packets = await Packet.find({ roleId: { $not: { $regex: "R0" } } })
       .select("-password")

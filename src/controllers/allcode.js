@@ -31,11 +31,13 @@ exports.getTypePagination = catchAsyncErrors(async (req, res, next) => {
   let allcodes = null;
   allcodes = await Allcode.find({
     type: filter,
-  }).sort({ valueVI: 1 });
-  length = allcodes.length;
-  if (length > 10) {
-    allcodes = allcodes.slice(size * page - size, size * page);
-  }
+  })
+    .sort({ valueVI: 1 })
+    .skip(size * page - size)
+    .limit(size);
+  length = await Allcode.find({
+    type: filter,
+  }).count();
 
   res.status(200).json({
     allcodes,

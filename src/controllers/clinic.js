@@ -158,22 +158,69 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   if (!size) {
     size = 10;
   }
-  let length = 0;
+  let length = "";
   let clinics = null;
   if (filter) {
-    clinics = await Clinic.aggregate([{
-      $match: {
-        'name': {
-          '$regex': filter,
-          '$options': 'i'
-        }
+    clinics = await Clinic.aggregate([
+      {
+        $match: {
+          name: {
+            $regex: filter,
+            $options: "i",
+          },
+        },
       },
-    }]);
-    length = clinics.length
-    if (length > 10) {
-      clinics = clinics.slice(size * page - size, size * page);
-    }
+      {
+        $limit: size,
+      },
+      {
+        $skip: size * page - size,
+      },
+    ]);
+    [length] = await Clinic.aggregate([
+      {
+        $match: {
+          name: {
+            $regex: filter,
+            $options: "i",
+          },
+        },
+      },
+      { $count: "length" },
+    ]);
   } else {
+    // {
+    //   $facet: {
+    //     response: [{ $skip: count * page }, { $limit: count }],
+    //     pagination: [
+    //       {
+    //         $count: 'totalDocs',
+    //       },
+    //       {
+    //         $addFields: {
+    //           page: page + 1,
+    //           totalPages: {
+    //             $floor: {
+    //               $divide: ['$totalDocs', count],
+    //             },
+    //           },
+    //         },
+    //       },
+    //     ],
+    //   },
+    // },
+
+    // [clinics] = await Clinic.aggregate([
+    //   {
+    //     $facet: {
+    //       response: [{ $skip: size * page - size }, { $limit: size }],
+    //       pagination:[ {
+    //         $count: "count",
+    //       }],
+    //     },
+    //   },
+    // ]);
+
     clinics = await Clinic.aggregate([
       {
         $limit: size,
@@ -182,12 +229,20 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
         $skip: size * page - size,
       },
     ]);
-    length = await Clinic.count();
+    [length] = await Clinic.aggregate([
+      {
+        $limit: size,
+      },
+      {
+        $skip: size * page - size,
+      },
+      { $count: "length" },
+    ]);
   }
   res.status(200).json({
     clinics,
     success: true,
-    count: length,
+    count: length.length,
   });
 });
 

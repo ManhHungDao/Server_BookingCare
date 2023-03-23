@@ -198,11 +198,16 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
         roleId: { $not: { $regex: "R0" } },
       },
       "-password"
-    );
-    length = users.length;
-    if (length > 10) {
-      users = users.slice(size * page - size, size * page);
-    }
+    )
+      .skip(size * page - size)
+      .limit(size);
+    length = await User.find(
+      {
+        "detail.clinic.id": clinicId,
+        roleId: { $not: { $regex: "R0" } },
+      },
+      "-password"
+    ).count();
   } else if (filter) {
     users = await User.find(
       {
@@ -213,18 +218,25 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
         roleId: { $not: { $regex: "R0" } },
       },
       "-password"
-    );
-    length = users.length;
-    if (length > 10) {
-      users = users.slice(size * page - size, size * page);
-    }
+    )
+      .skip(size * page - size)
+      .limit(size);
+    length = await User.find(
+      {
+        name: {
+          $regex: filter,
+          $options: "i",
+        },
+        roleId: { $not: { $regex: "R0" } },
+      },
+      "-password"
+    ).count();
   } else {
     users = await User.find({ roleId: { $not: { $regex: "R0" } } })
       .select("-password")
       .skip(size * page - size)
       .limit(size);
-    length = await User.count();
-    length--;
+    length = await User.find({ roleId: { $not: { $regex: "R0" } } }).count();
   }
 
   res.status(200).json({
