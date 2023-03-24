@@ -60,7 +60,9 @@ exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
     select: "email image.url detail.clinic.name detail.specialty.name ",
   });
   if (!schedule) {
-    return next(new ErrorHandler("Schedule not Found", 404));
+    return res.status(200).json({
+      success: false,
+    });
   }
   res.status(200).json({
     schedule,
@@ -193,7 +195,9 @@ exports.getSinglePacket = catchAsyncErrors(async (req, res, next) => {
     date: date,
   });
   if (!schedule) {
-    return next(new ErrorHandler("Schedule not Found", 404));
+    return res.status(200).json({
+      success: false,
+    });
   }
   res.status(200).json({
     schedule,

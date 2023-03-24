@@ -160,3 +160,36 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     count: length,
   });
 });
+
+exports.getAllHomePatient = catchAsyncErrors(async (req, res, next) => {
+  const handbooks = await Handbook.find().select("name image");
+  res.status(200).json({
+    handbooks,
+    success: true,
+  });
+});
+
+exports.getRelated = catchAsyncErrors(async (req, res, next) => {
+  let { page, size, sort, specialtyId } = req.query;
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+  let handbooks = null;
+  handbooks = await Handbook.find(
+    { "specialty.id": specialtyId },
+    "name image",
+    { skip: size * page - size, limit: size }
+  );
+  length = await Handbook.find({ "specialty.id": specialtyId }).count();
+  res.status(200).json({
+    handbooks,
+    success: true,
+    count: length,
+  });
+});

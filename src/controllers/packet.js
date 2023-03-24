@@ -2,6 +2,8 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Packet from "../models/packet";
+import moment from "moment";
+import Schedule from "../models/schedule";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const { name, image, specialty, clinic, price, introduce, detail, payment } =
@@ -91,7 +93,16 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!packet) {
     return next(new ErrorHandler("Packet not Found", 404));
   }
+
   cloudinary.v2.uploader.destroy(packet.image.public_id);
+
+  let theNextDay = moment(new Date()).add(1, "days").startOf("day").valueOf();
+  let query = {
+    "packet.id": id,
+    date: { $gte: theNextDay / 1000 },
+  };
+
+  await Schedule.deleteMany(query);
   await Packet.deleteOne({
     _id: id,
   });

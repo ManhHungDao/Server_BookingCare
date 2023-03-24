@@ -3,6 +3,8 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import sendToken from "../utils/jwtToken";
+import moment from "moment";
+import Schedule from "../models/schedule";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const {
@@ -119,6 +121,15 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("User not Found", 404));
   }
+
+  cloudinary.v2.uploader.destroy(user.image.public_id);
+  // kiểm tra ngày trong tương lai có lịch hay không, nếu có thì xóa lịch
+  let theNextDay = moment(new Date()).add(1, "days").startOf("day").valueOf();
+  let query = {
+    "doctor.id": id,
+    date: { $gte: theNextDay / 1000 },
+  };
+  await Schedule.deleteMany(query);
   await User.deleteOne({
     _id: id,
   });
