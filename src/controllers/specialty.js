@@ -209,12 +209,26 @@ exports.getByClinicId = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getPopularHome = catchAsyncErrors(async (req, res, next) => {
-  const specialties = await Specialty.find(
-    {
-      popular: true,
-    },
-    "_id name image key"
-  );
+  let { filter } = req.query;
+  let specialties = null;
+  if (filter) {
+    specialties = await Specialty.find(
+      {
+        name: {
+          $regex: filter,
+          $options: "i",
+        },
+        popular: true,
+      },
+      "_id name image key"
+    );
+  } else
+    specialties = await Specialty.find(
+      {
+        popular: true,
+      },
+      "_id name image key"
+    );
   res.status(200).json({
     specialties,
     success: true,

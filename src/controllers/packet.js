@@ -6,8 +6,17 @@ import moment from "moment";
 import Schedule from "../models/schedule";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { name, image, specialty, clinic, price, introduce, detail, payment } =
-    req.body;
+  const {
+    name,
+    image,
+    type,
+    clinic,
+    price,
+    introduce,
+    detail,
+    payment,
+    specialty,
+  } = req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
@@ -29,6 +38,12 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!detail) {
     return next(new ErrorHandler("Required detail", 400));
   }
+  if (!type) {
+    return next(new ErrorHandler("Required type", 400));
+  }
+  if (!specialty) {
+    return next(new ErrorHandler("Required specialty", 400));
+  }
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "packet",
   });
@@ -38,7 +53,10 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
       public_id: result.public_id,
       url: result.secure_url,
     },
-    specialty,
+    type: {
+      typeCode: type,
+      specialty: specialty,
+    },
     clinic,
     price,
     payment,

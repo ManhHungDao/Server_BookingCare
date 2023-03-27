@@ -258,32 +258,34 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAllHomePatient = catchAsyncErrors(async (req, res, next) => {
-  // let { page, size, sort, filter, clinicId } = req.query;
-  // page = parseInt(page);
-  // if (!page) {
-  //   page = 1;
-  // }
-  // size = parseInt(size);
-  // if (!size) {
-  //   size = 10;
-  // }
-  // let length = 0;
-  // let users = null;
+  let { page, size, sort, filter, clinicId } = req.query;
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+  let users = null;
 
-  // users = await User.find({ roleId: { $not: { $regex: "R0" } } })
-  //   .select("name image")
-  //   .skip(size * page - size)
-  //   .limit(size);
-  // length = await User.find({ roleId: { $not: { $regex: "R0" } } }).count();
-  // res.status(200).json({
-  //   users,
-  //   success: true,
-  //   count: length,
-  // });
-  const users = await User.find({ roleId: { $not: { $regex: "R0" } } })
-    .select("name image detail.specialty.name detail.position.name")
-    .skip(0)
-    .limit(20);
+  if (filter) {
+    users = await User.find(
+      {
+        name: {
+          $regex: filter,
+          $options: "i",
+        },
+        roleId: { $not: { $regex: "R0" } },
+      },
+      "name image detail.specialty.name detail.position.name"
+    );
+  } else
+    users = await User.find({ roleId: { $not: { $regex: "R0" } } })
+      .select("name image detail.specialty.name detail.position.name")
+      .skip(0)
+      .limit(20);
   res.status(200).json({
     users,
     success: true,

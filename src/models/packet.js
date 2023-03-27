@@ -26,13 +26,24 @@ const packetSchema = new Schema({
       required: true,
     },
   },
-  specialty: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Specialty",
+  type: {
+    typeCode: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+      },
+      name: {
+        type: String,
+      },
     },
-    name: {
-      type: String,
+    specialty: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Allcode",
+      },
+      name: {
+        type: String,
+      },
     },
   },
   price: {
