@@ -73,9 +73,9 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!introduce) {
     return next(new ErrorHandler("Required introduce", 400));
   }
-  if (!note) {
-    return next(new ErrorHandler("Required note", 400));
-  }
+  // if (!note) {
+  //   return next(new ErrorHandler("Required note", 400));
+  // }
   const result = await cloudinary.v2.uploader.upload(image, {
     folder: "user",
     width: 150,
@@ -100,7 +100,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
       price,
       payment,
       introduce,
-      note,
+      note: note || null,
       detail,
     },
   });

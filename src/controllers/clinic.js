@@ -5,6 +5,7 @@ import Clinic from "../models/clinic";
 import Specialty from "../models/specialty";
 import User from "../models/user";
 import Handbook from "../models/handbook";
+import Packet from "../models/packet";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const { name, image, logo, introduce, detail, address } = req.body;
@@ -115,23 +116,51 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   }
 
   // xóa người dùng thuộc bệnh viên
-  await User.deleteMany({
-    "detail.clinic.id": clinic._id,
-  });
+  const users = await User.find({ "detail.clinic.id": clinic._id }).then(
+    (users) =>
+      users.map((user) => cloudinary.v2.uploader.destroy(user.image.public_id))
+  );
 
   // xóa các chuyên khoa thuộc bệnh viện
-  await Specialty.deleteMany({
-    "clinic.id": clinic._id,
-  });
+  const specialties = await Specialty.find({ "clinic.id": clinic._id }).then(
+    (specialties) =>
+      specialties.map((specialty) =>
+        cloudinary.v2.uploader.destroy(specialty.image.public_id)
+      )
+  );
+
+  // xóa các góm khám thuộc bệnh viện
+  const packets = await Packet.find({ "clinic.id": clinic._id }).then(
+    (packets) =>
+      packets.map((packet) =>
+        cloudinary.v2.uploader.destroy(packet.image.public_id)
+      )
+  );
 
   // xóa các bài đăng thuộc bệnh viện
-  await Handbook.deleteMany({ "clinic.id": clinic._id });
+  const handbooks = await Handbook.find({ "clinic.id": clinic._id }).then(
+    (handbooks) =>
+      handbooks.map((handbook) =>
+        cloudinary.v2.uploader.destroy(handbook.image.public_id)
+      )
+  );
 
-  cloudinary.v2.uploader.destroy(clinic.image.public_id);
-  cloudinary.v2.uploader.destroy(clinic.logo.public_id);
-  await Clinic.deleteOne({
-    _id: id,
+  Promise.all(users, specialties, packets, handbooks).then(async () => {
+    await User.deleteMany({
+      "detail.clinic.id": clinic._id,
+    });
+    await Specialty.deleteMany({
+      "clinic.id": clinic._id,
+    });
+    await Packet.deleteMany({ "clinic.id": clinic._id });
+    await Handbook.deleteMany({ "clinic.id": clinic._id });
+    cloudinary.v2.uploader.destroy(clinic.image.public_id);
+    cloudinary.v2.uploader.destroy(clinic.logo.public_id);
+    await Clinic.deleteOne({
+      _id: id,
+    });
   });
+
   res.status(200).json({
     message: "Clinic deleted successfully",
     success: true,
@@ -161,33 +190,20 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   let length = "";
   let clinics = null;
   if (filter) {
-    clinics = await Clinic.aggregate([
-      {
-        $match: {
-          name: {
-            $regex: filter,
-            $options: "i",
-          },
-        },
+    clinics = await Clinic.find({
+      name: {
+        $regex: filter,
+        $options: "i",
       },
-      {
-        $limit: size,
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Clinic.find({
+      name: {
+        $regex: filter,
+        $options: "i",
       },
-      {
-        $skip: size * page - size,
-      },
-    ]);
-    [length] = await Clinic.aggregate([
-      {
-        $match: {
-          name: {
-            $regex: filter,
-            $options: "i",
-          },
-        },
-      },
-      { $count: "length" },
-    ]);
+    }).count();
   } else {
     // {
     //   $facet: {
@@ -221,33 +237,20 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     //   },
     // ]);
 
-    clinics = await Clinic.aggregate([
-      {
-        $limit: size,
-      },
-      {
-        $skip: size * page - size,
-      },
-    ]);
-    [length] = await Clinic.aggregate([
-      {
-        $limit: size,
-      },
-      {
-        $skip: size * page - size,
-      },
-      { $count: "length" },
-    ]);
+    clinics = await Clinic.find()
+      .skip(size * page - size)
+      .limit(size);
+    length = await Clinic.count();
   }
   res.status(200).json({
     clinics,
     success: true,
-    count: length.length,
+    count: length,
   });
 });
 
 exports.getAllHomePatient = catchAsyncErrors(async (req, res, next) => {
-  const clinics = await Clinic.find().sort({'views': -1}).select("name image");
+  const clinics = await Clinic.find().sort({ views: -1 }).select("name image");
   res.status(200).json({
     clinics,
     success: true,

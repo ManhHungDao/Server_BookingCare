@@ -1,12 +1,3 @@
-// title: DataTypes.STRING,
-// contentMarkdown: DataTypes.TEXT("long"),
-// contentHTML: DataTypes.TEXT("long"),
-// price: DataTypes.STRING,
-// clinicId: DataTypes.STRING,
-// description:DataTypes.TEXT("long"),
-// image: DataTypes.TEXT("long"),
-// typepacket:DataTypes.STRING,
-
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;

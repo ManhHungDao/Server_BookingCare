@@ -115,7 +115,8 @@ const userSchema = new Schema({
     },
     note: {
       type: String,
-      required: true,
+      default: null,
+      // required: true,
     },
     detail: {
       type: String,
