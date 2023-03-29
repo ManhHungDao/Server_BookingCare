@@ -98,6 +98,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   const key = specialty.key;
 
   // kiểm tra chuyên khoa có tồn tại trong người dùng
+
   const user = await User.findOne({
     "detail.specialty.id": key,
   });
@@ -105,15 +106,35 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   // kiểm tra chuyên khoa có bài đăng - xóa tất cả bài đăng thuộc chuyên khoa
   if (specialty.popular === true) {
     // - xóa chuyên khoa nổi bật   popular:true , - handbook clinic.id:null
-    await Handbook.deleteMany({
+    await Handbook.find({
       "specialty.id": specialty.key,
       "clinic.id": null,
+    }).then(async (handbooks) => {
+      if (!_.isEmpty(handbook)) {
+        handbooks.map((handbook) =>
+          cloudinary.v2.uploader.destroy(handbook.image.public_id)
+        );
+        await Handbook.deleteMany({
+          "specialty.id": specialty.key,
+          "clinic.id": null,
+        });
+      }
     });
   } else {
-    // - xóa chuyên khoa nổi bật   popular:false , - handbook clinic.id:!null
-    await Handbook.deleteMany({
+    // - xóa chuyên khoa    popular:false , - handbook clinic.id:!null
+    await Handbook.find({
       "specialty.id": specialty.key,
       "clinic.id": specialty.clinic.id,
+    }).then(async (handbooks) => {
+      if (!_.isEmpty(handbook)) {
+        handbooks.map((handbook) =>
+          cloudinary.v2.uploader.destroy(handbook.image.public_id)
+        );
+        await Handbook.deleteMany({
+          "specialty.id": specialty.key,
+          "clinic.id": specialty.clinic.id,
+        });
+      }
     });
   }
 

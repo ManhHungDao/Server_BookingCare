@@ -6,6 +6,7 @@ import Specialty from "../models/specialty";
 import User from "../models/user";
 import Handbook from "../models/handbook";
 import Packet from "../models/packet";
+import _ from "lodash";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const { name, image, logo, introduce, detail, address } = req.body;
@@ -116,51 +117,54 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   }
 
   // xóa người dùng thuộc bệnh viên
-  const users = await User.find({ "detail.clinic.id": clinic._id }).then(
-    (users) =>
-      users.map((user) => cloudinary.v2.uploader.destroy(user.image.public_id))
-  );
-
-  // xóa các chuyên khoa thuộc bệnh viện
-  const specialties = await Specialty.find({ "clinic.id": clinic._id }).then(
-    (specialties) =>
-      specialties.map((specialty) =>
-        cloudinary.v2.uploader.destroy(specialty.image.public_id)
-      )
-  );
-
-  // xóa các góm khám thuộc bệnh viện
-  const packets = await Packet.find({ "clinic.id": clinic._id }).then(
-    (packets) =>
-      packets.map((packet) =>
-        cloudinary.v2.uploader.destroy(packet.image.public_id)
-      )
-  );
-
-  // xóa các bài đăng thuộc bệnh viện
-  const handbooks = await Handbook.find({ "clinic.id": clinic._id }).then(
-    (handbooks) =>
-      handbooks.map((handbook) =>
-        cloudinary.v2.uploader.destroy(handbook.image.public_id)
-      )
-  );
-
-  Promise.all(users, specialties, packets, handbooks).then(async () => {
-    await User.deleteMany({
-      "detail.clinic.id": clinic._id,
-    });
-    await Specialty.deleteMany({
-      "clinic.id": clinic._id,
-    });
-    await Packet.deleteMany({ "clinic.id": clinic._id });
-    await Handbook.deleteMany({ "clinic.id": clinic._id });
-    cloudinary.v2.uploader.destroy(clinic.image.public_id);
-    cloudinary.v2.uploader.destroy(clinic.logo.public_id);
-    await Clinic.deleteOne({
-      _id: id,
-    });
+  await User.find({ "detail.clinic.id": clinic._id }).then(async (users) => {
+    if (!_.isEmpty(users)) {
+      users.map((user) => cloudinary.v2.uploader.destroy(user.image.public_id));
+      await User.deleteMany({
+        "detail.clinic.id": clinic._id,
+      });
+    }
   });
 
+  // xóa các chuyên khoa thuộc bệnh viện
+  await Specialty.find({ "clinic.id": clinic._id }).then(
+    async (specialties) => {
+      if (!_.isEmpty(specialties)) {
+        specialties.map((specialty) =>
+          cloudinary.v2.uploader.destroy(specialty.image.public_id)
+        );
+        await Specialty.deleteMany({
+          "clinic.id": clinic._id,
+        });
+      }
+    }
+  );
+
+  // xóa các gói khám thuộc bệnh viện
+  await Packet.find({ "clinic.id": clinic._id }).then(async (packets) => {
+    if (!_.isEmpty(packets)) {
+      packets.map((packet) =>
+        cloudinary.v2.uploader.destroy(packet.image.public_id)
+      );
+      await Packet.deleteMany({ "clinic.id": clinic._id });
+    }
+  });
+
+  // xóa các bài đăng thuộc bệnh viện
+  await Handbook.find({ "clinic.id": clinic._id }).then(async (handbooks) => {
+    if (!_.isEmpty(handbooks)) {
+      handbooks.map((handbook) =>
+        cloudinary.v2.uploader.destroy(handbook.image.public_id)
+      );
+      await Handbook.deleteMany({ "clinic.id": clinic._id });
+    }
+  });
+
+  cloudinary.v2.uploader.destroy(clinic.image.public_id);
+  cloudinary.v2.uploader.destroy(clinic.logo.public_id);
+  await Clinic.deleteOne({
+    _id: id,
+  });
   res.status(200).json({
     message: "Clinic deleted successfully",
     success: true,
