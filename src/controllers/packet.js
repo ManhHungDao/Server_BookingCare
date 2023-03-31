@@ -146,7 +146,7 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  let { page, size, sort, filter, clinicId } = req.query;
+  let { page, size, sort, filter, clinicId, type } = req.query;
   page = parseInt(page);
   if (!page) {
     page = 1;
@@ -157,7 +157,27 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   }
   let length = 0;
   let packets = null;
-  if (clinicId) {
+  if (type && clinicId) {
+    packets = await Packet.find({
+      "clinic.id": clinicId,
+      "type.typeCode.id": type,
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Packet.find({
+      "clinic.id": clinicId,
+      "type.typeCode.id": type,
+    }).count();
+  } else if (type) {
+    packets = await Packet.find({
+      "type.typeCode.id": type,
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Packet.find({
+      "type.typeCode.id": type,
+    }).count();
+  } else if (clinicId) {
     packets = await Packet.find({
       "clinic.id": clinicId,
     })
