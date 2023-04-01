@@ -4,6 +4,8 @@ import Schedule from "../models/schedule";
 import User from "../models/user";
 import nodemailer from "nodemailer";
 import _ from "lodash";
+var ObjectId = require("mongoose").Types.ObjectId;
+
 exports.createOrUpdate = catchAsyncErrors(async (req, res, next) => {
   let { doctor, packet, detail, schedule, date, note } = req.body;
   if (!doctor && !packet) {
@@ -295,7 +297,7 @@ exports.updateStatus = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
-  let { doctorId, packetId, date, patient, time } = req.body;
+  const { doctorId, packetId, date, patient, time } = req.body;
   if (!doctorId && !packetId) {
     return next(new ErrorHandler("Required doctor id or  packet id", 400));
   }
@@ -308,6 +310,37 @@ exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
   if (!time) {
     return next(new ErrorHandler("Required time", 400));
   }
+
+  const checkExisted = await Schedule.aggregate([
+    {
+      $match: {
+        date: date + "",
+        "doctor.id": doctorId ? new ObjectId(doctorId) : null,
+        "packet.id": packetId ? new ObjectId(packetId) : null,
+      },
+    },
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        $and: [
+          { "schedule.time": new ObjectId(time) },
+          {
+            $or: [
+              { "schedule.status": "Chờ xác nhận" },
+              { "schedule.status": "Đã xác nhận" },
+            ],
+          },
+        ],
+      },
+    },
+  ]);
+  if (!_.isEmpty(checkExisted))
+    return res.status(200).json({
+      success: false,
+    });
+
   let query = {
     date: date,
     "doctor.id": doctorId,
@@ -327,7 +360,7 @@ exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
         "schedule.$.user.gender": patient.gender,
         "schedule.$.user.dayOfBirth": patient.date,
         "schedule.$.user.reason": patient.reason,
-        "schedule.$.status": "Lịch hẹn mới",
+        "schedule.$.status": "Chờ xác nhận",
       },
     },
     options
@@ -340,7 +373,9 @@ exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.patientUpdateStatus = catchAsyncErrors(async (req, res, next) => {
-  let { doctorId, packetId, date, time } = req.body;
+  let { doctorId, packetId, date, time, cancel, email } = req.body;
+  doctorId = doctorId === "null" ? null : doctorId;
+  packetId = packetId === "null" ? null : packetId;
   if (!date) {
     return next(new ErrorHandler("Required date", 400));
   }
@@ -350,18 +385,45 @@ exports.patientUpdateStatus = catchAsyncErrors(async (req, res, next) => {
   if (!doctorId && !packetId) {
     return next(new ErrorHandler("Required doctor id or packet id", 400));
   }
-  console.log("🚀packetId:", packetId);
+  const status = cancel === "true" ? "Đã hủy" : "Đã xác nhận";
+
+  const allowUpdate = await Schedule.aggregate([
+    {
+      $match: {
+        date: date + "",
+        "doctor.id": doctorId ? new ObjectId(doctorId) : null,
+        "packet.id": packetId ? new ObjectId(packetId) : null,
+      },
+    },
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        $and: [
+          { "schedule.time": new ObjectId(time) },
+          { "schedule.user.email": email },
+          { "schedule.status": { $ne: "Chờ xác nhận" } },
+        ],
+      },
+    },
+  ]);
+
+  if (!_.isEmpty(allowUpdate)) {
+    return res.status(200).json({
+      success: false,
+    });
+  }
+
   let query = {
     date: date,
-    "doctor.id": doctorId === "null" ? null : doctorId,
-    "packet.id": packetId === "null" ? null : packetId,
+    "doctor.id": doctorId,
+    "packet.id": packetId,
     "schedule.time": time,
-    "schedule.status": "Lịch hẹn mới",
   };
   let options = { upsert: false, new: true, setDefaultsOnInsert: true };
-
   await Schedule.findOneAndUpdate(query, {
-    $set: { "schedule.$.status": "Đã xác nhận" },
+    $set: { "schedule.$.status": status },
     options,
   });
 
