@@ -6,7 +6,7 @@ import {
   getSingle,
   remove,
   update,
-  getAllHomePatient,getRelated
+  getAllHomePatient,getRelated,getAllSpecialty
 } from "../controllers/handbook";
 
 router.route("/create-handbook").post(create);
@@ -16,5 +16,7 @@ router.route("/delete-handbook").delete(remove);
 router.route("/update-handbook").put(update);
 router.route("/get-all-home-handbook").get(getAllHomePatient);
 router.route("/get-related-handbook").get(getRelated);
+router.route("/get-all-specialty-handbook").get(getAllSpecialty);
+
 
 module.exports = router;

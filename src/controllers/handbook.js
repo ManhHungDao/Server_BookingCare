@@ -113,7 +113,8 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  let { page, size, sort, filter, clinicId } = req.query;
+
+  let { page, size, sort, filter, specialtyId } = req.query;
   page = parseInt(page);
   if (!page) {
     page = 1;
@@ -124,14 +125,14 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   }
   let length = 0;
   let handbooks = null;
-  if (clinicId) {
+  if (specialtyId) {
     handbooks = await Handbook.find({
-      "clinic.id": clinicId,
+      "specialty.id": specialtyId,
     })
       .skip(size * page - size)
       .limit(size);
     length = await Handbook.find({
-      "clinic.id": clinicId,
+      "specialty.id": specialtyId,
     }).count();
   } else if (filter) {
     handbooks = await Handbook.find({
@@ -191,5 +192,17 @@ exports.getRelated = catchAsyncErrors(async (req, res, next) => {
     handbooks,
     success: true,
     count: length,
+  });
+});
+
+exports.getAllSpecialty = catchAsyncErrors(async (req, res, next) => {
+  let list = await Handbook.aggregate([
+    { $group: { _id: { key: "$specialty.id", value: "$specialty.name" } } },
+  ]);
+
+  list = list.map((item) => ({ id: item._id.key, name: item._id.value }));
+  res.status(200).json({
+    list,
+    success: true,
   });
 });
