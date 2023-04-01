@@ -240,7 +240,7 @@ exports.sendMail = catchAsyncErrors(async (req, res, next) => {
   });
 
   let mailOptions = {
-    from: '"BookingCare VN" <daomanhhung1202@gmail.com>',
+    from: '"HealthCare" <daomanhhung1202@gmail.com>',
     to: to,
     subject: subject,
     html: html,
@@ -327,6 +327,7 @@ exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
         "schedule.$.user.gender": patient.gender,
         "schedule.$.user.dayOfBirth": patient.date,
         "schedule.$.user.reason": patient.reason,
+        "schedule.$.status": "Lịch hẹn mới",
       },
     },
     options
@@ -334,6 +335,75 @@ exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     schedule,
+    success: true,
+  });
+});
+
+exports.patientUpdateStatus = catchAsyncErrors(async (req, res, next) => {
+  let { doctorId, packetId, date, time } = req.body;
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  if (!time) {
+    return next(new ErrorHandler("Required time", 400));
+  }
+  if (!doctorId && !packetId) {
+    return next(new ErrorHandler("Required doctor id or packet id", 400));
+  }
+  console.log("🚀packetId:", packetId);
+  let query = {
+    date: date,
+    "doctor.id": doctorId === "null" ? null : doctorId,
+    "packet.id": packetId === "null" ? null : packetId,
+    "schedule.time": time,
+    "schedule.status": "Lịch hẹn mới",
+  };
+  let options = { upsert: false, new: true, setDefaultsOnInsert: true };
+
+  await Schedule.findOneAndUpdate(query, {
+    $set: { "schedule.$.status": "Đã xác nhận" },
+    options,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+exports.patientUpdateComment = catchAsyncErrors(async (req, res, next) => {
+  let { doctorId, packetId, date, time, rating, comment } = req.body;
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  if (!time) {
+    return next(new ErrorHandler("Required time", 400));
+  }
+  if (!rating) {
+    return next(new ErrorHandler("Required rating", 400));
+  }
+  if (!comment) {
+    return next(new ErrorHandler("Required comment", 400));
+  }
+  let query = {
+    "doctor.id": doctorId === "null" ? null : doctorId,
+    "packet.id": packetId === "null" ? null : packetId,
+    "schedule.time": time,
+    "schedule.status": "Hoàn thành",
+  };
+  let options = { upsert: false, new: true, setDefaultsOnInsert: true };
+
+  await Schedule.findOneAndUpdate(
+    query,
+    {
+      $set: {
+        "schedule.$.rating": rating,
+        "schedule.$.comment": comment,
+      },
+    },
+    options
+  );
+
+  res.status(200).json({
     success: true,
   });
 });

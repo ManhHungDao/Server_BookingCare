@@ -8,7 +8,10 @@ import {
   sendMail,
   getUserScheduleByDate,
   updateStatus,
-  getPacketScheduleByDate,getSinglePacket,createUserBooking
+  getPacketScheduleByDate,
+  getSinglePacket,
+  createUserBooking,
+  patientUpdateStatus,
 } from "../controllers/schedule";
 
 router.route("/upsert-schedule").post(createOrUpdate);
@@ -20,6 +23,6 @@ router.route("/get-packet-schedule").get(getPacketScheduleByDate);
 router.route("/delete-schedule").delete(remove);
 router.route("/sent-mail-patient").post(sendMail);
 router.route("/create-user-booking-schedule").put(createUserBooking);
-
+router.route("/patient-confirm-booking").put(patientUpdateStatus);
 
 module.exports = router;
