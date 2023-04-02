@@ -291,3 +291,42 @@ exports.getAllHomePatient = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+// lấy ra danh sách bác sĩ thuộc chuyên khoa - hiển thị trong chuyên khoa khi người dùng nhấn chọn
+exports.getAllDoctorBySpecialtyHome = catchAsyncErrors(
+  async (req, res, next) => {
+    let { page, size, id } = req.query;
+
+    if (!id) {
+      return next(new ErrorHandler("Required specilaty id", 400));
+    }
+
+    page = parseInt(page);
+    if (!page) {
+      page = 1;
+    }
+    size = parseInt(size);
+    if (!size) {
+      size = 10;
+    }
+
+    let users = await User.find(
+      {
+        "detail.specialty.id": id,
+        roleId: { $not: { $regex: "R0" } },
+      },
+      "name"
+    )
+      .skip(size * page - size)
+      .limit(size);
+    let length = await User.find({
+      "detail.specialty.id": id,
+      roleId: { $not: { $regex: "R0" } },
+    }).count();
+    res.status(200).json({
+      users,
+      count:length,
+      success: true,
+    });
+  }
+);
