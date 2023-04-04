@@ -110,7 +110,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
       "specialty.id": specialty.key,
       "clinic.id": null,
     }).then(async (handbooks) => {
-      if (!_.isEmpty(handbook)) {
+      if (!_.isEmpty(handbooks)) {
         handbooks.map((handbook) =>
           cloudinary.v2.uploader.destroy(handbook.image.public_id)
         );
@@ -126,7 +126,7 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
       "specialty.id": specialty.key,
       "clinic.id": specialty.clinic.id,
     }).then(async (handbooks) => {
-      if (!_.isEmpty(handbook)) {
+      if (!_.isEmpty(handbooks)) {
         handbooks.map((handbook) =>
           cloudinary.v2.uploader.destroy(handbook.image.public_id)
         );
@@ -195,15 +195,14 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
       },
     }).count();
   } else {
-    specialties = await Specialty.aggregate([
-      {
-        $skip: size * page - size,
-      },
-      {
-        $limit: size,
-      },
-    ]);
-    length = await Specialty.count();
+    specialties = await Specialty.find({
+      popular: true,
+    })
+      .skip(size * page - size)
+      .limit(size);
+    length = await Specialty.find({
+      popular: true,
+    }).count();
   }
   res.status(200).json({
     specialties,

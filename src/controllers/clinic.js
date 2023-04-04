@@ -273,3 +273,13 @@ exports.increatmentViews = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.getAllProvince = catchAsyncErrors(async (req, res, next) => {
+  let list = await Clinic.aggregate([{ $group: { _id: "$address.province" } }]);
+  res.status(200).json({
+    list,
+    success: true,
+  });
+});
+
+

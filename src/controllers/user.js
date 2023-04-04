@@ -5,6 +5,8 @@ import cloudinary from "cloudinary";
 import sendToken from "../utils/jwtToken";
 import moment from "moment";
 import Schedule from "../models/schedule";
+import Clinic from "../models/clinic";
+import Specialty from "../models/specialty";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const {
@@ -325,8 +327,57 @@ exports.getAllDoctorBySpecialtyHome = catchAsyncErrors(
     }).count();
     res.status(200).json({
       users,
-      count:length,
+      count: length,
       success: true,
     });
   }
 );
+
+/* lọc ra những bác sĩ thuộc thành phố đã chọn*/
+exports.getAllDoctorByProvince = catchAsyncErrors(async (req, res, next) => {
+  let { page, size, id, province } = req.query;
+
+  if (!id) {
+    return next(new ErrorHandler("Required specilaty id", 400));
+  }
+  if (!province) {
+    return next(new ErrorHandler("Required province", 400));
+  }
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+
+  // lấy tất cả phòng khám thuộc thành phố đã chọn
+  const clinic = await Clinic.find({ "address.province": province }, "name");
+
+  const clinicIds = clinic.map((e) => e._id);
+  // lấy người dùng nằm trong bệnh viện đã lọc và có id chuyên khoa bằng với chuyên khoa đã chọn
+  const users = await User.find(
+    {
+      "detail.clinic.id": { $in: clinicIds },
+      "detail.specialty.id": id,
+    },
+    "name"
+  )
+    .skip(size * page - size)
+    .limit(size);
+
+  const length = await User.find(
+    {
+      "detail.clinic.id": { $in: clinicIds },
+      "detail.specialty.id": id,
+    },
+    "name"
+  ).count();
+
+  res.status(200).json({
+    users,
+    count: length,
+    success: true,
+  });
+});

@@ -10,6 +10,7 @@ import {
   getSingle,
   getAllHomePatient,
   getAllDoctorBySpecialtyHome,
+  getAllDoctorByProvince,
 } from "../controllers/user.js";
 
 import { getAllCount } from "../controllers/dashboard";
@@ -22,5 +23,6 @@ router.route("/get-all-user").get(getAll);
 router.route("/get-all-count").get(getAllCount);
 router.route("/get-all-user-home").get(getAllHomePatient);
 router.route("/get-user-by-specialty-home").get(getAllDoctorBySpecialtyHome);
+router.route("/get-user-by-province-home").get(getAllDoctorByProvince);
 
 module.exports = router;
