@@ -12,6 +12,8 @@ import {
   getSinglePacket,
   createUserBooking,
   patientUpdateStatus,
+  patientUpdateFeeback,
+  patientCheckAllowUpdateFeeback,
 } from "../controllers/schedule";
 
 router.route("/upsert-schedule").post(createOrUpdate);
@@ -24,5 +26,7 @@ router.route("/delete-schedule").delete(remove);
 router.route("/sent-mail-patient").post(sendMail);
 router.route("/create-user-booking-schedule").put(createUserBooking);
 router.route("/patient-confirm-booking").put(patientUpdateStatus);
+router.route("/patient-feedback").put(patientUpdateFeeback);
+router.route("/check-patient-feedback").get(patientCheckAllowUpdateFeeback);
 
 module.exports = router;

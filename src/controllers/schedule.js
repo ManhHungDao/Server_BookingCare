@@ -261,7 +261,7 @@ exports.sendMail = catchAsyncErrors(async (req, res, next) => {
 exports.updateStatus = catchAsyncErrors(async (req, res, next) => {
   let { doctorId, packetId, date, status, time } = req.body;
   if (!doctorId && !packetId) {
-    return next(new ErrorHandler("Required doctor id or  packet id", 400));
+    return next(new ErrorHandler("Required doctor id or packet id", 400));
   }
   if (!status) {
     return next(new ErrorHandler("Required status", 400));
@@ -376,6 +376,7 @@ exports.patientUpdateStatus = catchAsyncErrors(async (req, res, next) => {
   let { doctorId, packetId, date, time, cancel, email } = req.body;
   doctorId = doctorId === "null" ? null : doctorId;
   packetId = packetId === "null" ? null : packetId;
+
   if (!date) {
     return next(new ErrorHandler("Required date", 400));
   }
@@ -432,8 +433,76 @@ exports.patientUpdateStatus = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.patientUpdateComment = catchAsyncErrors(async (req, res, next) => {
+exports.patientCheckAllowUpdateFeeback = catchAsyncErrors(
+  async (req, res, next) => {
+    let { date, time, doctorId, packetId } = req.query;
+    if (!doctorId && !packetId) {
+      return next(
+        new ErrorHandler("Required Required doctor id or packet id", 400)
+      );
+    }
+    if (!date) {
+      return next(new ErrorHandler("Required date", 400));
+    }
+    if (!time) {
+      return next(new ErrorHandler("Required time", 400));
+    }
+
+    const [allowUpdate] = await Schedule.aggregate([
+      {
+        $match: {
+          date: date + "",
+          "doctor.id": doctorId ? new ObjectId(doctorId) : null,
+          "packet.id": packetId ? new ObjectId(packetId) : null,
+        },
+      },
+      {
+        $unwind: "$schedule",
+      },
+      {
+        $match: {
+          "schedule.time": new ObjectId(time),
+        },
+      },
+    ]);
+
+    if (allowUpdate?.schedule?.rating !== null) {
+      return res.status(200).json({
+        success: false,
+      });
+    }
+
+    // lấy thong tin trả vê
+
+    let query = {
+      date: date,
+      "doctor.id": doctorId ? doctorId : null,
+      "packet.id": packetId ? packetId : null,
+      "schedule.time": time,
+    };
+    const information = await Schedule.findOne(query)
+      .populate([
+        {
+          path: "doctor.id",
+          select: "name image detail.clinic detail.specialty",
+        },
+        { path: "packet.id", select: "name clinic type.specialty" },
+      ])
+      .select(" -schedule ");
+    res.status(200).json({
+      success: true,
+      information,
+    });
+  }
+);
+
+exports.patientUpdateFeeback = catchAsyncErrors(async (req, res, next) => {
   let { doctorId, packetId, date, time, rating, comment } = req.body;
+  if (!doctorId && !packetId) {
+    return next(
+      new ErrorHandler("Required Required doctor id or packet id", 400)
+    );
+  }
   if (!date) {
     return next(new ErrorHandler("Required date", 400));
   }
@@ -447,8 +516,9 @@ exports.patientUpdateComment = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Required comment", 400));
   }
   let query = {
-    "doctor.id": doctorId === "null" ? null : doctorId,
-    "packet.id": packetId === "null" ? null : packetId,
+    date: date,
+    "doctor.id": doctorId ? doctorId : null,
+    "packet.id": packetId ? packetId : null,
     "schedule.time": time,
     "schedule.status": "Hoàn thành",
   };
