@@ -13,16 +13,6 @@ const patientSchema = new Schema({
     type: String,
     required: true,
   },
-  image: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-  },
   password: {
     type: String,
     required: true,
@@ -50,7 +40,7 @@ const patientSchema = new Schema({
       required: true,
     },
   },
-  roleId: { type: String, required: true, default: "R3" },
+  roleId: { type: String, required: true, default: "R4" },
 });
 
 //ecrypting password before save
@@ -90,4 +80,4 @@ patientSchema.methods.getResetPassword = function () {
   return restToken;
 };
 
-module.exports = mongoose.model("User", patientSchema);
+module.exports = mongoose.model("Patient", patientSchema);

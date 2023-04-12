@@ -2,12 +2,12 @@ import express from "express";
 let router = express.Router();
 const { isAuthunticatedUser, authorizeRole } = require("../middlewares/auth");
 
-import { sendMailConfirm } from "../controllers/patient";
+import { sendMail } from "../controllers/mail";
+import { create, getSingle, update } from "../controllers/patient";
 
-router.route("/sent-mail-confirm").post(isAuthunticatedUser, sendMailConfirm);
-// router.route("/get-packet").get(getSingle);
-// router.route("/delete-packet").delete(isAuthunticatedUser, remove);
-// router.route("/get-all-packet").get(getAll);
-// router.route("/update-packet").put(isAuthunticatedUser, update);
+router.route("/sent-mail-confirm-register").post(sendMail);
+router.route("/register").post(create);
+router.route("/get-infor-account").get(isAuthunticatedUser, getSingle);
+router.route("/update-infor-account").put(isAuthunticatedUser, update);
 
 module.exports = router;

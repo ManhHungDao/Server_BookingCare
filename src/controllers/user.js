@@ -39,9 +39,6 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
   if (!password) {
     return next(new ErrorHandler("Required password", 400));
   }
-  if (!password) {
-    return next(new ErrorHandler("Required password", 400));
-  }
   if (!gender) {
     return next(new ErrorHandler("Required gender", 400));
   }

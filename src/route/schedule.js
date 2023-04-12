@@ -6,7 +6,6 @@ import {
   createOrUpdate,
   getSingleUser,
   remove,
-  sendMail,
   getUserScheduleByDate,
   updateStatus,
   getPacketScheduleByDate,
@@ -16,6 +15,8 @@ import {
   patientUpdateFeeback,
   patientCheckAllowUpdateFeeback,
 } from "../controllers/schedule";
+import { sendMail } from "../controllers/mail";
+
 
 router.route("/upsert-schedule").post(isAuthunticatedUser, createOrUpdate);
 router.route("/update-status-schedule").put(isAuthunticatedUser, updateStatus);
