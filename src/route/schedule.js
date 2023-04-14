@@ -14,9 +14,12 @@ import {
   patientUpdateStatus,
   patientUpdateFeeback,
   patientCheckAllowUpdateFeeback,
+  gellAllByEmail,
+  getDetail,
+  getPatientByDoctor,
+  getPatientByPacket,
 } from "../controllers/schedule";
 import { sendMail } from "../controllers/mail";
-
 
 router.route("/upsert-schedule").post(isAuthunticatedUser, createOrUpdate);
 router.route("/update-status-schedule").put(isAuthunticatedUser, updateStatus);
@@ -30,5 +33,9 @@ router.route("/create-user-booking-schedule").put(createUserBooking);
 router.route("/patient-confirm-booking").put(patientUpdateStatus);
 router.route("/patient-feedback").put(patientUpdateFeeback);
 router.route("/check-patient-feedback").get(patientCheckAllowUpdateFeeback);
+router.route("/get-schedule-by-email").get(isAuthunticatedUser, gellAllByEmail);
+router.route("/get-detail-schedule").get(isAuthunticatedUser, getDetail);
+router.route("/get-patient-comment-by-doctor").get(getPatientByDoctor);
+router.route("/get-patient-comment-by-packet").get(getPatientByPacket);
 
 module.exports = router;

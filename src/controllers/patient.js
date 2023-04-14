@@ -89,3 +89,70 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.getAll = catchAsyncErrors(async (req, res, next) => {
+  let { page, size, sort, filter } = req.query;
+
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+  let users = null;
+  if (filter) {
+    users = await Patient.find(
+      {
+        name: {
+          $regex: filter,
+          $options: "i",
+        },
+      },
+      "-password"
+    )
+      .skip(size * page - size)
+      .limit(size);
+    length = await Patient.find(
+      {
+        name: {
+          $regex: filter,
+          $options: "i",
+        },
+      },
+      "-password"
+    ).count();
+  } else {
+    users = await Patient.find()
+      .select("-password")
+      .skip(size * page - size)
+      .limit(size);
+    length = await Patient.find().count();
+  }
+  res.status(200).json({
+    users,
+    count: length,
+    success: true,
+  });
+});
+
+exports.remove = catchAsyncErrors(async (req, res, next) => {
+  const id = req.query.id;
+  if (!id) {
+    return next(new ErrorHandler("Required account id", 400));
+  }
+  let patient = await Patient.findById(id);
+  if (!patient) {
+    return next(new ErrorHandler("Account not Found", 404));
+  }
+
+  await Patient.deleteOne({
+    _id: id,
+  });
+  res.status(200).json({
+    success: true,
+    message: "User deleted successfully",
+  });
+});

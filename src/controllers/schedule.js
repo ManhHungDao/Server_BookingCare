@@ -453,7 +453,7 @@ exports.patientCheckAllowUpdateFeeback = catchAsyncErrors(
           path: "doctor.id",
           select: "name image detail.clinic detail.specialty",
         },
-        { path: "packet.id", select: "name clinic type.specialty" },
+        { path: "packet.id", select: "name image clinic type.specialty" },
       ])
       .select(" -schedule ");
     res.status(200).json({
@@ -503,6 +503,160 @@ exports.patientUpdateFeeback = catchAsyncErrors(async (req, res, next) => {
   );
 
   res.status(200).json({
+    success: true,
+  });
+});
+
+export const gellAllByEmail = catchAsyncErrors(async (req, res, next) => {
+  const { email, date } = req.query;
+  if (!email) {
+    return next(new ErrorHandler("Required email", 400));
+  }
+  if (!date) {
+    return next(new ErrorHandler("Required date", 400));
+  }
+  const schedule = await Schedule.aggregate([
+    {
+      $match: {
+        date: date + "",
+      },
+    },
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        "schedule.user.email": email,
+      },
+    },
+  ]);
+  res.status(200).json({
+    schedule,
+    success: true,
+  });
+});
+
+export const getDetail = catchAsyncErrors(async (req, res, next) => {
+  const { id, time } = req.query;
+  const [schedule] = await Schedule.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(id),
+      },
+    },
+
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "doctor.id",
+        foreignField: "_id",
+        as: "doctor",
+      },
+    },
+    {
+      $lookup: {
+        from: "packets",
+        localField: "packet.id",
+        foreignField: "_id",
+        as: "packet",
+      },
+    },
+    {
+      $match: {
+        "schedule.time": new ObjectId(time),
+      },
+    },
+    {
+      $project: {
+        date: 1,
+        "doctor._id": 1,
+        "doctor.name": 1,
+        "doctor.detail.clinic": 1,
+        "doctor.detail.specialty": 1,
+        "packet._id": 1,
+        "packet.name": 1,
+        "packet.clinic": 1,
+        "packet.type.specialty": 1,
+        detail: 1,
+        schedule: 1,
+      },
+    },
+  ]);
+
+  if (!schedule)
+    return res.status(500).json({
+      success: false,
+    });
+
+  res.status(200).json({
+    schedule,
+    success: true,
+  });
+});
+
+export const getPatientByDoctor = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.query;
+  if (!id) return next(new ErrorHandler("Required doctor id", 400));
+  const patient = await Schedule.aggregate([
+    {
+      $match: {
+        "doctor.id": new ObjectId(id),
+      },
+    },
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        "schedule.rating": { $ne: null },
+      },
+    },
+    {
+      $project: {
+        date: 1,
+        "schedule.user": 1,
+        "schedule.rating": 1,
+        "schedule.comment": 1,
+      },
+    },
+  ]);
+  res.status(200).json({
+    patient,
+    success: true,
+  });
+});
+
+export const getPatientByPacket = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.query;
+  if (!id) return next(new ErrorHandler("Required packet id", 400));
+  const patient = await Schedule.aggregate([
+    {
+      $match: {
+        "packet.id": new ObjectId(id),
+      },
+    },
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        "schedule.rating": { $ne: null },
+      },
+    },
+    {
+      $project: {
+        date: 1,
+        "schedule.user": 1,
+        "schedule.rating": 1,
+        "schedule.comment": 1,
+      },
+    },
+  ]);
+  res.status(200).json({
+    patient,
     success: true,
   });
 });
