@@ -23,7 +23,6 @@ exports.upsert = catchAsyncErrors(async (req, res, next) => {
       new: true,
       runValidators: true,
       useFindAndModify: false,
-      timestamps: false,
     };
     prescription = await Prescription.findOneAndUpdate(
       { scheduleId: scheduleId },

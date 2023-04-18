@@ -208,15 +208,16 @@ exports.getSinglePacket = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.remove = catchAsyncErrors(async (req, res, next) => {
-  const { id, date } = req.query;
-  if (!id) {
-    return next(new ErrorHandler("Required doctor id", 400));
+  const { packetId, doctorId, date } = req.query;
+  if (!packetId && !doctorId) {
+    return next(new ErrorHandler("Required doctor id or packet id", 400));
   }
   if (!date) {
     return next(new ErrorHandler("Required date", 400));
   }
   await Schedule.findOneAndRemove({
-    "doctor.id": id,
+    "doctor.id": doctorId ? doctorId : null,
+    "packet.id": packetId ? packetId : null,
     date: date,
   });
   res.status(200).json({
@@ -508,30 +509,60 @@ exports.patientUpdateFeeback = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const gellAllByEmail = catchAsyncErrors(async (req, res, next) => {
-  const { email, date } = req.query;
+  let { email, date, page, size } = req.query;
   if (!email) {
     return next(new ErrorHandler("Required email", 400));
   }
-  if (!date) {
-    return next(new ErrorHandler("Required date", 400));
+
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
   }
-  const schedule = await Schedule.aggregate([
-    {
-      $match: {
-        date: date + "",
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let schedule, count;
+  if (date) {
+    schedule = await Schedule.aggregate([
+      {
+        $match: {
+          date: date + "",
+        },
       },
-    },
-    {
-      $unwind: "$schedule",
-    },
-    {
-      $match: {
-        "schedule.user.email": email,
+      {
+        $unwind: "$schedule",
       },
-    },
-  ]);
+      {
+        $match: {
+          "schedule.user.email": email,
+        },
+      },
+    ]);
+    count = schedule.length;
+    if (count > size) {
+      schedule = schedule.slice(size * page - size, size * page);
+    }
+  } else {
+    schedule = await Schedule.aggregate([
+      {
+        $unwind: "$schedule",
+      },
+      {
+        $match: {
+          "schedule.user.email": email,
+        },
+      },
+    ]);
+    count = schedule.length;
+    if (count > size) {
+      schedule = schedule.slice(size * page - size, size * page);
+    }
+  }
+
   res.status(200).json({
     schedule,
+    count: count,
     success: true,
   });
 });
