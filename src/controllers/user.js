@@ -378,3 +378,63 @@ exports.getAllDoctorByProvince = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.query;
+  if (!email) {
+    return next(new ErrorHandler("Required user email", 400));
+  }
+  let doctorsRecent = await Schedule.aggregate([
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        "schedule.user.email": email,
+      },
+    },
+    { $group: { _id: { id: "$doctor.id", name: "$doctor.name" } } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "_id.id",
+        foreignField: "_id",
+        as: "doctor",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        "doctor.image": 1,
+        "doctor.detail.specialty.name": 1,
+        "doctor.detail.position.name": 1,
+      },
+    },
+  ]);
+
+  let outStandingDoctor = await User.find({
+    roleId: { $not: { $regex: "R0" } },
+  })
+    .select("name image detail.specialty.name detail.position.name")
+    .skip(0)
+    .limit(20);
+
+  doctorsRecent = doctorsRecent.map((e) => ({
+    _id: e._id.id,
+    name: e._id.name,
+    image: e.doctor[0].image,
+    detail: e.doctor[0].detail,
+  }));
+
+  const result = outStandingDoctor.filter((element) => {
+    const index = doctorsRecent.findIndex((obj) => obj._id === element._id);
+    return index === -1;
+  });
+
+  doctorsRecent = doctorsRecent.concat(result);
+  res.status(200).json({
+    count: doctorsRecent.length,
+    doctorsRecent: doctorsRecent,
+    success: true,
+  });
+});

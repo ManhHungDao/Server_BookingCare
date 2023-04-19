@@ -11,6 +11,7 @@ import {
   getAllHomePatient,
   getAllDoctorBySpecialtyHome,
   getAllDoctorByProvince,
+  suggestDoctorRecent,
 } from "../controllers/user.js";
 
 import { getAllCount } from "../controllers/dashboard";
@@ -24,5 +25,6 @@ router.route("/get-all-count").get(getAllCount);
 router.route("/get-all-user-home").get(getAllHomePatient);
 router.route("/get-user-by-specialty-home").get(getAllDoctorBySpecialtyHome);
 router.route("/get-user-by-province-home").get(getAllDoctorByProvince);
+router.route("/suggest-doctor-recent").get(suggestDoctorRecent);
 
 module.exports = router;
