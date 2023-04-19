@@ -434,7 +434,7 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
   doctorsRecent = doctorsRecent.concat(result);
   res.status(200).json({
     count: doctorsRecent.length,
-    doctorsRecent: doctorsRecent,
+    doctorsRecent: doctorsRecent.slice(0, 20),
     success: true,
   });
 });
