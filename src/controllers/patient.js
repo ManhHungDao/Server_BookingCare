@@ -1,9 +1,9 @@
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import sendToken from "../utils/jwtToken";
-
 import cloudinary from "cloudinary";
 import Packet from "../models/packet";
+import Schedule from "../models/schedule";
 import moment from "moment";
 import Patient from "../models/patient";
 
@@ -153,6 +153,42 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   });
   res.status(200).json({
     success: true,
-    message: "User deleted successfully",
+    message: "Account deleted successfully",
+  });
+});
+
+// dùng để sửa dữ liệu ảo đã thêm
+exports.updateFakeData = catchAsyncErrors(async (req, res, next) => {
+  // User.updateMany({"created": false}, {"$set":{"created": true}});
+  let fakeAddress = {
+    province: "Quảng Nam",
+    detail: "Nguyễn Huệ, Old Town, Minh An, Hội An, Quảng Nam, Việt Nam",
+    lat: "15.878428",
+    lng: "108.3311789",
+  };
+
+  // await Patient.updateMany(
+  //   { password: "password" },
+  //   {
+  //     $set: {
+  //       password:
+  //         "$2a$10$PAwYcHip0O77COta/DSDu.Bm2I8L6ywbaq8GTLHxhlsjvHd/sj9lG",
+  //     },
+  //   }
+  // );
+
+  await Schedule.updateMany(
+    { schedule: { $elemMatch: { status: "Hoàn thành" } } },
+    {
+      $set: {
+        "schedule.$.rating": 5,
+        "schedule.$.comment": "Dịch vụ rất tốt",
+      },
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "updated successfully",
   });
 });

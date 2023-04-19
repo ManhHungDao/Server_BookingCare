@@ -6,7 +6,9 @@ import Specialty from "../models/specialty";
 import User from "../models/user";
 import Handbook from "../models/handbook";
 import Packet from "../models/packet";
+import Patient from "../models/patient";
 import _ from "lodash";
+import getDistance from "geolib/es/getDistance";
 
 exports.create = catchAsyncErrors(async (req, res, next) => {
   const { name, image, logo, introduce, detail, address } = req.body;
@@ -261,6 +263,51 @@ exports.getAllHomePatient = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+exports.suggestNearestClinic = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.query;
+  if (!id) {
+    return next(new ErrorHandler("Required user id", 400));
+  }
+  const patient = await Patient.findById(id).select("address");
+  const clinics = await Clinic.find({});
+  let dataPoints = clinics.map((e) => ({
+    id: e._id,
+    name: e.name,
+    image: e.image,
+    latitude: e.address.lat,
+    longitude: e.address.lng,
+  }));
+
+  const myLocation = {
+    latitude: patient.address.lat,
+    longitude: patient.address.lng,
+  };
+
+  const distances = dataPoints.map((point) => {
+    let data = {
+      latitude: point.latitude,
+      longitude: point.longitude,
+    };
+    let distance = getDistance(data, myLocation) / 1000;
+    return {
+      point,
+      distance,
+    };
+  });
+
+  let nearestClinics = distances.sort((a, b) => a.distance - b.distance);
+  nearestClinics = nearestClinics.map((e) => ({
+    _id: e.point.id,
+    name: e.point.name,
+    image: e.point.image,
+    distance: e.distance,
+  }));
+  res.status(200).json({
+    success: true,
+    nearestClinics,
+  });
+});
+
 exports.increatmentViews = catchAsyncErrors(async (req, res, next) => {
   let clinic = await Clinic.findById(req.query.id);
   if (!clinic) {
@@ -281,5 +328,3 @@ exports.getAllProvince = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
-
-
