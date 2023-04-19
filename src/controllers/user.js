@@ -394,6 +394,8 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
       },
     },
     { $group: { _id: { id: "$doctor.id", name: "$doctor.name" } } },
+    { $skip: 0 },
+    { $limit: 20 },
     {
       $lookup: {
         from: "users",
@@ -412,13 +414,6 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
     },
   ]);
 
-  let outStandingDoctor = await User.find({
-    roleId: { $not: { $regex: "R0" } },
-  })
-    .select("name image detail.specialty.name detail.position.name")
-    .skip(0)
-    .limit(20);
-
   doctorsRecent = doctorsRecent.map((e) => ({
     _id: e._id.id,
     name: e._id.name,
@@ -426,15 +421,112 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
     detail: e.doctor[0].detail,
   }));
 
-  const result = outStandingDoctor.filter((element) => {
-    const index = doctorsRecent.findIndex((obj) => obj._id === element._id);
-    return index === -1;
-  });
+  if (doctorsRecent.length < 20) {
+    const thirtyDaysAgo = moment(new Date())
+      .subtract(30, "days")
+      .startOf("day")
+      .valueOf();
+    let listDoctorSchedule = await Schedule.aggregate([
+      {
+        $match: {
+          date: { $gt: thirtyDaysAgo / 1000 + "" },
+          "doctor.id": { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: { doctor: "$doctor" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $skip: 0 },
+      { $limit: 20 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id.doctor.id",
+          foreignField: "_id",
+          as: "doctor",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          "doctor.image": 1,
+          "doctor.detail.specialty.name": 1,
+          "doctor.detail.position.name": 1,
+        },
+      },
+    ]);
+    let outStandingDoctor = listDoctorSchedule.map((e) => ({
+      _id: e._id.doctor.id,
+      name: e._id.doctor.name,
+      image: e?.doctor[0]?.image ? e.doctor[0].image : "",
+      detail: e?.doctor[0]?.detail,
+    }));
+    const result = outStandingDoctor.filter((element) => {
+      const index = doctorsRecent.findIndex((obj) => obj._id === element._id);
+      return index === -1;
+    });
+    doctorsRecent = doctorsRecent.concat(result);
+  }
 
-  doctorsRecent = doctorsRecent.concat(result);
   res.status(200).json({
     count: doctorsRecent.length,
     doctorsRecent: doctorsRecent.slice(0, 20),
     success: true,
+  });
+});
+
+exports.outStandingDoctor = catchAsyncErrors(async (req, res, next) => {
+  const thirtyDaysAgo = moment(new Date())
+    .subtract(30, "days")
+    .startOf("day")
+    .valueOf();
+
+  let listDoctorSchedule = await Schedule.aggregate([
+    {
+      $match: {
+        date: { $gt: thirtyDaysAgo / 1000 + "" },
+        "doctor.id": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: { doctor: "$doctor" },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { count: -1 } },
+    { $skip: 0 },
+    { $limit: 20 },
+    {
+      $lookup: {
+        from: "users",
+        localField: "_id.doctor.id",
+        foreignField: "_id",
+        as: "doctor",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        "doctor.image": 1,
+        "doctor.detail.specialty.name": 1,
+        "doctor.detail.position.name": 1,
+      },
+    },
+  ]);
+  let outStandingDoctor = listDoctorSchedule.map((e) => ({
+    _id: e._id.doctor.id,
+    name: e._id.doctor.name,
+    image: e?.doctor[0]?.image ? e.doctor[0].image : "",
+    detail: e?.doctor[0]?.detail,
+  }));
+
+  res.status(200).json({
+    success: true,
+    outStandingDoctor,
   });
 });
