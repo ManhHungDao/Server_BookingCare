@@ -327,6 +327,7 @@ exports.createUserBooking = catchAsyncErrors(async (req, res, next) => {
         "schedule.$.user.address": patient.address,
         "schedule.$.user.gender": patient.gender,
         "schedule.$.user.dayOfBirth": patient.date,
+        "schedule.$.user.insurance": patient.insurance,
         "schedule.$.user.reason": patient.reason,
         "schedule.$.status": "Chờ xác nhận",
       },

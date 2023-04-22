@@ -2,6 +2,7 @@ import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import Prescription from "../models/prescription";
 import _ from "lodash";
+import Schedule from "../models/schedule";
 
 exports.upsert = catchAsyncErrors(async (req, res, next) => {
   const { scheduleId, detail, result } = req.body;
@@ -70,6 +71,45 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     prescription,
+    success: true,
+  });
+});
+
+// lấy ra những kết quả khám gần đây của bệnh nhân
+exports.getListResultRecent = catchAsyncErrors(async (req, res, next) => {
+  const email = req.query.email;
+
+  if (!email) {
+    return next(new ErrorHandler("Required email patient", 400));
+  }
+
+  let listId = await Schedule.aggregate([
+    {
+      $unwind: "$schedule",
+    },
+    {
+      $match: {
+        "schedule.status": "Hoàn thành",
+        "schedule.user.email": email,
+      },
+    },
+    {
+      $project: {
+        "schedule._id": 1,
+      },
+    },
+  ]);
+  listId = listId.map((e) => e.schedule._id);
+
+  const listResult = await Prescription.find({
+    scheduleId: { $in: listId },
+  })
+    .sort({ updatedAt: -1 })
+    .skip(0)
+    .limit(5);
+
+  res.status(200).json({
+    listResult,
     success: true,
   });
 });

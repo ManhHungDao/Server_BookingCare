@@ -84,6 +84,9 @@ const scheduleSchema = new Schema({
           type: String,
           default: null,
         },
+        insurance: {
+          type: String,
+        },
         reason: {
           type: String,
           default: null,
