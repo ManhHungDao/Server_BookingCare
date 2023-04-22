@@ -10,6 +10,7 @@ import {
   getAll,
   remove,
   updateFakeData,
+  checkEmailExisted,
 } from "../controllers/patient";
 
 router.route("/sent-mail-confirm-register").post(sendMail);
@@ -21,5 +22,6 @@ router.route("/delete-account-patient").delete(isAuthunticatedUser, remove);
 router
   .route("/updateMany-fakedata-patient")
   .put(isAuthunticatedUser, updateFakeData);
+router.route("/check-email-existed").get(checkEmailExisted);
 
 module.exports = router;

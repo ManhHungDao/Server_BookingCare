@@ -7,9 +7,36 @@ import Schedule from "../models/schedule";
 import moment from "moment";
 import Patient from "../models/patient";
 
+exports.checkEmailExisted = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.query;
+  if (!email) {
+    return next(new ErrorHandler("Requied old email", 400));
+  }
+  const patient = await Patient.findOne({
+    email: email,
+  });
+  if (patient)
+    res.status(200).json({
+      existed: true,
+    });
+  else {
+    res.status(200).json({
+      existed: false,
+    });
+  }
+});
+
 exports.create = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, password, gender, phone, dateOfBirth, address } =
-    req.body;
+  const {
+    name,
+    email,
+    password,
+    gender,
+    phone,
+    dateOfBirth,
+    address,
+    insurance,
+  } = req.body;
   if (!name) {
     return next(new ErrorHandler("Required name", 400));
   }
@@ -40,6 +67,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     phone,
     dateOfBirth,
     address,
+    insurance: insurance ? insurance : null,
   });
 
   res.status(200).json({

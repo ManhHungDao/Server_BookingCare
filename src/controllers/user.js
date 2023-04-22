@@ -465,8 +465,11 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
       image: e?.doctor[0]?.image ? e.doctor[0].image : "",
       detail: e?.doctor[0]?.detail,
     }));
+
     const result = outStandingDoctor.filter((element) => {
-      const index = doctorsRecent.findIndex((obj) => obj._id === element._id);
+      const index = doctorsRecent.findIndex(
+        (obj) => obj._id.toString() === element._id.toString()
+      );
       return index === -1;
     });
     doctorsRecent = doctorsRecent.concat(result);

@@ -30,6 +30,10 @@ const patientSchema = new Schema({
     type: String,
     required: true,
   },
+  insurance: {
+    type: String,
+  },
+
   address: {
     province: {
       type: String,
@@ -48,7 +52,6 @@ const patientSchema = new Schema({
       required: true,
     },
   },
-  roleId: { type: String, required: true, default: "R4" },
 });
 
 //ecrypting password before save

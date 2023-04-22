@@ -13,6 +13,10 @@ const priscriptionSchema = new Schema(
       type: String,
       required: true,
     },
+    result: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
