@@ -91,7 +91,7 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     gender,
     phone,
     dateOfBirth,
-    // roleId: "R3",
+    roleId: "R3",
     address,
     detail: {
       clinic,
@@ -206,6 +206,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     users = await User.find(
       {
         "detail.clinic.id": clinicId,
+        roleId: { $not: { $regex: "R0" } },
       },
       "-password"
     )
@@ -214,6 +215,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
     length = await User.find(
       {
         "detail.clinic.id": clinicId,
+        roleId: { $not: { $regex: "R0" } },
       },
       "-password"
     ).count();
@@ -224,6 +226,7 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
           $regex: filter,
           $options: "i",
         },
+        roleId: { $not: { $regex: "R0" } },
       },
       "-password"
     )
@@ -235,15 +238,16 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
           $regex: filter,
           $options: "i",
         },
+        roleId: { $not: { $regex: "R0" } },
       },
       "-password"
     ).count();
   } else {
-    users = await User.find({})
+    users = await User.find({ roleId: { $not: { $regex: "R0" } } })
       .select("-password")
       .skip(size * page - size)
       .limit(size);
-    length = await User.find({}).count();
+    length = await User.find({ roleId: { $not: { $regex: "R0" } } }).count();
   }
 
   res.status(200).json({

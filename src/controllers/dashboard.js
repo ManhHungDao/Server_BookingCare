@@ -50,7 +50,7 @@ exports.getAllCount = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     count: {
       clinic,
-      user,
+      user: user - 1,
       patient,
       schedule: schedule[0].count,
     },

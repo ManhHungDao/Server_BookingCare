@@ -37,7 +37,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  roleId: { type: String, required: true, default: "R2" },
+  roleId: { type: String, required: true, default: "R3" },
 
   dateOfBirth: {
     type: String,
