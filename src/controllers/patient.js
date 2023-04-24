@@ -134,10 +134,20 @@ exports.getAll = catchAsyncErrors(async (req, res, next) => {
   if (filter) {
     users = await Patient.find(
       {
-        name: {
-          $regex: filter,
-          $options: "i",
-        },
+        $or: [
+          {
+            name: {
+              $regex: filter,
+              $options: "i",
+            },
+          },
+          {
+            email: {
+              $regex: filter,
+              $options: "i",
+            },
+          },
+        ],
       },
       "-password"
     )
