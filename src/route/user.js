@@ -13,6 +13,7 @@ import {
   getAllDoctorByProvince,
   suggestDoctorRecent,
   outStandingDoctor,
+  getAllManager,
 } from "../controllers/user.js";
 
 import {
@@ -22,6 +23,8 @@ import {
   getAllPatientAccount,
   getAllLocationClinic,
 } from "../controllers/dashboard";
+
+import { getRoleUser, upsert } from "../controllers/role.js";
 
 router.route("/create-user").post(isAuthunticatedUser, create);
 router.route("/delete-user").delete(isAuthunticatedUser, remove);
@@ -33,6 +36,7 @@ router.route("/get-user-by-specialty-home").get(getAllDoctorBySpecialtyHome);
 router.route("/get-user-by-province-home").get(getAllDoctorByProvince);
 router.route("/suggest-doctor-recent").get(suggestDoctorRecent);
 router.route("/get-outstading-doctor").get(outStandingDoctor);
+router.route("/get-all-manager").get(isAuthunticatedUser, getAllManager);
 // dashboard route
 router.route("/get-all-count").get(isAuthunticatedUser, getAllCount);
 router
@@ -47,4 +51,8 @@ router
 router
   .route("/get-all-locaiton-clinic")
   .get(isAuthunticatedUser, getAllLocationClinic);
+// role
+router.route("/upsert-role-user").put(isAuthunticatedUser, upsert);
+router.route("/get-role-user").get(isAuthunticatedUser, getRoleUser);
+
 module.exports = router;

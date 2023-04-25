@@ -534,3 +534,14 @@ exports.outStandingDoctor = catchAsyncErrors(async (req, res, next) => {
     outStandingDoctor,
   });
 });
+
+exports.getAllManager = catchAsyncErrors(async (req, res, next) => {
+  const managers = await User.find(
+    { roleId: "R2" },
+    "image email name detail.clinic detail.specialty"
+  );
+  res.status(200).json({
+    success: true,
+    managers,
+  });
+});
