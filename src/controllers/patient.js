@@ -6,6 +6,8 @@ import Packet from "../models/packet";
 import Schedule from "../models/schedule";
 import moment from "moment";
 import Patient from "../models/patient";
+import User from "../models/user";
+import { map } from "lodash";
 
 exports.checkEmailExisted = catchAsyncErrors(async (req, res, next) => {
   const { email } = req.query;
@@ -216,17 +218,19 @@ exports.updateFakeData = catchAsyncErrors(async (req, res, next) => {
   // );
 
   await Schedule.updateMany(
-    { schedule: { $elemMatch: { status: "Hoàn thành" } } },
+    { "schedule.status": "Hoàn thành" },
     {
       $set: {
-        "schedule.$.rating": 5,
-        "schedule.$.comment": "Dịch vụ rất tốt",
+        "schedule.$[elem].rating": 4,
+        "schedule.$[elem].comment": "Cảm thấy hài lòng về dịch vụ khám",
       },
-    }
+    },
+    { arrayFilters: [{ $and: [{ "elem.status": "Hoàn thành" }] }] }
   );
+
+  // let users = await Packet.find({}, "name ");
 
   res.status(200).json({
     success: true,
-    message: "updated successfully",
   });
 });

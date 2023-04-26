@@ -19,9 +19,12 @@ router.route("/get-infor-account").get(isAuthunticatedUser, getSingle);
 router.route("/update-infor-account").put(isAuthunticatedUser, update);
 router.route("/get-all-account-patient").get(isAuthunticatedUser, getAll);
 router.route("/delete-account-patient").delete(isAuthunticatedUser, remove);
+// router
+//   .route("/updateMany-fakedata-patient")
+//   .put(isAuthunticatedUser, updateFakeData);
 router
   .route("/updateMany-fakedata-patient")
-  .put(isAuthunticatedUser, updateFakeData);
+  .get(isAuthunticatedUser, updateFakeData);
 router.route("/check-email-existed").get(checkEmailExisted);
 
 module.exports = router;

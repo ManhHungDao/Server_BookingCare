@@ -387,10 +387,14 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
   }
   let doctorsRecent = await Schedule.aggregate([
     {
+      $match: { "packet.id": null },
+    },
+    {
       $unwind: "$schedule",
     },
     {
       $match: {
+        // "schedule.status": "Hoàn thành",
         "schedule.user.email": email,
       },
     },
@@ -402,6 +406,11 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
         from: "users",
         localField: "_id.id",
         foreignField: "_id",
+        pipeline: [
+          {
+            $match: { _id: { $ne: null } },
+          },
+        ],
         as: "doctor",
       },
     },
@@ -418,6 +427,7 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
   doctorsRecent = doctorsRecent.map((e) => ({
     _id: e._id.id,
     name: e._id.name,
+    ...e,
     image: e.doctor[0].image,
     detail: e.doctor[0].detail,
   }));
