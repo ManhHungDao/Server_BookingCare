@@ -28,10 +28,15 @@ exports.getRoleUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Required id", 400));
   }
 
-  const permissions = await Role.findOne({ userId: id }, "permissions");
+  let permissions = await Role.findOne({ userId: id }, "permissions");
+
+  if (!permissions) permissions = [];
+  else {
+    permissions = permissions.permissions;
+  }
 
   res.status(200).json({
-    permissions,
+    permissions: permissions,
     success: true,
   });
 });
