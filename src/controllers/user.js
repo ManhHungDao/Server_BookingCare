@@ -427,7 +427,7 @@ exports.suggestDoctorRecent = catchAsyncErrors(async (req, res, next) => {
   doctorsRecent = doctorsRecent.map((e) => ({
     _id: e._id.id,
     name: e._id.name,
-    ...e,
+    // ...e,
     image: e.doctor[0].image,
     detail: e.doctor[0].detail,
   }));

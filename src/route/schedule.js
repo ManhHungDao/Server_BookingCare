@@ -18,6 +18,7 @@ import {
   getDetail,
   getPatientByDoctor,
   getPatientByPacket,
+  createAllSchedule,
 } from "../controllers/schedule";
 import { sendMail } from "../controllers/mail";
 
@@ -37,5 +38,8 @@ router.route("/get-schedule-by-email").get(isAuthunticatedUser, gellAllByEmail);
 router.route("/get-detail-schedule").get(isAuthunticatedUser, getDetail);
 router.route("/get-patient-comment-by-doctor").get(getPatientByDoctor);
 router.route("/get-patient-comment-by-packet").get(getPatientByPacket);
+
+//  dùng để tạo tất cả lịch khám cho bác sĩ và các gói khám
+router.route("/create-all-schedule").get(createAllSchedule);
 
 module.exports = router;
