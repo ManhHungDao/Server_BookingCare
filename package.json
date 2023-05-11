@@ -31,6 +31,7 @@
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.2",
     "nodemailer": "6.6.3",
+    "openai": "^3.2.1",
     "uuid": "8.3.2"
   },
   "devDependencies": {

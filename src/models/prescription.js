@@ -9,6 +9,18 @@ const priscriptionSchema = new Schema(
       type: String,
       required: true,
     },
+    doctor: {
+      type: String,
+    },
+    packet: {
+      type: String,
+    },
+    clinic: {
+      type: String,
+    },
+    specialty: {
+      type: String,
+    },
     detail: {
       type: String,
       required: true,

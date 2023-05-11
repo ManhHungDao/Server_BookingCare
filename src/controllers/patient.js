@@ -7,7 +7,9 @@ import Schedule from "../models/schedule";
 import moment from "moment";
 import Patient from "../models/patient";
 import User from "../models/user";
-import { map } from "lodash";
+import Prescription from "../models/prescription";
+import _ from "lodash";
+const { Configuration, OpenAIApi } = require("openai");
 
 exports.checkEmailExisted = catchAsyncErrors(async (req, res, next) => {
   const { email } = req.query;
@@ -218,19 +220,108 @@ exports.updateFakeData = catchAsyncErrors(async (req, res, next) => {
   // );
 
   await Schedule.updateMany(
-    { "schedule.status": "Hoàn thành" },
+    { "schedule.status": "Chờ xác nhận" },
+
     {
       $set: {
-        "schedule.$[elem].rating": 4,
-        "schedule.$[elem].comment": "Cảm thấy hài lòng về dịch vụ khám",
+        "schedule.$[elem].status": "Hoàn thành",
+        "schedule.$[elem].rating": 5,
+        "schedule.$[elem].comment": "Dịch vụ rất tốt",
       },
     },
-    { arrayFilters: [{ $and: [{ "elem.status": "Hoàn thành" }] }] }
+    { arrayFilters: [{ $and: [{ "elem.status": "Chờ xác nhận" }] }] }
   );
 
   // let users = await Packet.find({}, "name ");
 
   res.status(200).json({
+    success: true,
+  });
+});
+
+// thêm đơn thuốc và kết quả cho tất cả lịch đã khám
+exports.updatePrescriptions = catchAsyncErrors(async (req, res, next) => {
+  const resultExam = `<p style="margin-left:0px;text-align:justify;">Thoái hóa khớp, chấn thương đầu gối</p>`;
+  const prescription = `<figure class="table" style="width:98.65%;"><table class="ck-table-resized"><colgroup><col style="width:38.11%;"><col style="width:12.08%;"><col style="width:49.81%;"></colgroup><tbody><tr><td>Tên thuốc</td><td>Số lượng</td><td>Liều dùng</td></tr><tr><td>Paracetamol</td><td>2 vỉ</td><td><p>– Liều khuyến cáo: uống 1viên Paracetamol 500mg/lần mỗi 4-6 giờ. Uống liên tục 5 đến 7 ngày.</p><p>– Liều tối đa: Uống 3000mg paracetamol/1 ngày (tương đương 6 viên ).</p></td></tr><tr><td>Salazopyrin</td><td>1 hộp</td><td>Mỗi ngày uống 3&nbsp;viên, uống 1 viên sau ăn</td></tr><tr><td>Glucosamine Orihiro</td><td>1 hộp</td><td>Mỗi ngày uống 10&nbsp;viên, uống 2 lần sau ăn</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></figure>`;
+
+  let listId = await Schedule.aggregate([
+    { $match: { date: { $ne: null } } },
+    {
+      $unwind: "$schedule",
+    },
+    { $match: { "schedule.status": "Hoàn thành" } },
+    { $project: { "schedule._id": 1, doctor: 1, packet: 1 } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "doctor.id",
+        foreignField: "_id",
+        as: "doctor",
+      },
+    },
+    {
+      $lookup: {
+        from: "packets",
+        localField: "packet.id",
+        foreignField: "_id",
+        as: "packet",
+      },
+    },
+    { $project: { "schedule._id": 1, doctor: 1, packet: 1 } },
+  ]);
+  listId = listId.map((e) => ({
+    scheduleId: e.schedule._id,
+    doctor: e?.doctor?.[0]?.name ? e?.doctor?.[0]?.name : "",
+    packet: e?.packet?.[0]?.name ? e?.packet?.[0]?.name : "",
+    clinic: e?.doctor?.[0]?.detail?.clinic?.name
+      ? e?.doctor?.[0]?.detail?.clinic?.name
+      : e?.packet?.[0]?.clinic?.name
+      ? e?.packet?.[0]?.clinic?.name
+      : "",
+    specialty: e?.doctor?.[0]?.detail?.specialty?.name
+      ? e?.doctor?.[0]?.detail?.specialty?.name
+      : e?.packet?.[0]?.type?.specialty?.name
+      ? e?.packet?.[0]?.type?.specialty?.name
+      : "",
+    detail: prescription,
+    result: resultExam,
+  }));
+  listId = listId.map(async (e) => {
+    await Prescription.findOneAndUpdate({ scheduleId: e.scheduleId }, e, {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+    });
+  });
+  res.status(200).json({
+    success: true,
+  });
+});
+
+// api chat ai
+exports.chatAi = catchAsyncErrors(async (req, res, next) => {
+  const configuration = new Configuration({
+    organization: "org-i16GdI3bivetsydNnhzCYRLs",
+    apiKey: "sk-vWLs5wFhNHDCXkUFLDtHT3B'bkF hdkVpspFG4yNyOwM1A8O",
+  });
+  const openai = new OpenAIApi(configuration);
+
+  const completion = await openai.createCompletion(
+    {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: "Say this is a test!" }],
+      temperature: 0.7,
+    },
+    {
+      timeout: 1000,
+      headers: {
+        "Example-Header": "example",
+      },
+    }
+  );
+
+  res.status(200).json({
+    chat: completion.data.choices[0].text,
     success: true,
   });
 });
