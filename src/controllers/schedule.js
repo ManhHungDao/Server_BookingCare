@@ -696,41 +696,41 @@ export const getPatientByPacket = catchAsyncErrors(async (req, res, next) => {
 
 // dùng để tạo tất cả lịch khám cho bác sĩ và các gói khám
 export const createAllSchedule = catchAsyncErrors(async (req, res, next) => {
-  let listEmail = await User.find(
-    {
-      roleId: { $not: { $regex: "R0" } },
-    },
-    "name _id"
-  );
+  // let listEmail = await User.find(
+  //   {
+  //     roleId: { $not: { $regex: "R0" } },
+  //   },
+  //   "name _id"
+  // );
 
-  listEmail.map(async (e) => {
-    return await Schedule.create({
-      doctor: {
-        id: e._id,
-        name: e.name,
-      },
-      packet: req.body.packet,
-      detail: req.body.detail,
-      date: req.body.date,
-      schedule: req.body.schedule,
-    });
-  });
-  // const listPacket = await Packet.find({}, "name");
-  // listPacket.map(async (e) => {
+  // listEmail.map(async (e) => {
   //   return await Schedule.create({
   //     doctor: {
-  //       id: null,
-  //       name: null,
-  //     },
-  //     packet: {
   //       id: e._id,
   //       name: e.name,
   //     },
+  //     packet: req.body.packet,
   //     detail: req.body.detail,
   //     date: req.body.date,
   //     schedule: req.body.schedule,
   //   });
   // });
+  const listPacket = await Packet.find({}, "name");
+  listPacket.map(async (e) => {
+    return await Schedule.create({
+      doctor: {
+        id: null,
+        name: null,
+      },
+      packet: {
+        id: e._id,
+        name: e.name,
+      },
+      detail: req.body.detail,
+      date: req.body.date,
+      schedule: req.body.schedule,
+    });
+  });
   res.status(200).json({
     success: "ok",
   });

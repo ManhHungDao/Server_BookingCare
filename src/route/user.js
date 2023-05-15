@@ -22,6 +22,7 @@ import {
   getAllDoctorAccount,
   getAllPatientAccount,
   getAllLocationClinic,
+  statisticTimeBooking,
 } from "../controllers/dashboard";
 
 import { getRoleUser, upsert } from "../controllers/role.js";
@@ -51,7 +52,11 @@ router
 router
   .route("/get-all-locaiton-clinic")
   .get(isAuthunticatedUser, getAllLocationClinic);
-// role
+
+// router.route("/get-statistic-time").get(statisticTimeBooking);
+router
+  .route("/get-statistic-time")
+  .get(isAuthunticatedUser, statisticTimeBooking);
 router.route("/upsert-role-user").put(isAuthunticatedUser, upsert);
 router.route("/get-role-user").get(isAuthunticatedUser, getRoleUser);
 

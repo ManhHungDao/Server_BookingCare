@@ -226,7 +226,7 @@ exports.updateFakeData = catchAsyncErrors(async (req, res, next) => {
       $set: {
         "schedule.$[elem].status": "Hoàn thành",
         "schedule.$[elem].rating": 5,
-        "schedule.$[elem].comment": "Dịch vụ rất tốt",
+        "schedule.$[elem].comment": "Dịch vụ rất tốt, được quan tâm chu đáo",
       },
     },
     { arrayFilters: [{ $and: [{ "elem.status": "Chờ xác nhận" }] }] }
@@ -245,7 +245,7 @@ exports.updatePrescriptions = catchAsyncErrors(async (req, res, next) => {
   const prescription = `<figure class="table" style="width:98.65%;"><table class="ck-table-resized"><colgroup><col style="width:38.11%;"><col style="width:12.08%;"><col style="width:49.81%;"></colgroup><tbody><tr><td>Tên thuốc</td><td>Số lượng</td><td>Liều dùng</td></tr><tr><td>Paracetamol</td><td>2 vỉ</td><td><p>– Liều khuyến cáo: uống 1viên Paracetamol 500mg/lần mỗi 4-6 giờ. Uống liên tục 5 đến 7 ngày.</p><p>– Liều tối đa: Uống 3000mg paracetamol/1 ngày (tương đương 6 viên ).</p></td></tr><tr><td>Salazopyrin</td><td>1 hộp</td><td>Mỗi ngày uống 3&nbsp;viên, uống 1 viên sau ăn</td></tr><tr><td>Glucosamine Orihiro</td><td>1 hộp</td><td>Mỗi ngày uống 10&nbsp;viên, uống 2 lần sau ăn</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></figure>`;
 
   let listId = await Schedule.aggregate([
-    { $match: { date: { $ne: null } } },
+    { $match: { date: "1683824400" } },
     {
       $unwind: "$schedule",
     },

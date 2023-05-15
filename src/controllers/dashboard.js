@@ -4,6 +4,7 @@ import User from "../models/user";
 import Handbook from "../models/handbook";
 import Patient from "../models/patient";
 import Schedule from "../models/schedule";
+import Allcode from "../models/allcode";
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 
@@ -111,8 +112,43 @@ exports.getAllDoctorAccount = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
 exports.getAllLocationClinic = catchAsyncErrors(async (req, res, next) => {
   const list = await Clinic.find({}, "name address.lat address.lng");
+  res.status(200).json({
+    list,
+    success: true,
+  });
+});
+
+exports.statisticTimeBooking = catchAsyncErrors(async (req, res, next) => {
+  let list = await Schedule.aggregate([
+    { $match: {} },
+    { $unwind: "$schedule" },
+    { $match: { "schedule.status": "Hoàn thành" } },
+    {
+      $project: {
+        "schedule.time": 1,
+      },
+    },
+    { $group: { _id: "$schedule.time", count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+  ]);
+
+  const sumTimeBooking = list.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.count,
+    0
+  );
+
+  let listTime = await Allcode.find({ type: "TIME" }, "valueVI");
+  list = list.map((e) => {
+    let [item] = listTime.filter((i) => e._id.toString() === i._id.toString());
+    return {
+      time: item.valueVI,
+      count: e.count,
+      percent: ((e.count / sumTimeBooking) * 100).toFixed(3) + "%",
+    };
+  });
   res.status(200).json({
     list,
     success: true,
