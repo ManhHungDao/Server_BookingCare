@@ -95,12 +95,12 @@ exports.remove = catchAsyncErrors(async (req, res, next) => {
   if (!specialty) {
     return next(new ErrorHandler("Specialty not Found", 404));
   }
-  const key = specialty.key;
+  // const key = specialty.key;
 
   // kiểm tra chuyên khoa có tồn tại trong người dùng
-
   const user = await User.findOne({
-    "detail.specialty.id": key,
+    "detail.specialty.id": specialty.key,
+    "detail.clinic.id": specialty.clinic.id,
   });
   if (user) return next(new ErrorHandler("Existed feild in other model", 500));
   // kiểm tra chuyên khoa có bài đăng - xóa tất cả bài đăng thuộc chuyên khoa
