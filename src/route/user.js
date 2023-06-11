@@ -14,6 +14,7 @@ import {
   suggestDoctorRecent,
   outStandingDoctor,
   getAllManager,
+  getAllDoctorBySpecialtyOfClinicHome,
 } from "../controllers/user.js";
 
 import {
@@ -34,6 +35,10 @@ router.route("/get-user").get(getSingle);
 router.route("/get-all-user").get(getAll);
 router.route("/get-all-user-home").get(getAllHomePatient);
 router.route("/get-user-by-specialty-home").get(getAllDoctorBySpecialtyHome);
+router
+  .route("/get-user-by-specialty-clinic-home")
+  .get(getAllDoctorBySpecialtyOfClinicHome);
+
 router.route("/get-user-by-province-home").get(getAllDoctorByProvince);
 router.route("/suggest-doctor-recent").get(suggestDoctorRecent);
 router.route("/get-outstading-doctor").get(outStandingDoctor);

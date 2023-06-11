@@ -331,6 +331,50 @@ exports.getAllDoctorBySpecialtyHome = catchAsyncErrors(
   }
 );
 
+// lấy ra danh sách bác sĩ thuộc chuyên khoa nằm trong bệnh viện đã chọn
+exports.getAllDoctorBySpecialtyOfClinicHome = catchAsyncErrors(
+  async (req, res, next) => {
+    let { page, size, clinicId, specialtyId } = req.query;
+
+    if (!clinicId) {
+      return next(new ErrorHandler("Required clinic id", 400));
+    }
+
+    if (!specialtyId) {
+      return next(new ErrorHandler("Required specialty id", 400));
+    }
+    page = parseInt(page);
+    if (!page) {
+      page = 1;
+    }
+    size = parseInt(size);
+    if (!size) {
+      size = 10;
+    }
+
+    let users = await User.find(
+      {
+        "detail.clinic.id": clinicId,
+        "detail.specialty.id": specialtyId,
+        roleId: { $not: { $regex: "R0" } },
+      },
+      "name"
+    )
+      .skip(size * page - size)
+      .limit(size);
+    let length = await User.find({
+      "detail.clinic.id": clinicId,
+      "detail.specialty.id": specialtyId,
+      roleId: { $not: { $regex: "R0" } },
+    }).count();
+    res.status(200).json({
+      users,
+      count: length,
+      success: true,
+    });
+  }
+);
+
 /* lọc ra những bác sĩ thuộc thành phố đã chọn*/
 exports.getAllDoctorByProvince = catchAsyncErrors(async (req, res, next) => {
   let { page, size, id, province } = req.query;
