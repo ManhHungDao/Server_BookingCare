@@ -10,6 +10,7 @@ import {
   patientChangePassword,
   patientResetPassword,
   assistantResetPassword,
+  assistantChangePassword,
 } from "../controllers/auth";
 
 router.route("/login").post(login);
@@ -20,6 +21,11 @@ router
   .route("/patient-change-password")
   .patch(isAuthunticatedUser, patientChangePassword);
 router.route("/patient-reset-password").patch(patientResetPassword);
-router.route("/assistant-reset-password").patch(assistantResetPassword);
+router
+  .route("/assistant-reset-password")
+  .patch(isAuthunticatedUser, assistantResetPassword);
+router
+  .route("/assistant-change-password")
+  .patch(isAuthunticatedUser, assistantChangePassword);
 
 module.exports = router;
