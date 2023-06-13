@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 
 // route
+const assistant = require("./route/assistant");
 const specialty = require("./route/specialty");
 const handbook = require("./route/handbook");
 const packet = require("./route/packet");
@@ -53,6 +54,7 @@ app.use("/api", schedule);
 app.use("/api", packet);
 app.use("/api", patient);
 app.use("/api", prescription);
+app.use("/api", assistant);
 
 //Middleware error handler
 app.use(ErrorMiddleware);
