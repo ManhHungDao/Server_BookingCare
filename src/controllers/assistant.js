@@ -71,3 +71,50 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.getAll = catchAsyncErrors(async (req, res, next) => {
+  const assistants = await Assistant.find()
+    .populate({
+      path: "doctor.id",
+      select: "name image.url detail.clinic.name detail.specialty.name ",
+    })
+    .select("email name image phone doctor");
+  let length = assistants.length;
+
+  res.status(200).json({
+    assistants,
+    success: true,
+    count: length,
+  });
+});
+
+exports.remove = catchAsyncErrors(async (req, res, next) => {
+  const id = req.query.id;
+  const assistant = await Assistant.findById(id);
+  if (!assistant) {
+    return next(new ErrorHandler("Assistant not Found", 404));
+  }
+  cloudinary.v2.uploader.destroy(assistant.image.public_id);
+  await Assistant.deleteOne({
+    _id: id,
+  });
+  res.status(200).json({
+    success: true,
+    message: "Assistant deleted successfully",
+  });
+});
+
+exports.getSingle = catchAsyncErrors(async (req, res, next) => {
+  const id = req.query.id;
+  const assistant = await Assistant.findById(id)
+    .populate({
+      path: "doctor.id",
+      select: "name image.url detail.clinic detail.specialty ",
+    })
+    .select("-password");
+  // const assistant = await Assistant.findById(id);
+  res.status(200).json({
+    success: true,
+    assistant,
+  });
+});

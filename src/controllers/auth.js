@@ -1,4 +1,5 @@
 import User from "../models/user";
+import Assistant from "../models/assistant";
 import Patient from "../models/patient";
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
@@ -129,4 +130,21 @@ exports.patientResetPassword = catchAsyncErrors(async (req, res, next) => {
   patient.password = password;
   await patient.save();
   sendToken(patient, 200, res);
+});
+
+// assistant
+exports.assistantResetPassword = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.body;
+  const assistant = await Assistant.findOne(
+    {
+      email,
+    },
+    "email name password"
+  );
+  if (!assistant) {
+    return next(new ErrorHandler("Không thể xác định tài khoản", 400));
+  }
+  assistant.password = "123456Aa.";
+  await assistant.save();
+  sendToken(assistant, 200, res);
 });

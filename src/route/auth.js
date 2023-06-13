@@ -9,13 +9,17 @@ import {
   patientLogin,
   patientChangePassword,
   patientResetPassword,
+  assistantResetPassword,
 } from "../controllers/auth";
 
 router.route("/login").post(login);
 router.route("/change-password").patch(isAuthunticatedUser, changePassword);
 router.route("/reset-password").patch(isAuthunticatedUser, resetPassword);
 router.route("/patient-login").post(patientLogin);
-router.route("/patient-change-password").patch(isAuthunticatedUser,patientChangePassword);
+router
+  .route("/patient-change-password")
+  .patch(isAuthunticatedUser, patientChangePassword);
 router.route("/patient-reset-password").patch(patientResetPassword);
+router.route("/assistant-reset-password").patch(assistantResetPassword);
 
 module.exports = router;
