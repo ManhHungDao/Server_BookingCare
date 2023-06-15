@@ -118,3 +118,38 @@ exports.getSingle = catchAsyncErrors(async (req, res, next) => {
     assistant,
   });
 });
+
+exports.update = catchAsyncErrors(async (req, res, next) => {
+  const id = req.query.id;
+  if (!id) {
+    return next(new ErrorHandler("Required user id", 400));
+  }
+  let assistant = await Assistant.findById(id);
+  if (!assistant) {
+    return next(new ErrorHandler("Assistant not Found", 404));
+  }
+  if (req.body.image !== null) {
+    await cloudinary.v2.uploader.destroy(assistant.image.public_id);
+    const result = await cloudinary.v2.uploader.upload(req.body.image, {
+      folder: "assistant",
+      width: 150,
+      crop: "scale",
+    });
+    req.body.image = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  } else
+    req.body.image = {
+      ...assistant.image,
+    };
+  assistant = await Assistant.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
