@@ -49,7 +49,7 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
     {
       email,
     },
-    "email name roleId password"
+    "email name roleId password doctor"
   );
   if (assistant) {
     const isPasswordMatchedAssistant = await assistant.comparePassword(

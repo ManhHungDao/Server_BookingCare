@@ -153,3 +153,17 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.getAllAssistantUnderDoctor = catchAsyncErrors(
+  async (req, res, next) => {
+    const { doctorId } = req.query;
+    if (!doctorId) return next(new ErrorHandler("Required doctor id", 400));
+    const assistants = await Assistant.find({ "doctor.id": doctorId }).select(
+      "name"
+    );
+    res.status(200).json({
+      assistants,
+      success: true,
+    });
+  }
+);
