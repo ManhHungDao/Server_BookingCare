@@ -1,8 +1,5 @@
 import ErrorHandler from "../utils/errorHandler";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
-import Allcode from "../models/allcode";
-import Specialty from "../models/specialty";
-import Schedule from "../models/schedule";
 import Assistant from "../models/assistant";
 import _ from "lodash";
 import cloudinary from "cloudinary";
@@ -73,13 +70,49 @@ exports.create = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAll = catchAsyncErrors(async (req, res, next) => {
-  const assistants = await Assistant.find()
-    .populate({
-      path: "doctor.id",
-      select: "name image.url detail.clinic.name detail.specialty.name ",
+  let { page, size, sort, filter } = req.query;
+  page = parseInt(page);
+  if (!page) {
+    page = 1;
+  }
+  size = parseInt(size);
+  if (!size) {
+    size = 10;
+  }
+  let length = 0;
+  let assistants = null;
+
+  if (filter) {
+    assistants = await Assistant.find({
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
     })
-    .select("email name image phone doctor");
-  let length = assistants.length;
+      .populate({
+        path: "doctor.id",
+        select: "name image.url detail.clinic.name detail.specialty.name ",
+      })
+      .select("email name image phone doctor")
+      .skip(size * page - size)
+      .limit(size);
+    length = await Assistant.find({
+      name: {
+        $regex: filter,
+        $options: "i",
+      },
+    }).count();
+  } else {
+    assistants = await Assistant.find()
+      .populate({
+        path: "doctor.id",
+        select: "name image.url detail.clinic.name detail.specialty.name ",
+      })
+      .select("email name image phone doctor")
+      .skip(size * page - size)
+      .limit(size);
+    length = await Assistant.find().count();
+  }
 
   res.status(200).json({
     assistants,
